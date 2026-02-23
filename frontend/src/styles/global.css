@@ -1,0 +1,139 @@
+:root {
+  /* Brand Colors - NexusHR Fidelity */
+  --primary: #244dd6;
+  --primary-hover: #1e3eb1;
+  --action: #4A90E2;
+  --action-hover: #357abd;
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #244dd6 0%, #4A90E2 100%);
+  --gradient-purple: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
+
+  /* Palette */
+  --dark-navy: #0F172A;
+  --slate: #475569;
+  --light-slate: #E2E8F0;
+  --off-white: #F8FAFC;
+
+  /* Feedback */
+  --success: #22C55E;
+  --warning: #F59E0B;
+  --error: #EF4444;
+  --info: #3B82F6;
+
+  /* Typography */
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --text-main: #1E293B;
+  --text-secondary: #64748B;
+  --background: var(--off-white);
+  --surface: #ffffff;
+
+  /* Spacing & Radii */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --spacing-unit: 8px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+  /* Layout Constants */
+  --sidebar-width: 260px;
+  --header-height: 80px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--background);
+  color: var(--text-main);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+/* Reusable Components */
+
+.card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--light-slate);
+}
+
+.btn {
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.btn-primary {
+  background: var(--gradient-primary);
+  color: white;
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.2);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(255, 107, 107, 0.3);
+}
+
+/* Status Pills */
+.pill {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.pill-pending {
+  background: #FEF3C7;
+  color: #D97706;
+}
+
+.pill-approved {
+  background: #DCFCE7;
+  color: #16A34A;
+}
+
+.pill-declined {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--light-slate);
+  border-radius: 10px;
+}

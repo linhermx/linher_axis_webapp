@@ -1,0 +1,85 @@
+import { NavLink } from 'react-router-dom';
+import {
+    LayoutDashboard,
+    Users,
+    Calendar,
+    Target,
+    BarChart3,
+    Settings,
+    MoreVertical
+} from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
+import '../styles/sidebar.css';
+
+const Sidebar = () => {
+    const { user } = useAuth();
+
+    // In a real app, these would come from user session/profile data
+    const profile = {
+        name: 'Sarah Smith',
+        role: 'HR Admin',
+        avatar: 'S' // Placeholder for avatar
+    };
+
+    return (
+        <aside className="sidebar">
+            <div className="sidebar-header">
+                <div className="logo-section">
+                    <div className="logo-box">HR</div>
+                    <span className="logo-label">NexusHR</span>
+                </div>
+            </div>
+
+            <nav className="sidebar-nav">
+                <NavLink to="/" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                    <LayoutDashboard size={20} />
+                    <span>Panel de Control</span>
+                </NavLink>
+
+                <NavLink to="/employees" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                    <Users size={20} />
+                    <span>Empleados</span>
+                </NavLink>
+
+                <NavLink to="/calendar" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                    <Calendar size={20} />
+                    <span>Calendario</span>
+                </NavLink>
+
+                <NavLink to="/recruitment" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                    <Target size={20} />
+                    <span>Reclutamiento</span>
+                    <span className="nav-badge">4</span>
+                </NavLink>
+
+                <NavLink to="/reports" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                    <BarChart3 size={20} />
+                    <span>Reportes</span>
+                </NavLink>
+
+                <NavLink to="/settings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                    <Settings size={20} />
+                    <span>Configuración</span>
+                </NavLink>
+            </nav>
+
+            <div className="sidebar-footer">
+                <div className="user-profile-widget">
+                    <div className="user-avatar-small">
+                        {profile.avatar}
+                        <div className="status-indicator online"></div>
+                    </div>
+                    <div className="user-meta">
+                        <span className="user-fullname">{profile.name}</span>
+                        <span className="user-jobrole">Admin de RRHH</span>
+                    </div>
+                    <button className="user-options">
+                        <MoreVertical size={16} />
+                    </button>
+                </div>
+            </div>
+        </aside>
+    );
+};
+
+export default Sidebar;
