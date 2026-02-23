@@ -12,36 +12,20 @@
 }
 
 .sidebar-header {
-    padding: 30px 24px;
-    display: flex;
-    align-items: center;
-}
-
-.logo-section {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.logo-box {
-    background-color: var(--primary);
-    color: white;
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
+    padding: 25px 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 800;
-    font-size: 16px;
-    letter-spacing: -0.5px;
 }
 
-.logo-label {
-    font-weight: 800;
-    font-size: 20px;
-    color: var(--dark-navy);
+.sidebar-logo {
+    max-height: 80px;
+    max-width: 180px;
+    width: auto;
+    object-fit: contain;
 }
+
+
 
 .sidebar-nav {
     flex: 1;
@@ -71,7 +55,7 @@
 }
 
 .nav-item.active {
-    background-color: #FFF5F5;
+    background-color: #EBF8FF;
     color: var(--primary);
 }
 

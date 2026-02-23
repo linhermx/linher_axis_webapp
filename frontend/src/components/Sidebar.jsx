@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import logo from '../assets/linher-axis-horizontal-v1.svg';
 import {
     LayoutDashboard,
     Users,
@@ -24,10 +25,7 @@ const Sidebar = () => {
     return (
         <aside className="sidebar">
             <div className="sidebar-header">
-                <div className="logo-section">
-                    <div className="logo-box">HR</div>
-                    <span className="logo-label">NexusHR</span>
-                </div>
+                <img src={logo} alt="Linher Axis" className="sidebar-logo" />
             </div>
 
             <nav className="sidebar-nav">
