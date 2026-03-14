@@ -1,73 +1,88 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { LogIn, Lock, Mail } from 'lucide-react';
-import '../styles/login.css';
+import { Button, Card, InputField } from '../components/ui';
 
 const Login = () => {
-    const { login } = useAuth();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError('');
-        try {
-            await login(email, password);
-        } catch (err) {
-            setError(err.response?.data?.message || 'Ocurrió un error al iniciar sesión');
-        } finally {
-            setLoading(false);
-        }
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
 
-    return (
-        <div className="login-container">
-            <div className="login-card">
-                <div className="login-header">
-                    <div className="logo-circle">
-                        <LogIn size={32} color="#135bec" />
-                    </div>
-                    <h1>LINHER Axis</h1>
-                    <p>Accede a tu cuenta de RRHH</p>
-                </div>
+    try {
+      await login(email, password);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Ocurrió un error al iniciar sesión');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                <form onSubmit={handleSubmit} className="login-form">
-                    <div className="input-group">
-                        <Mail size={18} className="input-icon" />
-                        <input
-                            type="email"
-                            placeholder="Correo electrónico"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
-
-                    <div className="input-group">
-                        <Lock size={18} className="input-icon" />
-                        <input
-                            type="password"
-                            placeholder="Contraseña"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                    </div>
-
-                    {error && <div className="error-message">{error}</div>}
-
-                    <button type="submit" className="login-button" disabled={loading}>
-                        {loading ? 'Cargando...' : 'Iniciar Sesión'}
-                    </button>
-
-                    <a href="#" className="forgot-password">¿Olvidaste tu contraseña?</a>
-                </form>
-            </div>
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-ui-background p-5">
+      <Card className="w-full max-w-[440px] rounded-[20px] p-12 shadow-lg">
+        <div className="mb-10 text-center">
+          <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-brand-primary text-white">
+            <LogIn size={32} className="text-white" />
+          </div>
+          <h1 className="mb-2 text-[1.625rem] font-extrabold text-ui-dark-navy">LINHER Axis</h1>
+          <p className="text-[0.9375rem] text-ui-text-secondary">Accede a tu cuenta de RRHH</p>
         </div>
-    );
+
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <InputField
+            id="login-email"
+            name="email"
+            type="email"
+            label="Correo electrónico"
+            placeholder="correo@empresa.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            leftIcon={<Mail size={18} />}
+          />
+
+          <InputField
+            id="login-password"
+            name="password"
+            type="password"
+            label="Contraseña"
+            placeholder="Tu contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            leftIcon={<Lock size={18} />}
+          />
+
+          {error && (
+            <div
+              role="alert"
+              className="rounded-md border border-status-error bg-red-50 px-3 py-3 text-center text-sm text-status-error"
+            >
+              {error}
+            </div>
+          )}
+
+          <Button type="submit" size="lg" className="mt-2 w-full">
+            {loading ? 'Cargando...' : 'Iniciar Sesión'}
+          </Button>
+
+          <a
+            href="#"
+            className="block pt-2 text-center text-sm font-semibold text-brand-primary hover:underline"
+          >
+            ¿Olvidaste tu contraseña?
+          </a>
+        </form>
+      </Card>
+    </div>
+  );
 };
 
 export default Login;

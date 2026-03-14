@@ -1,46 +1,69 @@
+﻿import { useState } from 'react';
 import { Search, Bell, Plus } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
-import '../styles/topbar.css';
+import { Button, InputField } from './ui';
 
 const Topbar = () => {
-    const location = useLocation();
+  const location = useLocation();
+  const [searchTerm, setSearchTerm] = useState('');
 
-    // Simple logic to set page title based on path
-    const getPageTitle = () => {
-        const path = location.pathname;
-        if (path === '/') return 'Panel de Control';
-        if (path.startsWith('/employees')) return 'Empleados';
-        if (path.startsWith('/calendar')) return 'Calendario';
-        if (path.startsWith('/recruitment')) return 'Reclutamiento';
-        if (path.startsWith('/reports')) return 'Reportes';
-        if (path.startsWith('/settings')) return 'Configuración';
-        return 'Panel de Control';
-    }
+  const getPageTitle = () => {
+    const path = location.pathname;
+    if (path === '/') return 'Panel de Control';
+    if (path.startsWith('/employees')) return 'Empleados';
+    if (path.startsWith('/calendar')) return 'Calendario';
+    if (path.startsWith('/recruitment')) return 'Reclutamiento';
+    if (path.startsWith('/reports')) return 'Reportes';
+    if (path.startsWith('/settings')) return 'Configuración';
+    return 'Panel de Control';
+  };
 
-    return (
-        <header className="topbar">
-            <div className="topbar-left">
-                <h1 className="page-title">{getPageTitle()}</h1>
-            </div>
+  return (
+    <header className="flex h-[var(--header-height)] items-center justify-between px-10">
+      <div>
+        <h1 className="text-2xl font-extrabold text-ui-dark-navy">{getPageTitle()}</h1>
+      </div>
 
-            <div className="topbar-right">
-                <div className="topbar-search">
-                    <Search size={18} className="search-icon" />
-                    <input type="text" placeholder="Buscar empleados, cargos..." />
-                </div>
+      <div className="flex items-center gap-6">
+        <form
+          role="search"
+          className="w-full max-w-[320px]"
+          onSubmit={(e) => e.preventDefault()}
+        >
+          <InputField
+            id="topbar-search"
+            name="topbar_search"
+            label="Buscar"
+            srOnlyLabel
+            type="search"
+            placeholder="Buscar empleados, cargos..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            containerClassName="space-y-0"
+            inputClassName="shadow-sm"
+            leftIcon={<Search size={18} />}
+          />
+        </form>
 
-                <button className="icon-btn">
-                    <Bell size={20} />
-                    <span className="dot-badge"></span>
-                </button>
+        <Button
+          variant="icon"
+          aria-label="Ver notificaciones"
+          className="relative shadow-sm"
+        >
+          <Bell size={20} />
+          <span
+            aria-hidden="true"
+            className="absolute right-[0.72rem] top-[0.62rem] h-2 w-2 rounded-full border-2 border-ui-surface bg-brand-primary"
+          />
+        </Button>
 
-                <button className="btn btn-primary add-employee-btn">
-                    <Plus size={18} />
-                    <span>Añadir Empleado</span>
-                </button>
-            </div>
-        </header>
-    );
+        <Button className="shadow-sm">
+          <Plus size={18} />
+          <span>Añadir Empleado</span>
+        </Button>
+      </div>
+    </header>
+  );
 };
 
 export default Topbar;

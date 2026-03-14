@@ -1,173 +1,360 @@
-import {
-    Users,
-    ArrowRight,
-    TrendingDown,
-    TrendingUp,
-    Briefcase,
-    Umbrella,
-    ChevronRight,
-    Search,
-    MoreVertical
+﻿import {
+  Users,
+  ArrowRight,
+  TrendingDown,
+  TrendingUp,
+  Briefcase,
+  Umbrella,
+  ChevronRight,
+  Search,
+  MoreVertical,
 } from 'lucide-react';
-import '../styles/dashboard.css';
+import {
+  Badge,
+  Button,
+  Card,
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+} from '../components/ui';
+
+const STATUS_VARIANT = {
+  pending: 'warning',
+  approved: 'success',
+  declined: 'danger',
+};
 
 const Dashboard = () => {
-    // Datos de ejemplo para fidelidad NexusHR
-    const stats = [
-        { label: 'Total Empleados', value: '1,248', icon: <Users size={20} />, trend: <TrendingUp size={16} />, trendText: 'vs mes anterior', color: 'blue' },
-        { label: 'De Licencia Hoy', value: '12', icon: <Umbrella size={20} />, trend: <TrendingDown size={16} />, trendText: '4% menos que ayer', color: 'orange', trendColor: 'green' },
-        { label: 'Vacantes Abiertas', value: '45', icon: <Briefcase size={20} />, subtitle: '8 roles urgentes', color: 'purple' },
-    ];
+  const stats = [
+    {
+      label: 'Total Empleados',
+      value: '1,248',
+      icon: Users,
+      iconTone: 'bg-sky-100 text-sky-600',
+      trendIcon: TrendingUp,
+      trendText: 'vs mes anterior',
+      trendTone: 'text-status-success',
+    },
+    {
+      label: 'De Licencia Hoy',
+      value: '12',
+      icon: Umbrella,
+      iconTone: 'bg-amber-100 text-amber-600',
+      trendIcon: TrendingDown,
+      trendText: '4% menos que ayer',
+      trendTone: 'text-status-success',
+    },
+    {
+      label: 'Vacantes Abiertas',
+      value: '45',
+      icon: Briefcase,
+      iconTone: 'bg-violet-100 text-violet-600',
+      subtitle: '8 roles urgentes',
+    },
+  ];
 
-    const requests = [
-        { id: 1, name: 'Teresa Jenkins', role: 'Especialista de Ventas', type: 'Vacaciones', period: '01 Ene - 10 Ene', status: 'Pendiente', statusKey: 'pending', avatar: 'T' },
-        { id: 2, name: 'Salamon Newman', role: 'Senior Dev', type: 'Licencia Médica', period: 'Hoy', status: 'Aprobado', statusKey: 'approved', avatar: 'S' },
-        { id: 3, name: 'Monica Cutcher', role: 'Diseñadora', type: 'Día Libre', period: '29 Dic - 31 Dic', status: 'Rechazado', statusKey: 'declined', avatar: 'M' },
-    ];
+  const requests = [
+    {
+      id: 1,
+      name: 'Teresa Jenkins',
+      role: 'Especialista de Ventas',
+      type: 'Vacaciones',
+      period: '01 Ene - 10 Ene',
+      status: 'Pendiente',
+      statusKey: 'pending',
+      avatar: 'T',
+    },
+    {
+      id: 2,
+      name: 'Salamon Newman',
+      role: 'Senior Dev',
+      type: 'Licencia Médica',
+      period: 'Hoy',
+      status: 'Aprobado',
+      statusKey: 'approved',
+      avatar: 'S',
+    },
+    {
+      id: 3,
+      name: 'Monica Cutcher',
+      role: 'Diseñadora',
+      type: 'Día Libre',
+      period: '29 Dic - 31 Dic',
+      status: 'Rechazado',
+      statusKey: 'declined',
+      avatar: 'M',
+    },
+  ];
 
-    return (
-        <div className="dashboard-root">
-            <section className="dashboard-stats-row">
-                {stats.map((stat, i) => (
-                    <div key={i} className="stat-card">
-                        <div className="stat-card-header">
-                            <div className={`stat-card-icon ${stat.color}`}>{stat.icon}</div>
-                            <div className="stat-card-value">{stat.value}</div>
-                        </div>
-                        <div className="stat-card-label">{stat.label}</div>
-                        <div className="stat-card-footer">
-                            {stat.trend && <span className={`stat-trend ${stat.trendColor || ''}`}>{stat.trend}</span>}
-                            {stat.trendText && <span className="stat-trend-text">{stat.trendText}</span>}
-                            {stat.subtitle && <span className="stat-subtitle">{stat.subtitle}</span>}
-                        </div>
-                    </div>
-                ))}
+  const moodSegments = [
+    {
+      key: 'happy',
+      label: 'Feliz (53%)',
+      dashArray: '53, 100',
+      dashOffset: '0',
+      strokeClass: 'text-brand-action',
+      dotClass: 'bg-brand-action',
+    },
+    {
+      key: 'neutral',
+      label: 'Neutral (23%)',
+      dashArray: '23, 100',
+      dashOffset: '-53',
+      strokeClass: 'text-status-success',
+      dotClass: 'bg-status-success',
+    },
+    {
+      key: 'excited',
+      label: 'Entusiasmado (14%)',
+      dashArray: '14, 100',
+      dashOffset: '-76',
+      strokeClass: 'text-status-warning',
+      dotClass: 'bg-status-warning',
+    },
+    {
+      key: 'upset',
+      label: 'Molesto (6%)',
+      dashArray: '6, 100',
+      dashOffset: '-90',
+      strokeClass: 'text-violet-500',
+      dotClass: 'bg-violet-500',
+    },
+  ];
 
-                {/* Tarjeta de Acción Rápida: Nómina */}
-                <div className="stat-card payroll-widget">
-                    <div className="payroll-content">
-                        <div className="payroll-info">
-                            <span className="payroll-label">Acción Rápida</span>
-                            <h3 className="payroll-title">Ejecutar Nómina</h3>
-                            <span className="payroll-due">Ciclo vence en 3 días</span>
-                        </div>
-                        <button className="payroll-btn">
-                            <ArrowRight size={20} />
-                        </button>
-                    </div>
+  return (
+    <div className="flex flex-col gap-6">
+      <section className="grid grid-cols-1 gap-6 xl:grid-cols-4">
+        {stats.map((stat) => {
+          const Icon = stat.icon;
+          const TrendIcon = stat.trendIcon;
+
+          return (
+            <Card key={stat.label} className="rounded-[20px] p-6">
+              <div className="mb-2 flex items-center justify-between gap-3">
+                <div className={`flex h-9 w-9 items-center justify-center rounded-[10px] ${stat.iconTone}`}>
+                  <Icon size={20} />
                 </div>
-            </section>
+                <p className="text-2xl font-extrabold text-ui-dark-navy">{stat.value}</p>
+              </div>
 
-            <div className="dashboard-main-grid">
-                <section className="dashboard-left-col">
-                    <div className="card requests-card">
-                        <div className="card-header-row">
-                            <h2 className="card-title">Solicitudes</h2>
-                            <button className="view-all-link">Ver todo</button>
-                        </div>
-                        <table className="requests-table">
-                            <thead>
-                                <tr>
-                                    <th>Empleado</th>
-                                    <th>Tipo</th>
-                                    <th>Periodo</th>
-                                    <th>Estado</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {requests.map(req => (
-                                    <tr key={req.id}>
-                                        <td>
-                                            <div className="employee-cell">
-                                                <div className="avatar-small">{req.avatar}</div>
-                                                <div className="employee-meta">
-                                                    <div className="emp-name">{req.name}</div>
-                                                    <div className="emp-role">{req.role}</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>{req.type}</td>
-                                        <td>{req.period}</td>
-                                        <td>
-                                            <span className={`pill pill-${req.statusKey}`}>
-                                                {req.status}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <button className="row-options"><ChevronRight size={18} /></button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+              <p className="text-sm font-semibold text-ui-text-secondary">{stat.label}</p>
 
-                    <div className="card applicants-card">
-                        <div className="card-header-row">
-                            <h2 className="card-title">Nuevos Postulantes</h2>
-                            <div className="pagination-arrows">
-                                <button className="arrow-btn">{'<'}</button>
-                                <button className="arrow-btn active">{'>'}</button>
-                            </div>
-                        </div>
-                        <div className="applicant-item">
-                            <div className="avatar-medium">JD</div>
-                            <div className="applicant-meta">
-                                <div className="applicant-name">Jensen Duane</div>
-                                <div className="applicant-apply">Postuló para <span className="strong">Diseñador Gráfico Senior</span></div>
-                            </div>
-                            <span className="apply-time">Hace 2h</span>
-                            <button className="view-applicant-btn icon-btn"><Search size={16} /></button>
-                        </div>
-                    </div>
-                </section>
+              <div className="mt-3 flex items-center gap-2">
+                {TrendIcon && (
+                  <span className={`inline-flex items-center text-xs font-bold ${stat.trendTone}`}>
+                    <TrendIcon size={16} />
+                  </span>
+                )}
+                {stat.trendText && (
+                  <span className="text-xs text-ui-text-secondary opacity-80">{stat.trendText}</span>
+                )}
+                {stat.subtitle && (
+                  <span className="text-xs text-ui-text-secondary opacity-80">{stat.subtitle}</span>
+                )}
+              </div>
+            </Card>
+          );
+        })}
 
-                <section className="dashboard-right-col">
-                    <div className="card mood-card">
-                        <div className="card-header-row">
-                            <h2 className="card-title">Clima Laboral</h2>
-                            <button className="view-all-link">Detalles</button>
-                        </div>
-                        <div className="mood-chart-container">
-                            <div className="mood-doughnut">
-                                <svg viewBox="0 0 36 36" className="circular-chart">
-                                    <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                    <path className="circle" strokeDasharray="30, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" style={{ stroke: '#4A90E2' }} />
-                                    <path className="circle" strokeDasharray="20, 100" strokeDashoffset="-30" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" style={{ stroke: '#FFD43B' }} />
-                                    <path className="circle" strokeDasharray="15, 100" strokeDashoffset="-50" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" style={{ stroke: '#FF6B6B' }} />
-                                </svg>
-                                <div className="doughnut-center">
-                                    <span className="mood-score">Bueno</span>
-                                    <span className="mood-label">Promedio</span>
-                                </div>
-                            </div>
-                        </div>
-                        <ul className="mood-legend">
-                            <li><span className="dot" style={{ background: '#4A90E2' }}></span> Feliz (53%)</li>
-                            <li><span className="dot" style={{ background: '#22C55E' }}></span> Neutral (23%)</li>
-                            <li><span className="dot" style={{ background: '#FFD43B' }}></span> Entusiasmado (14%)</li>
-                            <li><span className="dot" style={{ background: '#8B5CF6' }}></span> Molesto (6%)</li>
-                        </ul>
-                    </div>
-
-                    <div className="card events-card">
-                        <div className="card-header-row">
-                            <h2 className="card-title">Próximos Eventos</h2>
-                            <button className="row-options"><MoreVertical size={16} /></button>
-                        </div>
-                        <div className="event-item">
-                            <div className="event-content">
-                                <div className="event-title">¡Cumpleaños de Shane Wiggins!</div>
-                                <div className="event-tag">Feriado</div>
-                            </div>
-                            <div className="event-time">Todo el día</div>
-                        </div>
-                    </div>
-                </section>
+        <Card className="rounded-[20px] border-none bg-[var(--gradient-purple)] p-6 text-white">
+          <div className="flex h-full items-center justify-between gap-4">
+            <div>
+              <p className="text-[0.6875rem] font-bold uppercase tracking-[0.05em] opacity-80">Acción Rápida</p>
+              <h3 className="my-1 text-lg font-bold">Ejecutar Nómina</h3>
+              <p className="text-xs opacity-80">Ciclo vence en 3 días</p>
             </div>
-        </div>
-    );
+
+            <Button
+              type="button"
+              variant="ghost"
+              aria-label="Ejecutar nómina"
+              className="h-10 w-10 rounded-xl bg-white/20 p-0 text-white hover:bg-white/30"
+            >
+              <ArrowRight size={20} />
+            </Button>
+          </div>
+        </Card>
+      </section>
+
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[2fr_1fr]">
+        <section className="flex flex-col gap-6">
+          <Card
+            title="Solicitudes"
+            actions={
+              <Button type="button" variant="ghost" size="sm">
+                Ver todo
+              </Button>
+            }
+            className="rounded-[20px]"
+          >
+            <div className="overflow-x-auto">
+              <Table className="min-w-[680px]">
+                <TableCaption>Solicitudes recientes de empleados</TableCaption>
+                <TableHead>
+                  <TableRow className="hover:bg-transparent">
+                    <TableHeaderCell scope="col" className="bg-transparent px-0 py-3 text-ui-text-secondary opacity-70">
+                      Empleado
+                    </TableHeaderCell>
+                    <TableHeaderCell scope="col" className="bg-transparent px-0 py-3 text-ui-text-secondary opacity-70">
+                      Tipo
+                    </TableHeaderCell>
+                    <TableHeaderCell scope="col" className="bg-transparent px-0 py-3 text-ui-text-secondary opacity-70">
+                      Periodo
+                    </TableHeaderCell>
+                    <TableHeaderCell scope="col" className="bg-transparent px-0 py-3 text-ui-text-secondary opacity-70">
+                      Estado
+                    </TableHeaderCell>
+                    <TableHeaderCell scope="col" className="bg-transparent px-0 py-3 text-ui-text-secondary opacity-70">
+                      Acciones
+                    </TableHeaderCell>
+                  </TableRow>
+                </TableHead>
+
+                <TableBody>
+                  {requests.map((req) => (
+                    <TableRow key={req.id} className="hover:bg-ui-background">
+                      <TableCell className="px-0 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ui-background text-xs font-bold text-brand-primary">
+                            {req.avatar}
+                          </div>
+                          <div>
+                            <p className="font-bold text-ui-dark-navy">{req.name}</p>
+                            <p className="text-[0.6875rem] text-ui-text-secondary">{req.role}</p>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="px-0 py-4">{req.type}</TableCell>
+                      <TableCell className="px-0 py-4">{req.period}</TableCell>
+                      <TableCell className="px-0 py-4">
+                        <Badge variant={STATUS_VARIANT[req.statusKey]}>{req.status}</Badge>
+                      </TableCell>
+                      <TableCell className="px-0 py-4">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          aria-label={`Ver detalle de ${req.name}`}
+                          className="h-8 w-8 p-0"
+                        >
+                          <ChevronRight size={18} />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </Card>
+
+          <Card
+            title="Nuevos Postulantes"
+            actions={
+              <div className="flex items-center gap-2">
+                <Button type="button" variant="secondary" size="sm" className="h-8 w-8 p-0" aria-label="Postulante anterior">
+                  <span aria-hidden="true">{'<'}</span>
+                </Button>
+                <Button type="button" size="sm" className="h-8 w-8 p-0" aria-label="Siguiente postulante">
+                  <span aria-hidden="true">{'>'}</span>
+                </Button>
+              </div>
+            }
+            className="rounded-[20px]"
+          >
+            <div className="flex items-center gap-4 py-1">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-100 font-bold text-status-info">
+                JD
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-bold">Jensen Duane</p>
+                <p className="text-xs text-ui-text-secondary">
+                  Postuló para <span className="font-semibold text-ui-text-main">Diseñador Gráfico Senior</span>
+                </p>
+              </div>
+
+              <span className="mr-2 text-[0.6875rem] font-bold text-ui-text-secondary opacity-70">Hace 2h</span>
+
+              <Button type="button" variant="icon" aria-label="Ver postulante" className="h-9 w-9 p-0">
+                <Search size={16} />
+              </Button>
+            </div>
+          </Card>
+        </section>
+
+        <section className="flex flex-col gap-6">
+          <Card
+            title="Clima Laboral"
+            actions={
+              <Button type="button" variant="ghost" size="sm">
+                Detalles
+              </Button>
+            }
+            className="rounded-[20px]"
+          >
+            <div className="flex justify-center py-5">
+              <div className="relative h-40 w-40">
+                <svg viewBox="0 0 36 36" className="block h-full w-full">
+                  <path
+                    className="fill-none stroke-current text-ui-light-slate"
+                    strokeWidth="3.8"
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                  {moodSegments.map((segment) => (
+                    <path
+                      key={segment.key}
+                      className={`fill-none stroke-current ${segment.strokeClass}`}
+                      strokeWidth="3.8"
+                      strokeLinecap="round"
+                      strokeDasharray={segment.dashArray}
+                      strokeDashoffset={segment.dashOffset}
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    />
+                  ))}
+                </svg>
+
+                <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-xl font-extrabold text-ui-dark-navy">Bueno</span>
+                  <span className="text-xs font-medium text-ui-text-secondary">Promedio</span>
+                </div>
+              </div>
+            </div>
+
+            <ul className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {moodSegments.map((segment) => (
+                <li key={segment.key} className="flex items-center gap-2 text-xs font-semibold text-ui-slate">
+                  <span className={`h-2 w-2 rounded-full ${segment.dotClass}`} />
+                  <span>{segment.label}</span>
+                </li>
+              ))}
+            </ul>
+          </Card>
+
+          <Card
+            title="Próximos Eventos"
+            actions={
+              <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" aria-label="Opciones de eventos">
+                <MoreVertical size={16} />
+              </Button>
+            }
+            className="rounded-[20px]"
+          >
+            <div className="flex items-center justify-between rounded-xl border-l-4 border-brand-primary bg-sky-100 p-4">
+              <div>
+                <p className="text-sm font-bold text-ui-dark-navy">¡Cumpleaños de Shane Wiggins!</p>
+                <p className="mt-0.5 text-[0.6875rem] font-semibold text-brand-primary">Feriado</p>
+              </div>
+              <p className="text-[0.6875rem] font-bold text-ui-text-secondary opacity-70">Todo el día</p>
+            </div>
+          </Card>
+        </section>
+      </div>
+    </div>
+  );
 };
 
 export default Dashboard;

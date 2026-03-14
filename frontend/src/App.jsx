@@ -1,9 +1,11 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './hooks/useAuth';
+import { AuthProvider } from './hooks/AuthProvider';
+import { useAuth } from './hooks/useAuth';
 import Layout from './components/Layout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import EmployeeDirectory from './pages/EmployeeDirectory';
+import CreateEmployee from './pages/CreateEmployee';
 
 const ProtectedRoute = ({ children }) => {
     const { user, loading } = useAuth();
@@ -30,6 +32,12 @@ function App() {
                     <Route path="/employees" element={
                         <ProtectedRoute>
                             <EmployeeDirectory />
+                        </ProtectedRoute>
+                    } />
+
+                    <Route path="/employees/new" element={
+                        <ProtectedRoute>
+                            <CreateEmployee />
                         </ProtectedRoute>
                     } />
 

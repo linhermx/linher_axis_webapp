@@ -15,11 +15,10 @@ import '../styles/sidebar.css';
 const Sidebar = () => {
     const { user } = useAuth();
 
-    // In a real app, these would come from user session/profile data
     const profile = {
-        name: 'Sarah Smith',
-        role: 'HR Admin',
-        avatar: 'S' // Placeholder for avatar
+        name: user?.name || 'Sarah Smith',
+        role: user?.role_name || 'Admin de RRHH',
+        avatar: (user?.name?.charAt(0) || 'S').toUpperCase(),
     };
 
     return (
@@ -69,7 +68,7 @@ const Sidebar = () => {
                     </div>
                     <div className="user-meta">
                         <span className="user-fullname">{profile.name}</span>
-                        <span className="user-jobrole">Admin de RRHH</span>
+                        <span className="user-jobrole">{profile.role}</span>
                     </div>
                     <button className="user-options">
                         <MoreVertical size={16} />
