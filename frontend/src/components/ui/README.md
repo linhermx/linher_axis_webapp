@@ -1,4 +1,4 @@
-# UI Primitives (Phase 1)
+﻿# UI Primitives (Phase 1)
 
 This folder contains the initial UI primitives for the design system:
 
@@ -7,6 +7,9 @@ This folder contains the initial UI primitives for the design system:
 - `PageHeader`
 - `Card`
 - `Badge`
+- `Alert`
+- `StatusView`
+- `ThemeToggle`
 - `Table` primitives (`TableShell`, `Table`, `TableHead`, `TableRow`, etc.)
 
 ## Token source
@@ -23,7 +26,7 @@ import { Button, Card, PageHeader } from '../components/ui';
 
 const Example = () => (
   <>
-    <PageHeader title="Directorio" subtitle="Gestión de empleados" />
+    <PageHeader title="Directorio" subtitle="Gestion de empleados" />
     <Card title="Acciones">
       <Button>Nuevo</Button>
     </Card>

@@ -1,139 +1,136 @@
-.sidebar {
-    width: var(--sidebar-width);
-    height: 100vh;
-    background-color: var(--surface);
-    border-right: 1px solid var(--light-slate);
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    left: 0;
-    top: 0;
-    z-index: 100;
+﻿.sidebar {
+  width: var(--sidebar-width);
+  height: 100vh;
+  background-color: var(--surface);
+  border-right: 1px solid var(--light-slate);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 100;
 }
 
 .sidebar-header {
-    padding: 25px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  padding: 25px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .sidebar-logo {
-    max-height: 80px;
-    max-width: 180px;
-    width: auto;
-    object-fit: contain;
+  max-height: 80px;
+  max-width: 180px;
+  width: auto;
+  object-fit: contain;
 }
 
-
-
 .sidebar-nav {
-    flex: 1;
-    padding: 0 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  flex: 1;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    color: var(--slate);
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 500;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  color: var(--slate);
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  position: relative;
 }
 
 .nav-item:hover {
-    background-color: var(--off-white);
-    color: var(--dark-navy);
+  background-color: var(--surface-subtle);
+  color: var(--text-main);
 }
 
 .nav-item.active {
-    background-color: #EBF8FF;
-    color: var(--primary);
+  background-color: var(--nav-active-bg);
+  color: var(--nav-active-text);
 }
 
 .nav-badge {
-    margin-left: auto;
-    background-color: var(--primary);
-    color: white;
-    font-size: 11px;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-weight: 700;
+  margin-left: auto;
+  background-color: var(--primary);
+  color: #ffffff;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 700;
 }
 
 .sidebar-footer {
-    padding: 24px;
-    border-top: 1px solid var(--light-slate);
+  padding: 24px;
+  border-top: 1px solid var(--light-slate);
 }
 
 .user-profile-widget {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background-color: var(--off-white);
-    padding: 12px;
-    border-radius: 16px;
-    position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: var(--surface-subtle);
+  padding: 12px;
+  border-radius: 16px;
+  position: relative;
 }
 
 .user-avatar-small {
-    width: 40px;
-    height: 40px;
-    background-color: #fce7f3;
-    /* Placeholder pinkish bg */
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    color: #db2777;
-    position: relative;
+  width: 40px;
+  height: 40px;
+  background-color: var(--avatar-bg);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--avatar-text);
+  position: relative;
 }
 
 .status-indicator {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    border: 2px solid white;
-    position: absolute;
-    bottom: -2px;
-    right: -2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--surface);
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
 }
 
 .status-indicator.online {
-    background-color: var(--success);
+  background-color: var(--success);
 }
 
 .user-meta {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .user-fullname {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--dark-navy);
-    white-space: nowrap;
-    text-overflow: ellipsis;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .user-jobrole {
-    font-size: 11px;
-    color: var(--text-secondary);
-    font-weight: 500;
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
 .user-options {
-    margin-left: auto;
-    color: var(--text-secondary);
-    opacity: 0.5;
+  margin-left: auto;
+  color: var(--text-secondary);
+  opacity: 0.7;
 }

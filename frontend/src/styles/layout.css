@@ -1,18 +1,25 @@
-.app-layout {
-    display: flex;
-    min-height: 100vh;
-    background-color: var(--off-white);
+﻿.app-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--background);
 }
 
 .main-content {
-    flex: 1;
-    margin-left: var(--sidebar-width);
-    display: flex;
-    flex-direction: column;
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  display: flex;
+  flex-direction: column;
 }
 
 .page-container {
-    padding: 0 40px 40px;
-    flex: 1;
-    overflow-y: auto;
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 40px 40px;
+}
+
+.page-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-top: 1.5rem;
 }

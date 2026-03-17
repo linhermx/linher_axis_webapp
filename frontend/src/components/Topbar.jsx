@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Search, Bell, Plus } from 'lucide-react';
+﻿import { useState } from 'react';
+import { Search, Bell } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
-import { Button, InputField } from './ui';
+import { Button, InputField, ThemeToggle } from './ui';
 
 const Topbar = () => {
   const location = useLocation();
@@ -56,10 +56,7 @@ const Topbar = () => {
           />
         </Button>
 
-        <Button className="!h-[42px] rounded-md px-4">
-          <Plus size={16} />
-          <span className="whitespace-nowrap">Añadir Empleado</span>
-        </Button>
+        <ThemeToggle />
       </div>
     </header>
   );
