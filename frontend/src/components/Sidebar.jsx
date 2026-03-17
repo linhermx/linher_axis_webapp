@@ -10,6 +10,7 @@ import {
   MoreVertical,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import { hasAnyPermission } from '../lib/permissions';
 import '../styles/sidebar.css';
 
 const Sidebar = () => {
@@ -20,6 +21,7 @@ const Sidebar = () => {
     role: user?.role_name || 'Admin de RRHH',
     avatar: (user?.name?.charAt(0) || 'A').toUpperCase(),
   };
+  const canViewEmployees = hasAnyPermission(user, ['VIEW_EMPLOYEES']);
 
   return (
     <aside className="sidebar">
@@ -33,10 +35,12 @@ const Sidebar = () => {
           <span>Panel de Control</span>
         </NavLink>
 
-        <NavLink to="/employees" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <Users size={20} />
-          <span>Empleados</span>
-        </NavLink>
+        {canViewEmployees ? (
+          <NavLink to="/employees" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+            <Users size={20} />
+            <span>Empleados</span>
+          </NavLink>
+        ) : null}
 
         <NavLink to="/calendar" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
           <Calendar size={20} />

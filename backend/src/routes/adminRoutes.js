@@ -12,7 +12,7 @@ router.use(authenticateToken);
 router.get('/audit-logs', checkPermission('VIEW_AUDIT_LOGS'), getAuditLogs);
 
 // Roles & Permissions management
-router.get('/roles', async (req, res) => {
+router.get('/roles', checkPermission('VIEW_AUDIT_LOGS'), async (req, res) => {
     try {
         const [roles] = await pool.query('SELECT * FROM roles');
         res.json(roles);
@@ -21,7 +21,7 @@ router.get('/roles', async (req, res) => {
     }
 });
 
-router.get('/permissions', async (req, res) => {
+router.get('/permissions', checkPermission('VIEW_AUDIT_LOGS'), async (req, res) => {
     try {
         const [permissions] = await pool.query('SELECT * FROM permissions');
         res.json(permissions);

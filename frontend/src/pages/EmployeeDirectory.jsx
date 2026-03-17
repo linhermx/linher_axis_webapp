@@ -3,12 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { UserPlus } from 'lucide-react';
 import DataTable from '../components/DataTable';
 import { Button, Card, PageHeader } from '../components/ui';
+import { useAuth } from '../hooks/useAuth';
+import { hasAnyPermission } from '../lib/permissions';
 import api from '../services/api';
 
 const EmployeeDirectory = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const canCreateEmployee = hasAnyPermission(user, ['CREATE_EMPLOYEE']);
 
   const columns = [
     { key: 'internal_id', label: 'ID' },
@@ -38,12 +42,12 @@ const EmployeeDirectory = () => {
       <PageHeader
         title="Directorio de Empleados"
         subtitle="Consulta, filtra y navega por el personal activo."
-        actions={
+        actions={canCreateEmployee ? (
           <Button type="button" onClick={() => navigate('/employees/new')}>
             <UserPlus size={18} />
             <span>Nuevo Empleado</span>
           </Button>
-        }
+        ) : undefined}
       />
 
       {loading ? (
