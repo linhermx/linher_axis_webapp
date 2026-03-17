@@ -13,6 +13,11 @@ INSERT IGNORE INTO roles (name, description) VALUES
 ('EMPLEADO', 'Autoservicio y visibilidad de perfil propio'),
 ('RECLUTADOR', 'Gestion de vacantes y candidatos');
 
+INSERT IGNORE INTO organizational_unit_types (code, name, description, sort_order) VALUES
+('company', 'Empresa', 'Unidad raiz de la organizacion', 1),
+('department', 'Departamento', 'Area funcional de la empresa', 2),
+('team', 'Equipo', 'Equipo operativo dentro de un departamento', 3);
+
 INSERT IGNORE INTO permissions (code, description) VALUES
 ('view_dashboard', 'Puede consultar el dashboard'),
 ('view_employees', 'Puede consultar el directorio de empleados'),

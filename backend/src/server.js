@@ -6,6 +6,7 @@ import authRoutes from './routes/authRoutes.js';
 import employeeRoutes from './routes/employeeRoutes.js';
 import documentRoutes from './routes/documentRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import organizationRoutes from './routes/organizationRoutes.js';
 import { requestContextMiddleware, logRuntimeError } from './utils/RequestContext.js';
 import { validateAuthConfig } from './utils/AuthToken.js';
 import { SystemLogger } from './utils/SystemLogger.js';
@@ -66,6 +67,7 @@ v1.use('/auth', authRoutes);
 v1.use('/employees', employeeRoutes);
 v1.use('/documents', documentRoutes);
 v1.use('/admin', adminRoutes);
+v1.use('/organization', organizationRoutes);
 v1.get('/health', healthCheckHandler);
 
 app.use('/api/v1', v1);

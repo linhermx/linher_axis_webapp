@@ -112,6 +112,67 @@ CREATE INDEX idx_employee_jobs_employee_id ON employee_jobs(employee_id);
 CREATE INDEX idx_employee_jobs_department_id ON employee_jobs(department_id);
 CREATE INDEX idx_employee_jobs_position_id ON employee_jobs(position_id);
 
+-- Organization structure
+CREATE TABLE organizational_unit_types (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(50) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL,
+    description TEXT NULL,
+    sort_order INT UNSIGNED NOT NULL DEFAULT 0
+);
+
+CREATE TABLE organizational_units (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    unit_type_id BIGINT UNSIGNED NOT NULL,
+    name VARCHAR(150) NOT NULL,
+    code VARCHAR(80) NULL UNIQUE,
+    lead_employee_id BIGINT UNSIGNED NULL,
+    is_active TINYINT(1) NOT NULL DEFAULT 1,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_organizational_units_type
+        FOREIGN KEY (unit_type_id) REFERENCES organizational_unit_types(id),
+    CONSTRAINT fk_organizational_units_lead_employee
+        FOREIGN KEY (lead_employee_id) REFERENCES employees(id)
+        ON DELETE SET NULL,
+    CONSTRAINT uq_organizational_units_type_name UNIQUE (unit_type_id, name)
+);
+
+CREATE TABLE organizational_unit_relations (
+    parent_unit_id BIGINT UNSIGNED NOT NULL,
+    child_unit_id BIGINT UNSIGNED NOT NULL,
+    relation_type VARCHAR(50) NOT NULL DEFAULT 'hierarchy',
+    PRIMARY KEY (parent_unit_id, child_unit_id, relation_type),
+    CONSTRAINT fk_organizational_unit_relations_parent
+        FOREIGN KEY (parent_unit_id) REFERENCES organizational_units(id)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_organizational_unit_relations_child
+        FOREIGN KEY (child_unit_id) REFERENCES organizational_units(id)
+        ON DELETE CASCADE
+);
+
+CREATE INDEX idx_organizational_unit_relations_child ON organizational_unit_relations(child_unit_id);
+CREATE INDEX idx_organizational_unit_relations_type ON organizational_unit_relations(relation_type);
+
+CREATE TABLE organizational_unit_members (
+    unit_id BIGINT UNSIGNED NOT NULL,
+    employee_id BIGINT UNSIGNED NOT NULL,
+    role_in_unit VARCHAR(80) NULL,
+    is_primary TINYINT(1) NOT NULL DEFAULT 0,
+    started_at DATE NULL,
+    ended_at DATE NULL,
+    PRIMARY KEY (unit_id, employee_id),
+    CONSTRAINT fk_organizational_unit_members_unit
+        FOREIGN KEY (unit_id) REFERENCES organizational_units(id)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_organizational_unit_members_employee
+        FOREIGN KEY (employee_id) REFERENCES employees(id)
+        ON DELETE CASCADE
+);
+
+CREATE INDEX idx_organizational_unit_members_employee ON organizational_unit_members(employee_id);
+CREATE INDEX idx_organizational_unit_members_ended_at ON organizational_unit_members(ended_at);
+
 -- Documents
 CREATE TABLE document_categories (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

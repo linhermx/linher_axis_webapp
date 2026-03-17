@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import EmployeeDirectory from './pages/EmployeeDirectory';
 import CreateEmployee from './pages/CreateEmployee';
+import OrganizationStructure from './pages/OrganizationStructure';
 
 const ProtectedRoute = ({ children, requiredPermissions = [] }) => {
   const { user, loading } = useAuth();
@@ -58,6 +59,15 @@ function App() {
             element={
               <ProtectedRoute requiredPermissions={['create_employee']}>
                 <CreateEmployee />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/employees/organization"
+            element={
+              <ProtectedRoute requiredPermissions={['view_employees']}>
+                <OrganizationStructure />
               </ProtectedRoute>
             }
           />

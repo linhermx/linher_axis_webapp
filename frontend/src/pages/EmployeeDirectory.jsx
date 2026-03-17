@@ -2,6 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import { UserPlus } from 'lucide-react';
 import DataTable from '../components/DataTable';
+import EmployeeModuleNav from '../components/EmployeeModuleNav';
 import { Button, Card, PageHeader } from '../components/ui';
 import { useAuth } from '../hooks/useAuth';
 import { hasAnyPermission } from '../lib/permissions';
@@ -48,7 +49,9 @@ const EmployeeDirectory = () => {
             <span>Nuevo Empleado</span>
           </Button>
         ) : undefined}
-      />
+      >
+        <EmployeeModuleNav />
+      </PageHeader>
 
       {loading ? (
         <Card>
