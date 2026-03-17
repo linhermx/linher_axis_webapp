@@ -72,6 +72,24 @@ const deleteExpiredRefreshTokens = async () => {
     await pool.query('DELETE FROM refresh_tokens WHERE expires_at < NOW()');
 };
 
+const pruneRefreshTokensByUser = async (userId, limit = 5) => {
+    const normalizedLimit = Number.isInteger(limit) && limit > 0 ? limit : 5;
+    await pool.query(
+        `DELETE FROM refresh_tokens
+         WHERE user_id = ?
+           AND id NOT IN (
+                SELECT id FROM (
+                    SELECT id
+                    FROM refresh_tokens
+                    WHERE user_id = ?
+                    ORDER BY created_at DESC, id DESC
+                    LIMIT ?
+                ) AS latest_tokens
+           )`,
+        [userId, userId, normalizedLimit]
+    );
+};
+
 const loadActiveUserSession = async (userId) => {
     const sessionUser = await getUserSessionById(pool, userId);
     if (!sessionUser || sessionUser.status !== 'active') {
@@ -119,6 +137,7 @@ export const login = async (req, res) => {
 
         await deleteExpiredRefreshTokens();
         await saveRefreshToken(sessionUser.id, sessionTokens.refreshToken, sessionTokens.refresh_expires_at);
+        await pruneRefreshTokensByUser(sessionUser.id, 5);
 
         res.json({
             accessToken: sessionTokens.accessToken,
@@ -174,6 +193,7 @@ export const refresh = async (req, res) => {
 
         await deleteRefreshToken(refreshToken);
         await saveRefreshToken(sessionUser.id, rotatedTokens.refreshToken, rotatedTokens.refresh_expires_at);
+        await pruneRefreshTokensByUser(sessionUser.id, 5);
 
         res.json({
             accessToken: rotatedTokens.accessToken,

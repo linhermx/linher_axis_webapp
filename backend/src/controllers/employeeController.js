@@ -1,4 +1,33 @@
 import pool from '../config/db.js';
+import { SystemLogger } from '../utils/SystemLogger.js';
+import { buildRequestContext } from '../utils/RequestContext.js';
+import { handleControllerError, sendError } from '../utils/ApiError.js';
+
+const logger = new SystemLogger(pool);
+
+const parseOptionalId = (value) => {
+    if (value === null || value === undefined || value === '') {
+        return null;
+    }
+
+    const numericValue = Number(value);
+    if (!Number.isInteger(numericValue) || numericValue <= 0) {
+        return null;
+    }
+
+    return numericValue;
+};
+
+const parseRequiredId = (value) => {
+    const numericValue = Number(value);
+    if (!Number.isInteger(numericValue) || numericValue <= 0) {
+        return null;
+    }
+
+    return numericValue;
+};
+
+const normalizeText = (value) => String(value || '').trim();
 
 export const getAllEmployees = async (req, res) => {
     try {
@@ -9,55 +38,124 @@ export const getAllEmployees = async (req, res) => {
             LEFT JOIN departments d ON ej.department_id = d.id
             LEFT JOIN positions p ON ej.position_id = p.id
         `);
-        res.json(employees);
+        return res.json(employees);
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching employees', error: error.message });
+        return handleControllerError({
+            logger,
+            req,
+            res,
+            error,
+            action: 'EMPLOYEES_LIST_ERROR',
+            message: 'Error al cargar empleados',
+        });
     }
 };
 
 export const createEmployee = async (req, res) => {
     const connection = await pool.getConnection();
+    let transactionStarted = false;
+
     try {
+        const internalId = normalizeText(req.body?.internal_id);
+        const firstName = normalizeText(req.body?.first_name);
+        const lastName = normalizeText(req.body?.last_name);
+
+        if (!internalId || !firstName || !lastName) {
+            return sendError(res, 400, 'internal_id, first_name y last_name son obligatorios', req);
+        }
+
         await connection.beginTransaction();
+        transactionStarted = true;
+
         const {
-            internal_id, first_name, last_name, birth_date, gender,
+            birth_date, gender,
             department_id, position_id, manager_id, start_date, schedule, salary
         } = req.body;
 
         const [empResult] = await connection.query(
             'INSERT INTO employees (internal_id, first_name, last_name, birth_date, gender) VALUES (?, ?, ?, ?, ?)',
-            [internal_id, first_name, last_name, birth_date, gender]
+            [internalId, firstName, lastName, birth_date || null, gender || null]
         );
         const employeeId = empResult.insertId;
 
         await connection.query(
             'INSERT INTO employee_jobs (employee_id, department_id, position_id, manager_id, start_date, schedule, salary) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [employeeId, department_id, position_id, manager_id, start_date, schedule, salary]
+            [
+                employeeId,
+                parseOptionalId(department_id),
+                parseOptionalId(position_id),
+                parseOptionalId(manager_id),
+                start_date || null,
+                schedule || null,
+                salary || null,
+            ]
         );
 
         await connection.commit();
-        res.status(201).json({ id: employeeId, message: 'Employee created successfully' });
+        transactionStarted = false;
+
+        res.status(201).json({ id: employeeId, message: 'Empleado creado correctamente' });
+
+        await logger.business(req.authUser?.id, 'CREATE_EMPLOYEE', {
+            employee_id: employeeId,
+            internal_id: internalId,
+            first_name: firstName,
+            last_name: lastName,
+            ...buildRequestContext(req),
+        }, req.ip);
+
+        return undefined;
     } catch (error) {
-        await connection.rollback();
-        res.status(500).json({ message: 'Error creating employee', error: error.message });
+        if (transactionStarted) {
+            await connection.rollback();
+        }
+
+        if (error?.code === 'ER_DUP_ENTRY') {
+            return sendError(res, 409, 'El empleado ya existe con ese ID interno o usuario asociado', req);
+        }
+
+        return handleControllerError({
+            logger,
+            req,
+            res,
+            error,
+            action: 'EMPLOYEE_CREATE_ERROR',
+            message: 'Error al crear empleado',
+            details: { internal_id: req.body?.internal_id || null },
+        });
     } finally {
         connection.release();
     }
 };
 
 export const getEmployeeById = async (req, res) => {
-    const { id } = req.params;
+    const employeeId = parseRequiredId(req.params.id);
+    if (!employeeId) {
+        return sendError(res, 400, 'ID de empleado invalido', req);
+    }
+
     try {
         const [rows] = await pool.query(`
             SELECT e.*, ej.department_id, ej.position_id, ej.manager_id, ej.start_date, ej.schedule, ej.salary, ej.currency
             FROM employees e
             LEFT JOIN employee_jobs ej ON e.id = ej.employee_id
             WHERE e.id = ?
-        `, [id]);
+        `, [employeeId]);
 
-        if (rows.length === 0) return res.status(404).json({ message: 'Employee not found' });
-        res.json(rows[0]);
+        if (rows.length === 0) {
+            return sendError(res, 404, 'Empleado no encontrado', req);
+        }
+
+        return res.json(rows[0]);
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching employee', error: error.message });
+        return handleControllerError({
+            logger,
+            req,
+            res,
+            error,
+            action: 'EMPLOYEE_FETCH_ERROR',
+            message: 'Error al cargar empleado',
+            details: { employee_id: employeeId },
+        });
     }
 };

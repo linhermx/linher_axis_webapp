@@ -1,15 +1,8 @@
 import pool from '../config/db.js';
+import { SystemLogger } from '../utils/SystemLogger.js';
+import { handleControllerError } from '../utils/ApiError.js';
 
-export const logAction = async (userId, action, targetType, targetId, oldValue = null, newValue = null, ipAddress = '') => {
-    try {
-        await pool.query(
-            'INSERT INTO audit_logs (user_id, action, target_type, target_id, old_value, new_value, ip_address) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [userId, action, targetType, targetId, JSON.stringify(oldValue), JSON.stringify(newValue), ipAddress]
-        );
-    } catch (error) {
-        console.error('Audit Log Error:', error);
-    }
-};
+const logger = new SystemLogger(pool);
 
 export const getAuditLogs = async (req, res) => {
     try {
@@ -19,8 +12,48 @@ export const getAuditLogs = async (req, res) => {
             LEFT JOIN users u ON al.user_id = u.id
             ORDER BY al.created_at DESC
         `);
-        res.json(rows);
+
+        return res.json(rows);
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching audit logs', error: error.message });
+        return handleControllerError({
+            logger,
+            req,
+            res,
+            error,
+            action: 'AUDIT_LOGS_FETCH_ERROR',
+            message: 'Error al cargar bitacora de auditoria',
+        });
+    }
+};
+
+export const getRoles = async (req, res) => {
+    try {
+        const [roles] = await pool.query('SELECT * FROM roles');
+        return res.json(roles);
+    } catch (error) {
+        return handleControllerError({
+            logger,
+            req,
+            res,
+            error,
+            action: 'ROLES_FETCH_ERROR',
+            message: 'Error al cargar roles',
+        });
+    }
+};
+
+export const getPermissions = async (req, res) => {
+    try {
+        const [permissions] = await pool.query('SELECT * FROM permissions');
+        return res.json(permissions);
+    } catch (error) {
+        return handleControllerError({
+            logger,
+            req,
+            res,
+            error,
+            action: 'PERMISSIONS_FETCH_ERROR',
+            message: 'Error al cargar permisos',
+        });
     }
 };

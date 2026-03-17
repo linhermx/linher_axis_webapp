@@ -4,6 +4,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 const SESSION_USER_KEY = 'user';
 const ACCESS_TOKEN_KEY = 'accessToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
+let refreshSessionPromise = null;
 
 const api = axios.create({
     baseURL: API_BASE_URL,
@@ -89,6 +90,37 @@ const appendOperatorId = (config, user) => {
     }
 };
 
+const executeRefreshSession = async () => {
+    const refreshToken = getStoredValue(REFRESH_TOKEN_KEY);
+    if (!refreshToken) {
+        throw new Error('Missing refresh token');
+    }
+
+    const { data } = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken });
+    if (!data?.accessToken || !data?.refreshToken) {
+        throw new Error('Invalid refresh response');
+    }
+
+    persistRotatedSession({
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+        user: data.user || null,
+    });
+
+    api.defaults.headers.common.Authorization = `Bearer ${data.accessToken}`;
+    return data;
+};
+
+const refreshSessionOnce = async () => {
+    if (!refreshSessionPromise) {
+        refreshSessionPromise = executeRefreshSession().finally(() => {
+            refreshSessionPromise = null;
+        });
+    }
+
+    return refreshSessionPromise;
+};
+
 api.interceptors.request.use(
     (config) => {
         const token = getStoredValue(ACCESS_TOKEN_KEY);
@@ -114,25 +146,7 @@ api.interceptors.response.use(
             originalRequest._retry = true;
 
             try {
-                const refreshToken = getStoredValue(REFRESH_TOKEN_KEY);
-                if (!refreshToken) {
-                    redirectToLogin();
-                    return Promise.reject(error);
-                }
-
-                const { data } = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken });
-                if (!data?.accessToken || !data?.refreshToken) {
-                    redirectToLogin();
-                    return Promise.reject(error);
-                }
-
-                persistRotatedSession({
-                    accessToken: data.accessToken,
-                    refreshToken: data.refreshToken,
-                    user: data.user || null,
-                });
-
-                api.defaults.headers.common['Authorization'] = `Bearer ${data.accessToken}`;
+                const data = await refreshSessionOnce();
                 originalRequest.headers = originalRequest.headers || {};
                 originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
                 return api(originalRequest);
