@@ -21,8 +21,8 @@ const upload = multer({ storage });
 
 router.use(authenticateToken);
 
-router.post('/upload', checkPermission('CREATE_EMPLOYEE'), upload.single('document'), uploadDocument);
-router.get('/employee/:employeeId', checkPermission('VIEW_EMPLOYEES'), getEmployeeDocuments);
-router.get('/alerts', checkPermission('VIEW_EMPLOYEES'), getExpiryAlerts);
+router.post('/upload', checkPermission('manage_documents'), upload.single('document'), uploadDocument);
+router.get('/employee/:employeeId', checkPermission('view_employees'), getEmployeeDocuments);
+router.get('/alerts', checkPermission('validate_documents'), getExpiryAlerts);
 
 export default router;

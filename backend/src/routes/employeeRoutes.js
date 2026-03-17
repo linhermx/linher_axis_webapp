@@ -7,8 +7,8 @@ const router = express.Router();
 
 router.use(authenticateToken); // All employee routes are protected
 
-router.get('/', checkPermission('VIEW_EMPLOYEES'), getAllEmployees);
-router.get('/:id', checkPermission('VIEW_EMPLOYEES'), getEmployeeById);
-router.post('/', checkPermission('CREATE_EMPLOYEE'), createEmployee);
+router.get('/', checkPermission('view_employees'), getAllEmployees);
+router.get('/:id', checkPermission('view_employees'), getEmployeeById);
+router.post('/', checkPermission('create_employee'), createEmployee);
 
 export default router;

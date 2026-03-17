@@ -1,75 +1,64 @@
-import pool from '../config/db.js';
-
 const normalizeToArray = (value) => {
     if (!value) return [];
     return Array.isArray(value) ? value : [value];
 };
 
-const getUserRoles = async (userId) => {
-    const [rows] = await pool.query(
-        `SELECT DISTINCT r.name
-         FROM roles r
-         JOIN user_roles ur ON ur.role_id = r.id
-         WHERE ur.user_id = ?`,
-        [userId]
-    );
+const normalizeRoleName = (value) => String(value || '').trim().toUpperCase();
+const normalizePermissionCode = (value) => String(value || '').trim().toLowerCase();
 
-    return rows.map((row) => row.name);
-};
+const toSet = (values, normalizer) => new Set(
+    normalizeToArray(values)
+        .map(normalizer)
+        .filter(Boolean)
+);
 
-const getUserPermissionsByCodes = async (userId, permissionCodes) => {
-    if (!permissionCodes.length) return [];
-
-    const placeholders = permissionCodes.map(() => '?').join(', ');
-    const [rows] = await pool.query(
-        `SELECT DISTINCT p.code
-         FROM permissions p
-         JOIN role_permissions rp ON p.id = rp.permission_id
-         JOIN user_roles ur ON rp.role_id = ur.role_id
-         WHERE ur.user_id = ?
-           AND p.code IN (${placeholders})`,
-        [userId, ...permissionCodes]
-    );
-
-    return rows.map((row) => row.code);
-};
+const isAdminUser = (user) => (
+    normalizeRoleName(user?.role_name) === 'ADMIN'
+    || Number(user?.role_id) === 1
+);
 
 export const checkPermission = (permissionCodes, options = {}) => {
-    const requiredCodes = normalizeToArray(permissionCodes);
-    const allowedRoles = normalizeToArray(options.allowRoles || ['HR_ADMIN']);
+    const requiredCodes = toSet(permissionCodes, normalizePermissionCode);
+    const allowedRoles = toSet(options.allowRoles || ['ADMIN'], normalizeRoleName);
     const requireAll = Boolean(options.requireAll);
 
-    return async (req, res, next) => {
+    return (req, res, next) => {
         try {
-            const userId = req.user.id;
-            const roleNames = await getUserRoles(userId);
-            const allowedByRole = roleNames.some((role) => allowedRoles.includes(role));
+            const user = req.authUser;
+            if (!user) {
+                return res.status(401).json({ message: 'Autenticacion requerida' });
+            }
 
-            if (allowedByRole || requiredCodes.length === 0) {
+            const userRoles = toSet([user.role_name, ...(user.roles || [])], normalizeRoleName);
+            const userPermissions = toSet(user.permissions || [], normalizePermissionCode);
+            const hasAllowedRole = Array.from(userRoles).some((role) => allowedRoles.has(role));
+
+            if (isAdminUser(user) || hasAllowedRole || requiredCodes.size === 0) {
                 req.authz = {
-                    roles: roleNames,
-                    permissions: [],
+                    roles: Array.from(userRoles),
+                    permissions: Array.from(userPermissions),
                 };
+
                 return next();
             }
 
-            const matchedPermissions = await getUserPermissionsByCodes(userId, requiredCodes);
+            const matchedPermissions = Array.from(requiredCodes).filter((code) => userPermissions.has(code));
             const isAuthorized = requireAll
-                ? requiredCodes.every((code) => matchedPermissions.includes(code))
+                ? matchedPermissions.length === requiredCodes.size
                 : matchedPermissions.length > 0;
 
             if (!isAuthorized) {
-                return res.status(403).json({ message: 'Forbidden: Insufficient permissions' });
+                return res.status(403).json({ message: 'No autorizado para esta accion' });
             }
 
             req.authz = {
-                roles: roleNames,
+                roles: Array.from(userRoles),
                 permissions: matchedPermissions,
             };
 
-            next();
+            return next();
         } catch (error) {
-            res.status(500).json({ message: 'Server error check permissions' });
+            return res.status(500).json({ message: 'Error al validar permisos' });
         }
     };
 };

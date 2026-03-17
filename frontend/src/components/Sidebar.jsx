@@ -21,7 +21,7 @@ const Sidebar = () => {
     role: user?.role_name || 'Admin de RRHH',
     avatar: (user?.name?.charAt(0) || 'A').toUpperCase(),
   };
-  const canViewEmployees = hasAnyPermission(user, ['VIEW_EMPLOYEES']);
+  const canViewEmployees = hasAnyPermission(user, ['view_employees']);
 
   return (
     <aside className="sidebar">

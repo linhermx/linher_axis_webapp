@@ -12,7 +12,7 @@ const EmployeeDirectory = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { user } = useAuth();
-  const canCreateEmployee = hasAnyPermission(user, ['CREATE_EMPLOYEE']);
+  const canCreateEmployee = hasAnyPermission(user, ['create_employee']);
 
   const columns = [
     { key: 'internal_id', label: 'ID' },

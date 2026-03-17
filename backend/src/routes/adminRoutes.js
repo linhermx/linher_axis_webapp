@@ -8,11 +8,11 @@ const router = express.Router();
 
 router.use(authenticateToken);
 
-// Audit Logs (HR_ADMIN only or specific permission)
-router.get('/audit-logs', checkPermission('VIEW_AUDIT_LOGS'), getAuditLogs);
+// Audit Logs (ADMIN or explicit permission)
+router.get('/audit-logs', checkPermission('view_audit_logs'), getAuditLogs);
 
 // Roles & Permissions management
-router.get('/roles', checkPermission('VIEW_AUDIT_LOGS'), async (req, res) => {
+router.get('/roles', checkPermission('view_audit_logs'), async (req, res) => {
     try {
         const [roles] = await pool.query('SELECT * FROM roles');
         res.json(roles);
@@ -21,7 +21,7 @@ router.get('/roles', checkPermission('VIEW_AUDIT_LOGS'), async (req, res) => {
     }
 });
 
-router.get('/permissions', checkPermission('VIEW_AUDIT_LOGS'), async (req, res) => {
+router.get('/permissions', checkPermission('view_audit_logs'), async (req, res) => {
     try {
         const [permissions] = await pool.query('SELECT * FROM permissions');
         res.json(permissions);

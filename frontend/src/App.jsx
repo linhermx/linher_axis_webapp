@@ -47,7 +47,7 @@ function App() {
           <Route
             path="/employees"
             element={
-              <ProtectedRoute requiredPermissions={['VIEW_EMPLOYEES']}>
+              <ProtectedRoute requiredPermissions={['view_employees']}>
                 <EmployeeDirectory />
               </ProtectedRoute>
             }
@@ -56,7 +56,7 @@ function App() {
           <Route
             path="/employees/new"
             element={
-              <ProtectedRoute requiredPermissions={['CREATE_EMPLOYEE']}>
+              <ProtectedRoute requiredPermissions={['create_employee']}>
                 <CreateEmployee />
               </ProtectedRoute>
             }
@@ -65,7 +65,7 @@ function App() {
           <Route
             path="/documents"
             element={
-              <ProtectedRoute requiredPermissions={['VIEW_EMPLOYEES']}>
+              <ProtectedRoute requiredPermissions={['view_employees']}>
                 <StatusView
                   title="Módulo de documentos"
                   description="Esta pantalla se habilitará cuando se conecte el flujo completo de expediente digital y validaciones HR."
@@ -77,7 +77,7 @@ function App() {
           <Route
             path="/admin"
             element={
-              <ProtectedRoute requiredPermissions={['VIEW_AUDIT_LOGS']}>
+              <ProtectedRoute requiredPermissions={['view_audit_logs']}>
                 <StatusView
                   title="Módulo de administración"
                   description="Esta pantalla se habilitará cuando se complete la bitácora avanzada, la gestión de roles y las herramientas de plataforma."
