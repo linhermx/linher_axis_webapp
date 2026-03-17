@@ -1,22 +1,33 @@
-﻿import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { LogIn, Lock, Mail } from 'lucide-react';
 import { Button, Card, InputField } from '../components/ui';
 
 const Login = () => {
-  const { login } = useAuth();
+  const { login, user } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (user) {
+      navigate('/', { replace: true });
+    }
+  }, [user, navigate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
+
     setLoading(true);
     setError('');
 
     try {
       await login(email, password);
+      navigate('/', { replace: true });
     } catch (err) {
       setError(err.response?.data?.message || 'Ocurrió un error al iniciar sesión');
     } finally {
@@ -69,7 +80,7 @@ const Login = () => {
             </div>
           )}
 
-          <Button type="submit" size="lg" className="mt-2 w-full">
+          <Button type="submit" size="lg" className="mt-2 w-full" disabled={loading}>
             {loading ? 'Cargando...' : 'Iniciar Sesión'}
           </Button>
 

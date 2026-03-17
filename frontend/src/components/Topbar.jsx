@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { Search, Bell, Plus } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { Button, InputField } from './ui';
@@ -19,47 +19,46 @@ const Topbar = () => {
   };
 
   return (
-    <header className="flex h-[var(--header-height)] items-center justify-between px-10">
-      <div>
-        <h1 className="text-2xl font-extrabold text-ui-dark-navy">{getPageTitle()}</h1>
+    <header className="flex h-[var(--header-height)] items-center justify-between gap-6 border-b border-ui-light-slate bg-ui-background px-10">
+      <div className="min-w-0">
+        <h1 className="text-[1.75rem] font-extrabold leading-tight tracking-[-0.02em] text-ui-dark-navy">
+          {getPageTitle()}
+        </h1>
       </div>
 
-      <div className="flex items-center gap-6">
-        <form
-          role="search"
-          className="w-full max-w-[320px]"
-          onSubmit={(e) => e.preventDefault()}
-        >
+      <div className="flex items-center gap-3">
+        <form role="search" className="w-full max-w-[360px]" onSubmit={(e) => e.preventDefault()}>
           <InputField
             id="topbar-search"
             name="topbar_search"
             label="Buscar"
             srOnlyLabel
             type="search"
+            variant="toolbar"
             placeholder="Buscar empleados, cargos..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             containerClassName="space-y-0"
-            inputClassName="shadow-sm"
-            leftIcon={<Search size={18} />}
+            inputClassName="bg-ui-background focus:bg-ui-surface"
+            leftIcon={<Search size={17} />}
           />
         </form>
 
         <Button
           variant="icon"
           aria-label="Ver notificaciones"
-          className="relative shadow-sm"
+          className="relative !h-[42px] !w-[42px] rounded-md border border-ui-light-slate bg-ui-surface text-ui-text-secondary shadow-sm hover:bg-ui-surface hover:text-ui-dark-navy focus-visible:ring-brand-primary"
         >
-          <Bell size={20} />
+          <Bell size={18} />
           <span
             aria-hidden="true"
-            className="absolute right-[0.72rem] top-[0.62rem] h-2 w-2 rounded-full border-2 border-ui-surface bg-brand-primary"
+            className="absolute right-[0.58rem] top-[0.5rem] h-2 w-2 rounded-full border-2 border-ui-surface bg-brand-primary"
           />
         </Button>
 
-        <Button className="shadow-sm">
-          <Plus size={18} />
-          <span>Añadir Empleado</span>
+        <Button className="!h-[42px] rounded-md px-4">
+          <Plus size={16} />
+          <span className="whitespace-nowrap">Añadir Empleado</span>
         </Button>
       </div>
     </header>

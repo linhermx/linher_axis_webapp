@@ -5,6 +5,7 @@
   TrendingUp,
   Briefcase,
   Umbrella,
+  ChevronLeft,
   ChevronRight,
   Search,
   MoreVertical,
@@ -256,10 +257,10 @@ const Dashboard = () => {
             actions={
               <div className="flex items-center gap-2">
                 <Button type="button" variant="secondary" size="sm" className="h-8 w-8 p-0" aria-label="Postulante anterior">
-                  <span aria-hidden="true">{'<'}</span>
+                  <ChevronLeft size={16} />
                 </Button>
                 <Button type="button" size="sm" className="h-8 w-8 p-0" aria-label="Siguiente postulante">
-                  <span aria-hidden="true">{'>'}</span>
+                  <ChevronRight size={16} />
                 </Button>
               </div>
             }
