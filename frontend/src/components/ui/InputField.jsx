@@ -20,10 +20,7 @@ const InputField = ({
   const fieldId = id || name || generatedId;
   const hasDescription = Boolean(error || helperText);
   const descriptionId = hasDescription ? `${fieldId}-description` : undefined;
-  const variantClassName =
-    variant === 'toolbar'
-      ? 'h-[42px] appearance-none rounded-md border border-ui-light-slate bg-ui-surface px-3 text-sm text-ui-text-main outline-none transition-colors placeholder:text-ui-text-secondary focus:border-brand-primary focus:bg-ui-surface focus:ring-1 focus:ring-brand-primary'
-      : 'h-11 appearance-none rounded-md border border-ui-light-slate bg-ui-background px-3 text-sm text-ui-text-main outline-none transition-colors placeholder:text-ui-text-secondary focus:border-brand-primary focus:bg-ui-surface focus:ring-2 focus:ring-brand-primary';
+  const variantClassName = variant === 'toolbar' ? 'bg-ui-surface' : 'bg-ui-background';
 
   return (
     <div className={cn('space-y-2', containerClassName)}>
@@ -31,7 +28,7 @@ const InputField = ({
         <label
           htmlFor={fieldId}
           className={cn(
-            'block text-sm font-semibold text-ui-text-main',
+            'form-label',
             srOnlyLabel && 'sr-only',
             labelClassName
           )}
@@ -54,11 +51,10 @@ const InputField = ({
           aria-invalid={Boolean(error)}
           aria-describedby={descriptionId}
           className={cn(
-            'w-full',
+            'form-field w-full',
             variantClassName,
             leftIcon && 'pl-10',
-            error &&
-              'border-status-error bg-red-50 focus:border-status-error focus:ring-status-error',
+            error && 'border-status-error',
             inputClassName
           )}
           required={required}
