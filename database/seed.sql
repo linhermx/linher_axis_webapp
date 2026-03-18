@@ -30,6 +30,7 @@ INSERT IGNORE INTO permissions (code, description) VALUES
 ('approve_requests', 'Puede aprobar o rechazar solicitudes'),
 ('view_calendar', 'Puede consultar calendario organizacional'),
 ('view_audit_logs', 'Puede consultar bitacora de auditoria'),
+('sync_microsip', 'Puede ejecutar sincronizacion con Microsip'),
 ('manage_roles', 'Puede gestionar roles y permisos'),
 ('manage_recruitment', 'Puede gestionar vacantes y candidatos');
 
@@ -57,7 +58,8 @@ JOIN permissions p ON (
         'manage_requests',
         'approve_requests',
         'view_calendar',
-        'view_audit_logs'
+        'view_audit_logs',
+        'sync_microsip'
     ))
     OR (r.name = 'EMPLEADO' AND p.code IN (
         'view_dashboard',
