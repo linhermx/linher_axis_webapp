@@ -8,6 +8,7 @@ import {
   BarChart3,
   Settings,
   MoreVertical,
+  IdCard,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { hasAnyPermission } from '../lib/permissions';
@@ -23,6 +24,7 @@ const Sidebar = () => {
   };
   const canViewEmployees = hasAnyPermission(user, ['view_employees']);
   const canViewAdmin = hasAnyPermission(user, ['view_audit_logs']);
+  const canViewProfile = hasAnyPermission(user, ['view_profile_self', 'view_profile_employee']);
 
   return (
     <aside className="sidebar">
@@ -40,6 +42,13 @@ const Sidebar = () => {
           <NavLink to="/employees" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
             <Users size={20} />
             <span>Empleados</span>
+          </NavLink>
+        ) : null}
+
+        {canViewProfile ? (
+          <NavLink to="/me/profile" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+            <IdCard size={20} />
+            <span>Mi Perfil 360</span>
           </NavLink>
         ) : null}
 

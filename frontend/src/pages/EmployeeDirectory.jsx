@@ -61,7 +61,7 @@ const EmployeeDirectory = () => {
         <DataTable
           columns={columns}
           data={employees}
-          onRowClick={(emp) => navigate(`/employees/${emp.id}`)}
+          onRowClick={(emp) => navigate(`/employees/${emp.id}/profile-360`)}
         />
       )}
     </section>

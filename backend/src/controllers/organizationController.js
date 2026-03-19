@@ -157,7 +157,7 @@ export const getOrganizationUnit = async (req, res) => {
                 p.name AS position_name
              FROM organizational_unit_members m
              JOIN employees e ON e.id = m.employee_id
-             LEFT JOIN employee_jobs ej ON ej.employee_id = e.id
+             LEFT JOIN employee_jobs ej ON ej.employee_id = e.id AND ej.current_job_flag = 1
              LEFT JOIN positions p ON p.id = ej.position_id
              WHERE m.unit_id = ?
                AND (m.ended_at IS NULL OR m.ended_at >= CURDATE())

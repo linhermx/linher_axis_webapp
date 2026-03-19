@@ -34,7 +34,7 @@ export const getAllEmployees = async (req, res) => {
         const [employees] = await pool.query(`
             SELECT e.*, d.name as department_name, p.name as position_name 
             FROM employees e
-            LEFT JOIN employee_jobs ej ON e.id = ej.employee_id
+            LEFT JOIN employee_jobs ej ON e.id = ej.employee_id AND ej.current_job_flag = 1
             LEFT JOIN departments d ON ej.department_id = d.id
             LEFT JOIN positions p ON ej.position_id = p.id
         `);
@@ -79,7 +79,17 @@ export const createEmployee = async (req, res) => {
         const employeeId = empResult.insertId;
 
         await connection.query(
-            'INSERT INTO employee_jobs (employee_id, department_id, position_id, manager_id, start_date, schedule, salary) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            `INSERT INTO employee_jobs (
+                employee_id,
+                department_id,
+                position_id,
+                manager_id,
+                start_date,
+                end_date,
+                schedule,
+                salary,
+                current_job_flag
+            ) VALUES (?, ?, ?, ?, ?, NULL, ?, ?, 1)`,
             [
                 employeeId,
                 parseOptionalId(department_id),
@@ -136,9 +146,9 @@ export const getEmployeeById = async (req, res) => {
 
     try {
         const [rows] = await pool.query(`
-            SELECT e.*, ej.department_id, ej.position_id, ej.manager_id, ej.start_date, ej.schedule, ej.salary, ej.currency
+            SELECT e.*, ej.department_id, ej.position_id, ej.manager_id, ej.start_date, ej.end_date, ej.schedule, ej.salary, ej.currency
             FROM employees e
-            LEFT JOIN employee_jobs ej ON e.id = ej.employee_id
+            LEFT JOIN employee_jobs ej ON e.id = ej.employee_id AND ej.current_job_flag = 1
             WHERE e.id = ?
         `, [employeeId]);
 

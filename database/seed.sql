@@ -28,6 +28,10 @@ INSERT IGNORE INTO permissions (code, description) VALUES
 ('validate_documents', 'Puede validar documentos en expediente'),
 ('manage_requests', 'Puede gestionar solicitudes'),
 ('approve_requests', 'Puede aprobar o rechazar solicitudes'),
+('view_profile_self', 'Puede consultar su propio perfil 360'),
+('view_profile_employee', 'Puede consultar el perfil 360 de colaboradores'),
+('view_payroll_self', 'Puede consultar su historial de pagos'),
+('view_payroll_employee', 'Puede consultar historial de pagos de colaboradores'),
 ('view_calendar', 'Puede consultar calendario organizacional'),
 ('view_audit_logs', 'Puede consultar bitacora de auditoria'),
 ('sync_microsip', 'Puede ejecutar sincronizacion con Microsip'),
@@ -45,6 +49,9 @@ JOIN permissions p ON (
         'view_documents',
         'manage_requests',
         'approve_requests',
+        'view_profile_self',
+        'view_profile_employee',
+        'view_payroll_self',
         'view_calendar'
     ))
     OR (r.name = 'RRHH' AND p.code IN (
@@ -57,6 +64,10 @@ JOIN permissions p ON (
         'validate_documents',
         'manage_requests',
         'approve_requests',
+        'view_profile_self',
+        'view_profile_employee',
+        'view_payroll_self',
+        'view_payroll_employee',
         'view_calendar',
         'view_audit_logs',
         'sync_microsip'
@@ -65,6 +76,8 @@ JOIN permissions p ON (
         'view_dashboard',
         'view_documents',
         'manage_requests',
+        'view_profile_self',
+        'view_payroll_self',
         'view_calendar'
     ))
     OR (r.name = 'RECLUTADOR' AND p.code IN (

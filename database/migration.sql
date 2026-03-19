@@ -1,237 +1,15 @@
-﻿-- LINHER Axis HRIS - Database Schema (3FN canonical)
+﻿-- AXIS HRIS incremental migration for existing databases
+-- Safe to run multiple times (idempotent)
 
--- Reference tables
-CREATE TABLE ref_sync_status (
+SET NAMES utf8mb4;
+
+CREATE TABLE IF NOT EXISTS ref_sync_status (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     code VARCHAR(50) NOT NULL UNIQUE,
     label VARCHAR(100) NOT NULL
 );
 
--- Auth and roles
-CREATE TABLE roles (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL UNIQUE,
-    description TEXT NULL
-);
-
-CREATE TABLE permissions (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    code VARCHAR(100) NOT NULL UNIQUE,
-    description TEXT NULL
-);
-
-CREATE TABLE role_permissions (
-    role_id BIGINT UNSIGNED NOT NULL,
-    permission_id BIGINT UNSIGNED NOT NULL,
-    PRIMARY KEY (role_id, permission_id),
-    CONSTRAINT fk_role_permissions_role
-        FOREIGN KEY (role_id) REFERENCES roles(id)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_role_permissions_permission
-        FOREIGN KEY (permission_id) REFERENCES permissions(id)
-        ON DELETE CASCADE
-);
-
-CREATE TABLE users (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
-    status ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE user_roles (
-    user_id BIGINT UNSIGNED NOT NULL,
-    role_id BIGINT UNSIGNED NOT NULL,
-    PRIMARY KEY (user_id, role_id),
-    CONSTRAINT fk_user_roles_user
-        FOREIGN KEY (user_id) REFERENCES users(id)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_user_roles_role
-        FOREIGN KEY (role_id) REFERENCES roles(id)
-        ON DELETE CASCADE
-);
-
-CREATE TABLE refresh_tokens (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    user_id BIGINT UNSIGNED NOT NULL,
-    token VARCHAR(255) NOT NULL UNIQUE,
-    expires_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    last_used_at TIMESTAMP NULL,
-    revoked_at TIMESTAMP NULL,
-    revoked_reason VARCHAR(120) NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_refresh_tokens_user
-        FOREIGN KEY (user_id) REFERENCES users(id)
-        ON DELETE CASCADE
-);
-
-CREATE INDEX idx_refresh_tokens_user_id ON refresh_tokens(user_id);
-CREATE INDEX idx_refresh_tokens_expires_at ON refresh_tokens(expires_at);
-CREATE INDEX idx_refresh_tokens_revoked_at ON refresh_tokens(revoked_at);
-
--- Employees
-CREATE TABLE departments (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE
-);
-
-CREATE TABLE positions (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE
-);
-
-CREATE TABLE employees (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    user_id BIGINT UNSIGNED NULL UNIQUE,
-    internal_id VARCHAR(20) NOT NULL UNIQUE,
-    first_name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
-    birth_date DATE NULL,
-    gender VARCHAR(20) NULL,
-    CONSTRAINT fk_employees_user
-        FOREIGN KEY (user_id) REFERENCES users(id)
-        ON DELETE SET NULL
-);
-
-CREATE TABLE employee_jobs (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    employee_id BIGINT UNSIGNED NOT NULL,
-    department_id BIGINT UNSIGNED NULL,
-    position_id BIGINT UNSIGNED NULL,
-    manager_id BIGINT UNSIGNED NULL,
-    start_date DATE NULL,
-    end_date DATE NULL,
-    schedule VARCHAR(100) NULL,
-    salary DECIMAL(15, 2) NULL,
-    currency VARCHAR(3) NOT NULL DEFAULT 'MXN',
-    current_job_flag TINYINT(1) NULL DEFAULT 1,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT chk_employee_jobs_current_job_flag
-        CHECK (current_job_flag = 1 OR current_job_flag IS NULL),
-    CONSTRAINT fk_employee_jobs_employee
-        FOREIGN KEY (employee_id) REFERENCES employees(id)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_employee_jobs_department
-        FOREIGN KEY (department_id) REFERENCES departments(id),
-    CONSTRAINT fk_employee_jobs_position
-        FOREIGN KEY (position_id) REFERENCES positions(id),
-    CONSTRAINT fk_employee_jobs_manager
-        FOREIGN KEY (manager_id) REFERENCES employees(id)
-);
-
-CREATE INDEX idx_employee_jobs_employee_id ON employee_jobs(employee_id);
-CREATE INDEX idx_employee_jobs_department_id ON employee_jobs(department_id);
-CREATE INDEX idx_employee_jobs_position_id ON employee_jobs(position_id);
-CREATE INDEX idx_employee_jobs_end_date ON employee_jobs(end_date);
-CREATE UNIQUE INDEX uq_employee_jobs_active_slot ON employee_jobs(employee_id, current_job_flag);
-
--- Organization structure
-CREATE TABLE organizational_unit_types (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    code VARCHAR(50) NOT NULL UNIQUE,
-    name VARCHAR(100) NOT NULL,
-    description TEXT NULL,
-    sort_order INT UNSIGNED NOT NULL DEFAULT 0
-);
-
-CREATE TABLE organizational_units (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    unit_type_id BIGINT UNSIGNED NOT NULL,
-    name VARCHAR(150) NOT NULL,
-    code VARCHAR(80) NULL UNIQUE,
-    lead_employee_id BIGINT UNSIGNED NULL,
-    is_active TINYINT(1) NOT NULL DEFAULT 1,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_organizational_units_type
-        FOREIGN KEY (unit_type_id) REFERENCES organizational_unit_types(id),
-    CONSTRAINT fk_organizational_units_lead_employee
-        FOREIGN KEY (lead_employee_id) REFERENCES employees(id)
-        ON DELETE SET NULL,
-    CONSTRAINT uq_organizational_units_type_name UNIQUE (unit_type_id, name)
-);
-
-CREATE TABLE organizational_unit_relations (
-    parent_unit_id BIGINT UNSIGNED NOT NULL,
-    child_unit_id BIGINT UNSIGNED NOT NULL,
-    relation_type VARCHAR(50) NOT NULL DEFAULT 'hierarchy',
-    PRIMARY KEY (parent_unit_id, child_unit_id, relation_type),
-    CONSTRAINT fk_organizational_unit_relations_parent
-        FOREIGN KEY (parent_unit_id) REFERENCES organizational_units(id)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_organizational_unit_relations_child
-        FOREIGN KEY (child_unit_id) REFERENCES organizational_units(id)
-        ON DELETE CASCADE
-);
-
-CREATE INDEX idx_organizational_unit_relations_child ON organizational_unit_relations(child_unit_id);
-CREATE INDEX idx_organizational_unit_relations_type ON organizational_unit_relations(relation_type);
-
-CREATE TABLE organizational_unit_members (
-    unit_id BIGINT UNSIGNED NOT NULL,
-    employee_id BIGINT UNSIGNED NOT NULL,
-    role_in_unit VARCHAR(80) NULL,
-    is_primary TINYINT(1) NOT NULL DEFAULT 0,
-    started_at DATE NULL,
-    ended_at DATE NULL,
-    PRIMARY KEY (unit_id, employee_id),
-    CONSTRAINT fk_organizational_unit_members_unit
-        FOREIGN KEY (unit_id) REFERENCES organizational_units(id)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_organizational_unit_members_employee
-        FOREIGN KEY (employee_id) REFERENCES employees(id)
-        ON DELETE CASCADE
-);
-
-CREATE INDEX idx_organizational_unit_members_employee ON organizational_unit_members(employee_id);
-CREATE INDEX idx_organizational_unit_members_ended_at ON organizational_unit_members(ended_at);
-
--- Documents
-CREATE TABLE document_categories (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE
-);
-
-CREATE TABLE employee_documents (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    employee_id BIGINT UNSIGNED NOT NULL,
-    category_id BIGINT UNSIGNED NOT NULL,
-    file_name VARCHAR(255) NOT NULL,
-    file_path TEXT NOT NULL,
-    expiry_date DATE NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_employee_documents_employee
-        FOREIGN KEY (employee_id) REFERENCES employees(id)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_employee_documents_category
-        FOREIGN KEY (category_id) REFERENCES document_categories(id)
-);
-
-CREATE INDEX idx_employee_documents_employee_id ON employee_documents(employee_id);
-CREATE INDEX idx_employee_documents_category_id ON employee_documents(category_id);
-
--- Audit
-CREATE TABLE audit_logs (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    user_id BIGINT UNSIGNED NULL,
-    action VARCHAR(255) NOT NULL,
-    target_type VARCHAR(50) NULL,
-    target_id BIGINT UNSIGNED NULL,
-    old_value JSON NULL,
-    new_value JSON NULL,
-    ip_address VARCHAR(45) NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_audit_logs_user
-        FOREIGN KEY (user_id) REFERENCES users(id)
-);
-
-CREATE INDEX idx_audit_logs_user_id ON audit_logs(user_id);
-CREATE INDEX idx_audit_logs_target ON audit_logs(target_type, target_id);
-
--- Microsip integration (read-only snapshots)
-CREATE TABLE ext_microsip_department (
+CREATE TABLE IF NOT EXISTS ext_microsip_department (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     microsip_department_id VARCHAR(100) NOT NULL UNIQUE,
     name VARCHAR(150) NOT NULL,
@@ -241,7 +19,7 @@ CREATE TABLE ext_microsip_department (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE ext_microsip_job_title (
+CREATE TABLE IF NOT EXISTS ext_microsip_job_title (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     microsip_job_title_id VARCHAR(100) NOT NULL UNIQUE,
     name VARCHAR(150) NOT NULL,
@@ -251,7 +29,7 @@ CREATE TABLE ext_microsip_job_title (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE ext_microsip_country (
+CREATE TABLE IF NOT EXISTS ext_microsip_country (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     microsip_country_id VARCHAR(100) NOT NULL UNIQUE,
     name VARCHAR(120) NOT NULL,
@@ -264,7 +42,7 @@ CREATE TABLE ext_microsip_country (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE ext_microsip_state (
+CREATE TABLE IF NOT EXISTS ext_microsip_state (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     microsip_state_id VARCHAR(100) NOT NULL UNIQUE,
     country_ext_id BIGINT UNSIGNED NULL,
@@ -281,9 +59,8 @@ CREATE TABLE ext_microsip_state (
         ON DELETE SET NULL
 );
 
-CREATE INDEX idx_ext_microsip_state_country ON ext_microsip_state(country_ext_id);
 
-CREATE TABLE ext_microsip_city (
+CREATE TABLE IF NOT EXISTS ext_microsip_city (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     microsip_city_id VARCHAR(100) NOT NULL UNIQUE,
     state_ext_id BIGINT UNSIGNED NULL,
@@ -299,9 +76,8 @@ CREATE TABLE ext_microsip_city (
         ON DELETE SET NULL
 );
 
-CREATE INDEX idx_ext_microsip_city_state ON ext_microsip_city(state_ext_id);
 
-CREATE TABLE ext_microsip_employee (
+CREATE TABLE IF NOT EXISTS ext_microsip_employee (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     microsip_employee_id VARCHAR(100) NOT NULL UNIQUE,
     employee_number VARCHAR(50) NULL,
@@ -324,10 +100,8 @@ CREATE TABLE ext_microsip_employee (
         ON DELETE SET NULL
 );
 
-CREATE INDEX idx_ext_microsip_employee_department ON ext_microsip_employee(department_ext_id);
-CREATE INDEX idx_ext_microsip_employee_job_title ON ext_microsip_employee(job_title_ext_id);
 
-CREATE TABLE employee_microsip_links (
+CREATE TABLE IF NOT EXISTS employee_microsip_links (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     employee_id BIGINT UNSIGNED NOT NULL UNIQUE,
     microsip_employee_ext_id BIGINT UNSIGNED NOT NULL UNIQUE,
@@ -342,9 +116,8 @@ CREATE TABLE employee_microsip_links (
         ON DELETE CASCADE
 );
 
-CREATE INDEX idx_employee_microsip_links_link_source ON employee_microsip_links(link_source);
 
-CREATE TABLE ext_microsip_employee_compensation (
+CREATE TABLE IF NOT EXISTS ext_microsip_employee_compensation (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     employee_ext_id BIGINT UNSIGNED NOT NULL UNIQUE,
     salary_daily DECIMAL(15, 2) NULL,
@@ -362,12 +135,7 @@ CREATE TABLE ext_microsip_employee_compensation (
         ON DELETE CASCADE
 );
 
-CREATE INDEX idx_ext_microsip_employee_compensation_salary_daily
-    ON ext_microsip_employee_compensation(salary_daily);
-CREATE INDEX idx_ext_microsip_employee_compensation_contribution_base
-    ON ext_microsip_employee_compensation(contribution_base_amount);
-
-CREATE TABLE ext_microsip_employee_social_security (
+CREATE TABLE IF NOT EXISTS ext_microsip_employee_social_security (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     employee_ext_id BIGINT UNSIGNED NOT NULL UNIQUE,
     social_security_number VARCHAR(40) NULL,
@@ -384,10 +152,7 @@ CREATE TABLE ext_microsip_employee_social_security (
         ON DELETE CASCADE
 );
 
-CREATE INDEX idx_ext_microsip_employee_social_security_nss
-    ON ext_microsip_employee_social_security(social_security_number);
-
-CREATE TABLE ext_microsip_employee_labor (
+CREATE TABLE IF NOT EXISTS ext_microsip_employee_labor (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     employee_ext_id BIGINT UNSIGNED NOT NULL UNIQUE,
     manager_microsip_employee_id VARCHAR(100) NULL,
@@ -413,7 +178,7 @@ CREATE TABLE ext_microsip_employee_labor (
         ON DELETE CASCADE
 );
 
-CREATE TABLE ext_microsip_employee_personal (
+CREATE TABLE IF NOT EXISTS ext_microsip_employee_personal (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     employee_ext_id BIGINT UNSIGNED NOT NULL UNIQUE,
     sex_code VARCHAR(10) NULL,
@@ -437,12 +202,7 @@ CREATE TABLE ext_microsip_employee_personal (
         ON DELETE SET NULL
 );
 
-CREATE INDEX idx_ext_microsip_employee_personal_rfc ON ext_microsip_employee_personal(rfc);
-CREATE INDEX idx_ext_microsip_employee_personal_curp ON ext_microsip_employee_personal(curp);
-CREATE INDEX idx_ext_microsip_employee_personal_imss_registry
-    ON ext_microsip_employee_personal(social_security_registry);
-
-CREATE TABLE ext_microsip_employee_contact (
+CREATE TABLE IF NOT EXISTS ext_microsip_employee_contact (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     employee_ext_id BIGINT UNSIGNED NOT NULL UNIQUE,
     email VARCHAR(220) NULL,
@@ -457,9 +217,7 @@ CREATE TABLE ext_microsip_employee_contact (
         ON DELETE CASCADE
 );
 
-CREATE INDEX idx_ext_microsip_employee_contact_email ON ext_microsip_employee_contact(email);
-
-CREATE TABLE ext_microsip_employee_address (
+CREATE TABLE IF NOT EXISTS ext_microsip_employee_address (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     employee_ext_id BIGINT UNSIGNED NOT NULL UNIQUE,
     full_address VARCHAR(600) NULL,
@@ -483,10 +241,7 @@ CREATE TABLE ext_microsip_employee_address (
         ON DELETE SET NULL
 );
 
-CREATE INDEX idx_ext_microsip_employee_address_postal_code
-    ON ext_microsip_employee_address(postal_code);
-
-CREATE TABLE ext_microsip_employee_family (
+CREATE TABLE IF NOT EXISTS ext_microsip_employee_family (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     employee_ext_id BIGINT UNSIGNED NOT NULL UNIQUE,
     father_name VARCHAR(180) NULL,
@@ -500,7 +255,7 @@ CREATE TABLE ext_microsip_employee_family (
         ON DELETE CASCADE
 );
 
-CREATE TABLE ext_microsip_employee_payment_account (
+CREATE TABLE IF NOT EXISTS ext_microsip_employee_payment_account (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     employee_ext_id BIGINT UNSIGNED NOT NULL UNIQUE,
     payment_group_code VARCHAR(100) NULL,
@@ -515,7 +270,7 @@ CREATE TABLE ext_microsip_employee_payment_account (
         ON DELETE CASCADE
 );
 
-CREATE TABLE ext_microsip_payroll_payment (
+CREATE TABLE IF NOT EXISTS ext_microsip_payroll_payment (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     microsip_payroll_payment_id VARCHAR(100) NOT NULL UNIQUE,
     employee_ext_id BIGINT UNSIGNED NOT NULL,
@@ -556,14 +311,8 @@ CREATE TABLE ext_microsip_payroll_payment (
         ON DELETE CASCADE
 );
 
-CREATE INDEX idx_ext_microsip_payroll_payment_employee
-    ON ext_microsip_payroll_payment(employee_ext_id);
-CREATE INDEX idx_ext_microsip_payroll_payment_date
-    ON ext_microsip_payroll_payment(payment_date);
-CREATE INDEX idx_ext_microsip_payroll_payment_employee_date
-    ON ext_microsip_payroll_payment(employee_ext_id, payment_date);
 
-CREATE TABLE ext_microsip_sync_log (
+CREATE TABLE IF NOT EXISTS ext_microsip_sync_log (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     sync_type VARCHAR(50) NOT NULL,
     status_id BIGINT UNSIGNED NOT NULL,
@@ -581,4 +330,142 @@ CREATE TABLE ext_microsip_sync_log (
         ON DELETE SET NULL
 );
 
-CREATE INDEX idx_ext_microsip_sync_log_status ON ext_microsip_sync_log(status_id);
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS ensure_column $$
+CREATE PROCEDURE ensure_column(
+    IN p_table VARCHAR(128),
+    IN p_column VARCHAR(128),
+    IN p_definition TEXT
+)
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_schema = DATABASE()
+          AND table_name = p_table
+          AND column_name = p_column
+    ) THEN
+        SET @sql = CONCAT('ALTER TABLE `', p_table, '` ADD COLUMN `', p_column, '` ', p_definition);
+        PREPARE stmt FROM @sql;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;
+    END IF;
+END $$
+
+DROP PROCEDURE IF EXISTS ensure_index $$
+CREATE PROCEDURE ensure_index(
+    IN p_table VARCHAR(128),
+    IN p_index VARCHAR(128),
+    IN p_sql TEXT
+)
+BEGIN
+    DECLARE CONTINUE HANDLER FOR 1061 BEGIN END;
+
+    IF EXISTS (
+        SELECT 1
+        FROM information_schema.tables
+        WHERE table_schema = DATABASE()
+          AND table_name = p_table
+    ) AND NOT EXISTS (
+        SELECT 1
+        FROM information_schema.statistics
+        WHERE table_schema = DATABASE()
+          AND table_name = p_table
+          AND index_name = p_index
+    ) THEN
+        SET @sql = p_sql;
+        PREPARE stmt FROM @sql;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;
+    END IF;
+END $$
+
+DELIMITER ;
+
+CALL ensure_column('ext_microsip_employee', 'employee_number', 'VARCHAR(50) NULL');
+CALL ensure_column('ext_microsip_employee', 'source_payload', 'JSON NULL');
+CALL ensure_column('ext_microsip_employee', 'synced_at', 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP');
+
+CALL ensure_column('ext_microsip_employee_compensation', 'payroll_regime', 'VARCHAR(80) NULL');
+CALL ensure_column('ext_microsip_employee_compensation', 'contribution_base_amount', 'DECIMAL(15,2) NULL');
+CALL ensure_column('ext_microsip_employee_compensation', 'source_payload', 'JSON NULL');
+
+CALL ensure_column('ext_microsip_employee_social_security', 'employee_contribution_amount', 'DECIMAL(15,2) NULL');
+CALL ensure_column('ext_microsip_employee_social_security', 'employer_contribution_amount', 'DECIMAL(15,2) NULL');
+CALL ensure_column('ext_microsip_employee_social_security', 'total_contribution_amount', 'DECIMAL(15,2) NULL');
+CALL ensure_column('ext_microsip_employee_social_security', 'source_payload', 'JSON NULL');
+
+CALL ensure_index(
+  'ext_microsip_state',
+  'idx_ext_microsip_state_country',
+  'CREATE INDEX `idx_ext_microsip_state_country` ON `ext_microsip_state` (`country_ext_id`)'
+);
+CALL ensure_index(
+  'ext_microsip_city',
+  'idx_ext_microsip_city_state',
+  'CREATE INDEX `idx_ext_microsip_city_state` ON `ext_microsip_city` (`state_ext_id`)'
+);
+CALL ensure_index(
+  'ext_microsip_employee',
+  'idx_ext_microsip_employee_department',
+  'CREATE INDEX `idx_ext_microsip_employee_department` ON `ext_microsip_employee` (`department_ext_id`)'
+);
+CALL ensure_index(
+  'ext_microsip_employee',
+  'idx_ext_microsip_employee_job_title',
+  'CREATE INDEX `idx_ext_microsip_employee_job_title` ON `ext_microsip_employee` (`job_title_ext_id`)'
+);
+CALL ensure_index(
+  'employee_microsip_links',
+  'idx_employee_microsip_links_link_source',
+  'CREATE INDEX `idx_employee_microsip_links_link_source` ON `employee_microsip_links` (`link_source`)'
+);
+CALL ensure_index(
+  'ext_microsip_payroll_payment',
+  'idx_ext_microsip_payroll_payment_employee',
+  'CREATE INDEX `idx_ext_microsip_payroll_payment_employee` ON `ext_microsip_payroll_payment` (`employee_ext_id`)'
+);
+CALL ensure_index(
+  'ext_microsip_payroll_payment',
+  'idx_ext_microsip_payroll_payment_date',
+  'CREATE INDEX `idx_ext_microsip_payroll_payment_date` ON `ext_microsip_payroll_payment` (`payment_date`)'
+);
+CALL ensure_index(
+  'ext_microsip_payroll_payment',
+  'idx_ext_microsip_payroll_payment_employee_date',
+  'CREATE INDEX `idx_ext_microsip_payroll_payment_employee_date` ON `ext_microsip_payroll_payment` (`employee_ext_id`, `payment_date`)'
+);
+
+DROP PROCEDURE IF EXISTS ensure_column;
+DROP PROCEDURE IF EXISTS ensure_index;
+
+INSERT IGNORE INTO ref_sync_status (code, label) VALUES
+('pending', 'Pendiente'),
+('running', 'En progreso'),
+('success', 'Exitoso'),
+('failed', 'Fallido');
+
+INSERT IGNORE INTO permissions (code, description) VALUES
+('view_profile_self', 'Puede consultar su propio perfil 360'),
+('view_profile_employee', 'Puede consultar el perfil 360 de colaboradores'),
+('view_payroll_self', 'Puede consultar su historial de pagos'),
+('view_payroll_employee', 'Puede consultar historial de pagos de colaboradores');
+
+INSERT IGNORE INTO role_permissions (role_id, permission_id)
+SELECT r.id, p.id
+FROM roles r
+JOIN permissions p ON p.code IN ('view_profile_self', 'view_payroll_self')
+WHERE r.name = 'EMPLEADO';
+
+INSERT IGNORE INTO role_permissions (role_id, permission_id)
+SELECT r.id, p.id
+FROM roles r
+JOIN permissions p ON p.code IN ('view_profile_self', 'view_profile_employee', 'view_payroll_self')
+WHERE r.name = 'SUPERVISOR';
+
+INSERT IGNORE INTO role_permissions (role_id, permission_id)
+SELECT r.id, p.id
+FROM roles r
+JOIN permissions p ON p.code IN ('view_profile_self', 'view_profile_employee', 'view_payroll_self', 'view_payroll_employee')
+WHERE r.name = 'RRHH';

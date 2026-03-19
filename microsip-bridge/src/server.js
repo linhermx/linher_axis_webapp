@@ -44,6 +44,66 @@ const withMeta = (items, context = {}) => ({
     },
 });
 
+const REQUIRED_FIELDS_BY_DATASET = {
+    departments: ['microsip_department_id', 'name'],
+    job_titles: ['microsip_job_title_id', 'name'],
+    employees: [
+        'microsip_employee_id',
+        'employee_number',
+        'first_name',
+        'last_name',
+        'department_id',
+        'job_title_id',
+    ],
+    countries: ['microsip_country_id', 'name'],
+    states: ['microsip_state_id', 'microsip_country_id', 'name'],
+    cities: ['microsip_city_id', 'microsip_state_id', 'name'],
+    payroll_payments: [
+        'microsip_payroll_payment_id',
+        'microsip_employee_id',
+        'payment_date',
+    ],
+};
+
+const validateDatasetCollection = (datasetName, items) => {
+    const requiredFields = REQUIRED_FIELDS_BY_DATASET[datasetName] || [];
+    if (!requiredFields.length) {
+        return;
+    }
+
+    const sample = Array.isArray(items) && items.length > 0 ? items[0] : null;
+    if (!sample || typeof sample !== 'object') {
+        return;
+    }
+
+    const missingFields = requiredFields.filter((field) => {
+        const value = sample[field];
+        return value === undefined || value === null || String(value).trim() === '';
+    });
+
+    if (missingFields.length) {
+        const error = new Error(
+            `Payload invalido para ${datasetName}. Campos faltantes: ${missingFields.join(', ')}`
+        );
+        error.code = 'MICROSIP_DATASET_SCHEMA_INVALID';
+        error.details = {
+            dataset: datasetName,
+            missing_fields: missingFields,
+        };
+        throw error;
+    }
+};
+
+const parseDate = (value) => {
+    const normalized = String(value || '').trim();
+    if (!normalized) {
+        return null;
+    }
+
+    const parsed = new Date(normalized);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+};
+
 const ensureApiKey = (req, res, next) => {
     if (!REQUIRE_API_KEY) {
         return next();
@@ -85,6 +145,39 @@ const applyCommonFilters = (items, body = {}) => {
     return current;
 };
 
+const applyPayrollFilters = (items, body = {}) => {
+    let current = applyCommonFilters(items, body);
+    const employeeId = String(body.employee_id || '').trim();
+    if (employeeId) {
+        current = current.filter((item) => (
+            String(item.microsip_employee_id || item.employee_id || '').trim() === employeeId
+        ));
+    }
+
+    const dateFrom = parseDate(body.date_from);
+    const dateTo = parseDate(body.date_to);
+    if (dateFrom || dateTo) {
+        current = current.filter((item) => {
+            const paymentDate = parseDate(item.payment_date || item.fecha || item.date);
+            if (!paymentDate) {
+                return false;
+            }
+
+            if (dateFrom && paymentDate < dateFrom) {
+                return false;
+            }
+
+            if (dateTo && paymentDate > dateTo) {
+                return false;
+            }
+
+            return true;
+        });
+    }
+
+    return current;
+};
+
 app.use(express.json({ limit: '1mb' }));
 
 app.get('/health', async (req, res) => {
@@ -117,6 +210,7 @@ app.get('/health', async (req, res) => {
 app.post('/exports/departments', ensureApiKey, async (req, res) => {
     try {
         const items = await provider.exportDepartments(req.body || {});
+        validateDatasetCollection('departments', items);
         return res.json(withMeta(applyCommonFilters(items, req.body), req.body || {}));
     } catch (error) {
         // eslint-disable-next-line no-console
@@ -132,6 +226,7 @@ app.post('/exports/departments', ensureApiKey, async (req, res) => {
 app.post('/exports/job-titles', ensureApiKey, async (req, res) => {
     try {
         const items = await provider.exportJobTitles(req.body || {});
+        validateDatasetCollection('job_titles', items);
         return res.json(withMeta(applyCommonFilters(items, req.body), req.body || {}));
     } catch (error) {
         // eslint-disable-next-line no-console
@@ -147,12 +242,77 @@ app.post('/exports/job-titles', ensureApiKey, async (req, res) => {
 app.post('/exports/employees', ensureApiKey, async (req, res) => {
     try {
         const items = await provider.exportEmployees(req.body || {});
+        validateDatasetCollection('employees', items);
         return res.json(withMeta(applyCommonFilters(items, req.body), req.body || {}));
     } catch (error) {
         // eslint-disable-next-line no-console
         console.error('[microsip-bridge] employees export error:', error);
         return res.status(500).json({
             message: 'Error al exportar empleados desde Microsip',
+            code: error.code || null,
+            details: error.details || null,
+        });
+    }
+});
+
+app.post('/exports/countries', ensureApiKey, async (req, res) => {
+    try {
+        const items = await provider.exportCountries(req.body || {});
+        validateDatasetCollection('countries', items);
+        return res.json(withMeta(applyCommonFilters(items, req.body), req.body || {}));
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('[microsip-bridge] countries export error:', error);
+        return res.status(500).json({
+            message: 'Error al exportar paises desde Microsip',
+            code: error.code || null,
+            details: error.details || null,
+        });
+    }
+});
+
+app.post('/exports/states', ensureApiKey, async (req, res) => {
+    try {
+        const items = await provider.exportStates(req.body || {});
+        validateDatasetCollection('states', items);
+        return res.json(withMeta(applyCommonFilters(items, req.body), req.body || {}));
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('[microsip-bridge] states export error:', error);
+        return res.status(500).json({
+            message: 'Error al exportar estados desde Microsip',
+            code: error.code || null,
+            details: error.details || null,
+        });
+    }
+});
+
+app.post('/exports/cities', ensureApiKey, async (req, res) => {
+    try {
+        const items = await provider.exportCities(req.body || {});
+        validateDatasetCollection('cities', items);
+        return res.json(withMeta(applyCommonFilters(items, req.body), req.body || {}));
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('[microsip-bridge] cities export error:', error);
+        return res.status(500).json({
+            message: 'Error al exportar ciudades desde Microsip',
+            code: error.code || null,
+            details: error.details || null,
+        });
+    }
+});
+
+app.post('/exports/payroll-payments', ensureApiKey, async (req, res) => {
+    try {
+        const items = await provider.exportPayrollPayments(req.body || {});
+        validateDatasetCollection('payroll_payments', items);
+        return res.json(withMeta(applyPayrollFilters(items, req.body), req.body || {}));
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('[microsip-bridge] payroll export error:', error);
+        return res.status(500).json({
+            message: 'Error al exportar pagos de nomina desde Microsip',
             code: error.code || null,
             details: error.details || null,
         });

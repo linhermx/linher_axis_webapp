@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+﻿import { useCallback, useEffect, useMemo, useState } from 'react';
 import { RefreshCw } from 'lucide-react';
 import {
   Alert,
@@ -22,10 +22,13 @@ import {
 import api from '../services/api';
 
 const SYNC_TYPE_OPTIONS = [
-  { value: 'full', label: 'Sincronización completa' },
+  { value: 'full', label: 'Sincronizacion completa' },
+  { value: 'profile_full', label: 'Perfil 360 completo' },
+  { value: 'locations', label: 'Solo ubicaciones' },
   { value: 'departments', label: 'Solo departamentos' },
   { value: 'job_titles', label: 'Solo puestos' },
   { value: 'employees', label: 'Solo empleados' },
+  { value: 'payroll', label: 'Solo pagos de nomina' },
 ];
 
 const STATUS_LABEL_MAP = {
@@ -51,12 +54,12 @@ const toStatusLabel = (statusCode, fallback = 'Sin estado') => (
 const formatDateTime = (value) => {
   if (!value) return 'Sin fecha';
   const parsedDate = new Date(value);
-  if (Number.isNaN(parsedDate.getTime())) return 'Fecha inválida';
+  if (Number.isNaN(parsedDate.getTime())) return 'Fecha invalida';
   return parsedDate.toLocaleString('es-MX', { timeZone: 'America/Mexico_City' });
 };
 
 const formatDuration = (startedAt, finishedAt) => {
-  if (!startedAt || !finishedAt) return 'En ejecución';
+  if (!startedAt || !finishedAt) return 'En ejecucion';
   const startTime = new Date(startedAt).getTime();
   const endTime = new Date(finishedAt).getTime();
   if (Number.isNaN(startTime) || Number.isNaN(endTime) || endTime < startTime) return 'N/A';
@@ -116,7 +119,7 @@ const MicrosipAdmin = () => {
       setHealthPayload(healthResponse.data || null);
       setSyncLogs(Array.isArray(logsResponse.data?.data) ? logsResponse.data.data : []);
     } catch (error) {
-      setLoadError(error?.response?.data?.message || 'No fue posible cargar el panel de integración Microsip.');
+      setLoadError(error?.response?.data?.message || 'No fue posible cargar el panel de integracion Microsip.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -147,15 +150,15 @@ const MicrosipAdmin = () => {
       const { data } = await api.post('/admin/microsip/sync', { sync_type: syncType });
       showToast(
         data?.status === 'failed' ? 'warning' : 'success',
-        'Sincronización ejecutada',
+        'Sincronizacion ejecutada',
         `Procesados ${data?.processed || 0} de ${data?.total || 0} registros.`
       );
       await loadMicrosipAdminData({ silent: true });
     } catch (error) {
       showToast(
         'error',
-        'No se pudo ejecutar la sincronización',
-        error?.response?.data?.message || 'Error inesperado durante la sincronización.'
+        'No se pudo ejecutar la Sincronizacion',
+        error?.response?.data?.message || 'Error inesperado durante la Sincronizacion.'
       );
     } finally {
       setRunningSync(false);
@@ -165,8 +168,8 @@ const MicrosipAdmin = () => {
   return (
     <section>
       <PageHeader
-        title="Integración Microsip"
-        subtitle="Monitorea conectividad, ejecuta sincronizaciones y revisa bitácora de ejecuciones."
+        title="integracion Microsip"
+        subtitle="Monitorea conectividad, ejecuta sincronizaciones y revisa bitacora de ejecuciones."
         actions={(
           <Button
             type="button"
@@ -182,21 +185,21 @@ const MicrosipAdmin = () => {
       />
 
       {loadError ? (
-        <Alert variant="error" title="Error al cargar integración" className="mb-6">
+        <Alert variant="error" title="Error al cargar integracion" className="mb-6">
           {loadError}
         </Alert>
       ) : null}
 
       {loading ? (
         <Card>
-          <p className="text-sm text-ui-text-secondary">Cargando panel de integración...</p>
+          <p className="text-sm text-ui-text-secondary">Cargando panel de integracion...</p>
         </Card>
       ) : (
         <div className="space-y-6">
           <div className="grid gap-6 xl:grid-cols-2">
             <Card
               title="Estado del conector"
-              subtitle="Disponibilidad del bridge y configuración activa."
+              subtitle="Disponibilidad del bridge y configuracion activa."
               actions={(
                 <StatusBadge
                   status={connectorBadge.status}
@@ -210,7 +213,7 @@ const MicrosipAdmin = () => {
                   Modo:
                   {' '}
                   <span className="font-semibold text-ui-dark-navy">
-                    {connector?.mode || 'Sin información'}
+                    {connector?.mode || 'Sin informacion'}
                   </span>
                 </p>
                 <p>
@@ -231,8 +234,8 @@ const MicrosipAdmin = () => {
             </Card>
 
             <Card
-              title="Última sincronización"
-              subtitle="Resumen de la ejecución más reciente."
+              title="Ultima Sincronizacion"
+              subtitle="Resumen de la Ejecucion mas reciente."
               actions={latestSyncLog ? (
                 <StatusBadge
                   status={toBadgeStatus(latestSyncLog.status_code)}
@@ -259,7 +262,7 @@ const MicrosipAdmin = () => {
                     <span className="font-semibold text-ui-dark-navy">{formatDateTime(latestSyncLog.finished_at)}</span>
                   </p>
                   <p>
-                    Duración:
+                    Duracion:
                     {' '}
                     <span className="font-semibold text-ui-dark-navy">
                       {formatDuration(latestSyncLog.started_at, latestSyncLog.finished_at)}
@@ -277,17 +280,17 @@ const MicrosipAdmin = () => {
                   </p>
                 </div>
               ) : (
-                <p className="text-sm text-ui-text-secondary">Todavía no hay sincronizaciones registradas.</p>
+                <p className="text-sm text-ui-text-secondary">Todavia no hay sincronizaciones registradas.</p>
               )}
             </Card>
           </div>
 
-          <Card title="Ejecución manual" subtitle="Lanza sincronizaciones puntuales bajo demanda.">
+          <Card title="Ejecucion manual" subtitle="Lanza sincronizaciones puntuales bajo demanda.">
             <div className="grid gap-4 md:grid-cols-[minmax(260px,360px)_auto] md:items-end">
               <CustomSelect
                 id="microsip-sync-type"
                 name="microsip_sync_type"
-                label="Tipo de sincronización"
+                label="Tipo de Sincronizacion"
                 value={syncType}
                 onChange={(event) => setSyncType(event.target.value)}
                 options={SYNC_TYPE_OPTIONS}
@@ -298,22 +301,22 @@ const MicrosipAdmin = () => {
                 onClick={handleSyncSubmit}
                 disabled={runningSync || refreshing}
               >
-                {runningSync ? 'Ejecutando...' : 'Ejecutar sincronización'}
+                {runningSync ? 'Ejecutando...' : 'Ejecutar Sincronizacion'}
               </Button>
             </div>
           </Card>
 
-          <Card title="Bitácora de sincronización" subtitle="Historial reciente de ejecuciones.">
+          <Card title="bitacora de Sincronizacion" subtitle="Historial reciente de ejecuciones.">
             {syncLogs.length === 0 ? (
               <StatusView
-                title="Sin bitácora disponible"
-                description="Cuando se ejecuten sincronizaciones, aquí verás el historial y su resultado."
+                title="Sin bitacora disponible"
+                description="Cuando se ejecuten sincronizaciones, aqui veras el historial y su resultado."
                 className="min-h-[180px]"
               />
             ) : (
               <TableShell>
                 <Table>
-                  <TableCaption>Bitácora de sincronizaciones de Microsip</TableCaption>
+                  <TableCaption>bitacora de sincronizaciones de Microsip</TableCaption>
                   <TableHead>
                     <TableRow className="hover:bg-transparent">
                       <TableHeaderCell scope="col">ID</TableHeaderCell>
@@ -329,7 +332,7 @@ const MicrosipAdmin = () => {
                   <TableBody>
                     {syncLogs.length === 0 ? (
                       <TableEmptyState colSpan={8}>
-                        No hay eventos de sincronización registrados.
+                        No hay eventos de Sincronizacion registrados.
                       </TableEmptyState>
                     ) : (
                       syncLogs.map((log) => (
@@ -373,3 +376,5 @@ const MicrosipAdmin = () => {
 };
 
 export default MicrosipAdmin;
+
+

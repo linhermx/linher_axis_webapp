@@ -10,6 +10,8 @@ const Topbar = () => {
   const getPageTitle = () => {
     const path = location.pathname;
     if (path === '/') return 'Panel de Control';
+    if (path === '/me/profile') return 'Mi Perfil 360';
+    if (/^\/employees\/\d+\/profile-360$/.test(path)) return 'Perfil de Colaborador';
     if (path.startsWith('/employees')) return 'Empleados';
     if (path.startsWith('/calendar')) return 'Calendario';
     if (path.startsWith('/recruitment')) return 'Reclutamiento';

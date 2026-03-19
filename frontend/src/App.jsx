@@ -10,6 +10,8 @@ import EmployeeDirectory from './pages/EmployeeDirectory';
 import CreateEmployee from './pages/CreateEmployee';
 import OrganizationStructure from './pages/OrganizationStructure';
 import MicrosipAdmin from './pages/MicrosipAdmin';
+import MyProfile360 from './pages/MyProfile360';
+import EmployeeProfile360 from './pages/EmployeeProfile360';
 
 const ProtectedRoute = ({ children, requiredPermissions = [] }) => {
   const { user, loading } = useAuth();
@@ -60,6 +62,15 @@ function App() {
             element={
               <ProtectedRoute requiredPermissions={['create_employee']}>
                 <CreateEmployee />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/employees/:id/profile-360"
+            element={
+              <ProtectedRoute requiredPermissions={['view_profile_employee']}>
+                <EmployeeProfile360 />
               </ProtectedRoute>
             }
           />
@@ -126,6 +137,15 @@ function App() {
             element={
               <ProtectedRoute requiredPermissions={['view_audit_logs']}>
                 <MicrosipAdmin />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/me/profile"
+            element={
+              <ProtectedRoute requiredPermissions={['view_profile_self', 'view_profile_employee']}>
+                <MyProfile360 />
               </ProtectedRoute>
             }
           />

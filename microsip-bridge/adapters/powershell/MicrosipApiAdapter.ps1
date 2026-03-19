@@ -1,11 +1,17 @@
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('health', 'departments', 'job_titles', 'employees')]
+    [ValidateSet('health', 'departments', 'job_titles', 'employees', 'countries', 'states', 'cities', 'payroll_payments')]
     [string]$Dataset,
     [string]$ContextBase64 = ''
 )
 
 $ErrorActionPreference = 'Stop'
+
+# Force UTF-8 stdout/stderr so Node bridge can parse accents correctly.
+$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+[Console]::InputEncoding = $utf8NoBom
+[Console]::OutputEncoding = $utf8NoBom
+$OutputEncoding = $utf8NoBom
 
 function Convert-ToBool {
     param(
@@ -321,7 +327,152 @@ function Resolve-DatasetConfig {
                     'job_title_id',
                     'employment_status',
                     'hired_at',
-                    'terminated_at'
+                    'terminated_at',
+                    'daily_salary',
+                    'integrated_daily_salary',
+                    'salary_currency',
+                    'salary_type',
+                    'payroll_regime',
+                    'social_security_number',
+                    'imss_clinic_code',
+                    'imss_employee_contribution',
+                    'imss_employer_contribution',
+                    'imss_total_contribution',
+                    'imss_contribution_base',
+                    'manager_microsip_employee_id',
+                    'manager_name',
+                    'contract_type',
+                    'payment_method',
+                    'shift_code',
+                    'shift_name',
+                    'schedule',
+                    'workday_hours',
+                    'payroll_regime_code',
+                    'sat_contract_code',
+                    'sat_workday_code',
+                    'sat_entry_code',
+                    'is_unionized',
+                    'antiquity_table_code',
+                    'salary_hourly',
+                    'integration_percentage',
+                    'social_security_enabled',
+                    'cas_enabled',
+                    'ptu_enabled',
+                    'tax_disabled',
+                    'calculate_annual_isr',
+                    'files_declaration',
+                    'employer_registry_id',
+                    'social_min_zone',
+                    'pensioned',
+                    'pension_type',
+                    'sex_code',
+                    'birth_date',
+                    'birth_city_id',
+                    'marital_status_code',
+                    'children_count',
+                    'rfc',
+                    'curp',
+                    'other_registry',
+                    'email',
+                    'phone_primary',
+                    'phone_secondary',
+                    'full_address',
+                    'street_name',
+                    'exterior_number',
+                    'interior_number',
+                    'neighborhood',
+                    'locality',
+                    'reference_note',
+                    'city_id',
+                    'postal_code',
+                    'father_name',
+                    'mother_name',
+                    'payment_group_code',
+                    'payment_account_type',
+                    'payment_account_number'
+                )
+            }
+        }
+        'countries' {
+            return @{
+                query = $env:MICROSIP_SQL_COUNTRIES
+                fields = Split-Fields -Value $env:MICROSIP_FIELDS_COUNTRIES
+                fallbackFields = @(
+                    'microsip_country_id',
+                    'name',
+                    'abbrev',
+                    'fiscal_key',
+                    'is_default',
+                    'is_active'
+                )
+            }
+        }
+        'states' {
+            return @{
+                query = $env:MICROSIP_SQL_STATES
+                fields = Split-Fields -Value $env:MICROSIP_FIELDS_STATES
+                fallbackFields = @(
+                    'microsip_state_id',
+                    'microsip_country_id',
+                    'name',
+                    'abbrev',
+                    'fiscal_key',
+                    'is_default',
+                    'is_active'
+                )
+            }
+        }
+        'cities' {
+            return @{
+                query = $env:MICROSIP_SQL_CITIES
+                fields = Split-Fields -Value $env:MICROSIP_FIELDS_CITIES
+                fallbackFields = @(
+                    'microsip_city_id',
+                    'microsip_state_id',
+                    'name',
+                    'fiscal_key',
+                    'is_default',
+                    'is_active'
+                )
+            }
+        }
+        'payroll_payments' {
+            return @{
+                query = $env:MICROSIP_SQL_PAYROLL_PAYMENTS
+                fields = Split-Fields -Value $env:MICROSIP_FIELDS_PAYROLL_PAYMENTS
+                fallbackFields = @(
+                    'microsip_payroll_payment_id',
+                    'payroll_batch_id',
+                    'microsip_employee_id',
+                    'job_title_id',
+                    'department_id',
+                    'workday_hours',
+                    'salary_type',
+                    'integrated_salary',
+                    'work_days',
+                    'work_hours',
+                    'vacation_days',
+                    'cotization_days',
+                    'absences_days',
+                    'incapacity_days',
+                    'overtime_hours',
+                    'overtime_excess_hours',
+                    'overtime_excess_amount',
+                    'base_contribution_salary',
+                    'total_earnings',
+                    'total_deductions',
+                    'total_other_payments',
+                    'total_earnings_taxable',
+                    'total_earnings_exempt',
+                    'state_tax_base',
+                    'ptu_base',
+                    'payment_date',
+                    'payroll_type',
+                    'payment_method',
+                    'payment_type',
+                    'is_applied',
+                    'is_sent',
+                    'sent_email'
                 )
             }
         }

@@ -46,16 +46,17 @@ const findActiveUserByEmail = async (email) => {
 
 const saveRefreshToken = async (userId, token, expiresAtIso) => {
     await pool.query(
-        'INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES (?, ?, ?)',
+        'INSERT INTO refresh_tokens (user_id, token, expires_at, last_used_at) VALUES (?, ?, ?, NOW())',
         [userId, token, expiresAtIso]
     );
 };
 
 const findRefreshToken = async (token) => {
     const [rows] = await pool.query(
-        `SELECT id, user_id, token, expires_at
+        `SELECT id, user_id, token, expires_at, last_used_at, revoked_at
          FROM refresh_tokens
          WHERE token = ?
+           AND revoked_at IS NULL
          LIMIT 1`,
         [token]
     );
@@ -63,13 +64,35 @@ const findRefreshToken = async (token) => {
     return rows[0] || null;
 };
 
-const deleteRefreshToken = async (token) => {
-    const [result] = await pool.query('DELETE FROM refresh_tokens WHERE token = ?', [token]);
+const revokeRefreshToken = async (token, reason = 'manual') => {
+    const [result] = await pool.query(
+        `UPDATE refresh_tokens
+         SET revoked_at = NOW(),
+             revoked_reason = ?,
+             last_used_at = NOW()
+         WHERE token = ?
+           AND revoked_at IS NULL`,
+        [reason, token]
+    );
     return result.affectedRows > 0;
 };
 
+const markRefreshTokenAsUsed = async (token) => {
+    await pool.query(
+        `UPDATE refresh_tokens
+         SET last_used_at = NOW()
+         WHERE token = ?
+           AND revoked_at IS NULL`,
+        [token]
+    );
+};
+
 const deleteExpiredRefreshTokens = async () => {
-    await pool.query('DELETE FROM refresh_tokens WHERE expires_at < NOW()');
+    await pool.query(
+        `DELETE FROM refresh_tokens
+         WHERE expires_at < NOW()
+            OR (revoked_at IS NOT NULL AND revoked_at < DATE_SUB(NOW(), INTERVAL 30 DAY))`
+    );
 };
 
 const pruneRefreshTokensByUser = async (userId, limit = 5) => {
@@ -77,14 +100,20 @@ const pruneRefreshTokensByUser = async (userId, limit = 5) => {
     await pool.query(
         `DELETE FROM refresh_tokens
          WHERE user_id = ?
-           AND id NOT IN (
+           AND (
+                revoked_at IS NOT NULL
+                OR expires_at < NOW()
+                OR id NOT IN (
                 SELECT id FROM (
                     SELECT id
                     FROM refresh_tokens
                     WHERE user_id = ?
+                      AND revoked_at IS NULL
+                      AND expires_at >= NOW()
                     ORDER BY created_at DESC, id DESC
                     LIMIT ?
                 ) AS latest_tokens
+                )
            )`,
         [userId, userId, normalizedLimit]
     );
@@ -169,21 +198,23 @@ export const refresh = async (req, res) => {
         }
 
         if (isTokenExpired(persistedToken.expires_at)) {
-            await deleteRefreshToken(refreshToken);
+            await revokeRefreshToken(refreshToken, 'expired');
             return res.status(403).json({ message: 'Refresh token expirado' });
         }
 
         const tokenUserId = toNumericUserId(decoded?.sub || decoded?.id || persistedToken.user_id);
         if (!tokenUserId) {
-            await deleteRefreshToken(refreshToken);
+            await revokeRefreshToken(refreshToken, 'invalid_user');
             return res.status(403).json({ message: 'Refresh token invalido' });
         }
 
         const sessionUser = await loadActiveUserSession(tokenUserId);
         if (!sessionUser) {
-            await deleteRefreshToken(refreshToken);
+            await revokeRefreshToken(refreshToken, 'inactive_user');
             return res.status(403).json({ message: 'Usuario inactivo o no encontrado' });
         }
+
+        await markRefreshTokenAsUsed(refreshToken);
 
         const rememberMe = toBoolean(decoded?.remember_me);
         const rotatedTokens = signAuthTokens(
@@ -191,7 +222,7 @@ export const refresh = async (req, res) => {
             rememberMe
         );
 
-        await deleteRefreshToken(refreshToken);
+        await revokeRefreshToken(refreshToken, 'rotated');
         await saveRefreshToken(sessionUser.id, rotatedTokens.refreshToken, rotatedTokens.refresh_expires_at);
         await pruneRefreshTokensByUser(sessionUser.id, 5);
 
@@ -216,7 +247,7 @@ export const logout = async (req, res) => {
     }
 
     try {
-        await deleteRefreshToken(refreshToken);
+        await revokeRefreshToken(refreshToken, 'logout');
 
         try {
             const decoded = verifyRefreshToken(refreshToken);

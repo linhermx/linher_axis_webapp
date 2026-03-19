@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import pool from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
+import meRoutes from './routes/meRoutes.js';
 import employeeRoutes from './routes/employeeRoutes.js';
 import documentRoutes from './routes/documentRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
@@ -64,6 +65,7 @@ const v1 = express.Router();
 
 // Routes
 v1.use('/auth', authRoutes);
+v1.use('/me', meRoutes);
 v1.use('/employees', employeeRoutes);
 v1.use('/documents', documentRoutes);
 v1.use('/admin', adminRoutes);

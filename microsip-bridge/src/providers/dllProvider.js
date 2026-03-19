@@ -225,4 +225,16 @@ export const createDllProvider = () => ({
     async exportEmployees(context = {}) {
         return exportCollection('employees', context);
     },
+    async exportCountries(context = {}) {
+        return exportCollection('countries', context);
+    },
+    async exportStates(context = {}) {
+        return exportCollection('states', context);
+    },
+    async exportCities(context = {}) {
+        return exportCollection('cities', context);
+    },
+    async exportPayrollPayments(context = {}) {
+        return exportCollection('payroll_payments', context);
+    },
 });

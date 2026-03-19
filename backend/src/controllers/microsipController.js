@@ -62,6 +62,22 @@ export const getMicrosipSyncLogs = async (req, res) => {
     }
 };
 
+export const getMicrosipEmployeesSnapshot = async (req, res) => {
+    try {
+        const rows = await microsipSyncService.listEmployeeSnapshots(parseLimit(req.query.limit));
+        return res.json({ data: rows });
+    } catch (error) {
+        return handleControllerError({
+            logger,
+            req,
+            res,
+            error,
+            action: 'MICROSIP_EMPLOYEE_SNAPSHOT_FETCH_ERROR',
+            message: 'Error al consultar snapshot de empleados Microsip',
+        });
+    }
+};
+
 export const triggerMicrosipSync = async (req, res) => {
     const syncType = req.body?.sync_type || 'full';
 

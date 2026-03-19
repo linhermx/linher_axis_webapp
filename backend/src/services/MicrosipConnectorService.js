@@ -86,6 +86,22 @@ export class MicrosipConnectorService {
                 options.employeesPath ?? process.env.MICROSIP_CONNECTOR_EMPLOYEES_PATH,
                 '/exports/employees'
             ),
+            countries: normalizePath(
+                options.countriesPath ?? process.env.MICROSIP_CONNECTOR_COUNTRIES_PATH,
+                '/exports/countries'
+            ),
+            states: normalizePath(
+                options.statesPath ?? process.env.MICROSIP_CONNECTOR_STATES_PATH,
+                '/exports/states'
+            ),
+            cities: normalizePath(
+                options.citiesPath ?? process.env.MICROSIP_CONNECTOR_CITIES_PATH,
+                '/exports/cities'
+            ),
+            payrollPayments: normalizePath(
+                options.payrollPaymentsPath ?? process.env.MICROSIP_CONNECTOR_PAYROLL_PAYMENTS_PATH,
+                '/exports/payroll-payments'
+            ),
         };
 
         this.client = axios.create({
@@ -179,6 +195,26 @@ export class MicrosipConnectorService {
 
     async exportEmployees(context = {}) {
         const data = await this.request('post', this.paths.employees, context);
+        return normalizeResultItems(data);
+    }
+
+    async exportCountries(context = {}) {
+        const data = await this.request('post', this.paths.countries, context);
+        return normalizeResultItems(data);
+    }
+
+    async exportStates(context = {}) {
+        const data = await this.request('post', this.paths.states, context);
+        return normalizeResultItems(data);
+    }
+
+    async exportCities(context = {}) {
+        const data = await this.request('post', this.paths.cities, context);
+        return normalizeResultItems(data);
+    }
+
+    async exportPayrollPayments(context = {}) {
+        const data = await this.request('post', this.paths.payrollPayments, context);
         return normalizeResultItems(data);
     }
 }

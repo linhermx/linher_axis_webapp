@@ -1,7 +1,11 @@
 import {
+    mockCities,
+    mockCountries,
     mockDepartments,
     mockEmployees,
     mockJobTitles,
+    mockPayrollPayments,
+    mockStates,
 } from '../data/mockData.js';
 
 const normalizeRows = (rows) => (Array.isArray(rows) ? rows : []);
@@ -23,5 +27,17 @@ export const createMockProvider = () => ({
     },
     async exportEmployees() {
         return normalizeRows(mockEmployees);
+    },
+    async exportCountries() {
+        return normalizeRows(mockCountries);
+    },
+    async exportStates() {
+        return normalizeRows(mockStates);
+    },
+    async exportCities() {
+        return normalizeRows(mockCities);
+    },
+    async exportPayrollPayments() {
+        return normalizeRows(mockPayrollPayments);
     },
 });
