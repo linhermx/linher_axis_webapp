@@ -60,7 +60,6 @@ const Sidebar = () => {
         <NavLink to="/recruitment" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
           <Target size={20} />
           <span>Reclutamiento</span>
-          <span className="nav-badge">4</span>
         </NavLink>
 
         <NavLink to="/reports" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>

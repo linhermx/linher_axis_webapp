@@ -126,7 +126,7 @@ function App() {
               <ProtectedRoute requiredPermissions={['view_employees']}>
                 <StatusView
                   title="Módulo de documentos"
-                  description="Esta pantalla se habilitará cuando se conecte el flujo completo de expediente digital y validaciones HR."
+                  description="Esta pantalla se habilitará al cerrar el flujo de Mis Documentos (autoservicio del empleado) y validaciones de RRHH."
                 />
               </ProtectedRoute>
             }

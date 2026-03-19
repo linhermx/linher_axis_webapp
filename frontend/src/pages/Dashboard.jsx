@@ -1,6 +1,5 @@
 ﻿import {
   Users,
-  ArrowRight,
   TrendingDown,
   TrendingUp,
   Briefcase,
@@ -161,22 +160,16 @@ const Dashboard = () => {
           );
         })}
 
-        <Card className="rounded-[20px] border-none bg-[var(--gradient-purple)] p-6 text-white">
-          <div className="flex h-full items-center justify-between gap-4">
+        <Card className="rounded-[20px] border-none bg-[var(--gradient-primary)] p-6 text-white">
+          <div className="flex h-full flex-col justify-between gap-4">
             <div>
-              <p className="text-[0.6875rem] font-bold uppercase tracking-[0.05em] opacity-80">Acción Rápida</p>
-              <h3 className="my-1 text-lg font-bold">Ejecutar Nómina</h3>
-              <p className="text-xs opacity-80">Ciclo vence en 3 días</p>
+              <p className="text-[0.6875rem] font-bold uppercase tracking-[0.05em] opacity-80">Expediente Digital</p>
+              <h3 className="my-1 text-lg font-bold">Validaciones pendientes</h3>
+              <p className="text-xs opacity-80">15 documentos en revisión por RRHH</p>
             </div>
-
-            <Button
-              type="button"
-              variant="ghost"
-              aria-label="Ejecutar nómina"
-              className="h-10 w-10 rounded-xl bg-white/20 p-0 text-white hover:bg-white/30"
-            >
-              <ArrowRight size={20} />
-            </Button>
+            <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.04em] opacity-80">
+              Indicador operativo
+            </p>
           </div>
         </Card>
       </section>
