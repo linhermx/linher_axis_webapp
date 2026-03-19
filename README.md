@@ -104,6 +104,14 @@ Orden efectivo para `full/profile_full`:
 - `GET /api/admin/microsip/sync-logs?limit=`
 - `GET /api/admin/microsip/employees?limit=`
 - `POST /api/admin/microsip/sync`
+- `POST /api/admin/microsip/reconcile-links`
+
+## Politica de retencion de pagos (MVP)
+
+- La retencion se controla con `MICROSIP_PAYROLL_RETENTION_MONTHS`.
+- Valor por defecto recomendado: `24`.
+- Valor `0`: no se elimina historial.
+- La limpieza se ejecuta al final de cada sincronizacion que incluya dataset `payroll`.
 
 ## Matriz de permisos (MVP actual)
 

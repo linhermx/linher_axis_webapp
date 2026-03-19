@@ -16,6 +16,7 @@ const Topbar = () => {
     if (path.startsWith('/calendar')) return 'Calendario';
     if (path.startsWith('/recruitment')) return 'Reclutamiento';
     if (path.startsWith('/reports')) return 'Reportes';
+    if (path.startsWith('/documents')) return 'Expediente';
     if (path.startsWith('/admin')) return 'Administración';
     if (path.startsWith('/settings')) return 'Configuración';
     return 'Panel de Control';

@@ -9,6 +9,7 @@ import {
   Settings,
   MoreVertical,
   IdCard,
+  FolderOpen,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { hasAnyPermission } from '../lib/permissions';
@@ -25,6 +26,10 @@ const Sidebar = () => {
   const canViewEmployees = hasAnyPermission(user, ['view_employees']);
   const canViewAdmin = hasAnyPermission(user, ['view_audit_logs']);
   const canViewProfile = hasAnyPermission(user, ['view_profile_self', 'view_profile_employee']);
+  const canViewDocuments = hasAnyPermission(user, ['view_documents', 'manage_documents', 'validate_documents']);
+  const canViewCalendar = hasAnyPermission(user, ['view_calendar']);
+  const canManageRecruitment = hasAnyPermission(user, ['manage_recruitment']);
+  const canViewReports = hasAnyPermission(user, ['view_dashboard']);
 
   return (
     <aside className="sidebar">
@@ -52,20 +57,33 @@ const Sidebar = () => {
           </NavLink>
         ) : null}
 
-        <NavLink to="/calendar" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <Calendar size={20} />
-          <span>Calendario</span>
-        </NavLink>
+        {canViewDocuments ? (
+          <NavLink to="/documents" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+            <FolderOpen size={20} />
+            <span>Expediente</span>
+          </NavLink>
+        ) : null}
 
-        <NavLink to="/recruitment" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <Target size={20} />
-          <span>Reclutamiento</span>
-        </NavLink>
+        {canViewCalendar ? (
+          <NavLink to="/calendar" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+            <Calendar size={20} />
+            <span>Calendario</span>
+          </NavLink>
+        ) : null}
 
-        <NavLink to="/reports" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <BarChart3 size={20} />
-          <span>Reportes</span>
-        </NavLink>
+        {canManageRecruitment ? (
+          <NavLink to="/recruitment" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+            <Target size={20} />
+            <span>Reclutamiento</span>
+          </NavLink>
+        ) : null}
+
+        {canViewReports ? (
+          <NavLink to="/reports" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+            <BarChart3 size={20} />
+            <span>Reportes</span>
+          </NavLink>
+        ) : null}
 
         {canViewAdmin ? (
           <NavLink to="/admin" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>

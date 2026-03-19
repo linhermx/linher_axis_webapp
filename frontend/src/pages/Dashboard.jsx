@@ -1,18 +1,13 @@
-﻿import {
+import {
   Users,
   TrendingDown,
   TrendingUp,
   Briefcase,
   Umbrella,
-  ChevronLeft,
-  ChevronRight,
-  Search,
-  MoreVertical,
 } from 'lucide-react';
 import {
-  Badge,
-  Button,
   Card,
+  StatusBadge,
   Table,
   TableBody,
   TableCaption,
@@ -22,10 +17,10 @@ import {
   TableRow,
 } from '../components/ui';
 
-const STATUS_VARIANT = {
-  pending: 'warning',
-  approved: 'success',
-  declined: 'danger',
+const STATUS_META = {
+  pending: { status: 'pending', label: 'Pendiente' },
+  approved: { status: 'approved', label: 'Aprobado' },
+  declined: { status: 'declined', label: 'Rechazado' },
 };
 
 const Dashboard = () => {
@@ -64,7 +59,6 @@ const Dashboard = () => {
       role: 'Especialista de Ventas',
       type: 'Vacaciones',
       period: '01 Ene - 10 Ene',
-      status: 'Pendiente',
       statusKey: 'pending',
       avatar: 'T',
     },
@@ -72,9 +66,8 @@ const Dashboard = () => {
       id: 2,
       name: 'Salamon Newman',
       role: 'Senior Dev',
-      type: 'Licencia Médica',
+      type: 'Licencia médica',
       period: 'Hoy',
-      status: 'Aprobado',
       statusKey: 'approved',
       avatar: 'S',
     },
@@ -82,9 +75,8 @@ const Dashboard = () => {
       id: 3,
       name: 'Monica Cutcher',
       role: 'Diseñadora',
-      type: 'Día Libre',
+      type: 'Día libre',
       period: '29 Dic - 31 Dic',
-      status: 'Rechazado',
       statusKey: 'declined',
       avatar: 'M',
     },
@@ -144,17 +136,17 @@ const Dashboard = () => {
               <p className="text-sm font-semibold text-ui-text-secondary">{stat.label}</p>
 
               <div className="mt-3 flex items-center gap-2">
-                {TrendIcon && (
+                {TrendIcon ? (
                   <span className={`inline-flex items-center text-xs font-bold ${stat.trendTone}`}>
                     <TrendIcon size={16} />
                   </span>
-                )}
-                {stat.trendText && (
+                ) : null}
+                {stat.trendText ? (
                   <span className="text-xs text-ui-text-secondary opacity-80">{stat.trendText}</span>
-                )}
-                {stat.subtitle && (
+                ) : null}
+                {stat.subtitle ? (
                   <span className="text-xs text-ui-text-secondary opacity-80">{stat.subtitle}</span>
-                )}
+                ) : null}
               </div>
             </Card>
           );
@@ -163,7 +155,7 @@ const Dashboard = () => {
         <Card className="rounded-[20px] border-none bg-[var(--gradient-primary)] p-6 text-white">
           <div className="flex h-full flex-col justify-between gap-4">
             <div>
-              <p className="text-[0.6875rem] font-bold uppercase tracking-[0.05em] opacity-80">Expediente Digital</p>
+              <p className="text-[0.6875rem] font-bold uppercase tracking-[0.05em] opacity-80">Expediente digital</p>
               <h3 className="my-1 text-lg font-bold">Validaciones pendientes</h3>
               <p className="text-xs opacity-80">15 documentos en revisión por RRHH</p>
             </div>
@@ -176,15 +168,7 @@ const Dashboard = () => {
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[2fr_1fr]">
         <section className="flex flex-col gap-6">
-          <Card
-            title="Solicitudes"
-            actions={
-              <Button type="button" variant="ghost" size="sm">
-                Ver todo
-              </Button>
-            }
-            className="rounded-[20px]"
-          >
+          <Card title="Solicitudes" className="rounded-[20px]">
             <div className="overflow-x-auto">
               <Table className="min-w-[680px]">
                 <TableCaption>Solicitudes recientes de empleados</TableCaption>
@@ -202,94 +186,64 @@ const Dashboard = () => {
                     <TableHeaderCell scope="col" className="bg-transparent px-0 py-3 text-ui-text-secondary opacity-70">
                       Estado
                     </TableHeaderCell>
-                    <TableHeaderCell scope="col" className="bg-transparent px-0 py-3 text-ui-text-secondary opacity-70">
-                      Acciones
-                    </TableHeaderCell>
                   </TableRow>
                 </TableHead>
 
                 <TableBody>
-                  {requests.map((req) => (
-                    <TableRow key={req.id} className="hover:bg-ui-background">
-                      <TableCell className="px-0 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ui-background text-xs font-bold text-brand-primary">
-                            {req.avatar}
+                  {requests.map((requestItem) => {
+                    const statusMeta = STATUS_META[requestItem.statusKey] || STATUS_META.pending;
+                    return (
+                      <TableRow key={requestItem.id} className="hover:bg-ui-background">
+                        <TableCell className="px-0 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ui-background text-xs font-bold text-brand-primary">
+                              {requestItem.avatar}
+                            </div>
+                            <div>
+                              <p className="font-bold text-ui-dark-navy">{requestItem.name}</p>
+                              <p className="text-[0.6875rem] text-ui-text-secondary">{requestItem.role}</p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="font-bold text-ui-dark-navy">{req.name}</p>
-                            <p className="text-[0.6875rem] text-ui-text-secondary">{req.role}</p>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="px-0 py-4">{req.type}</TableCell>
-                      <TableCell className="px-0 py-4">{req.period}</TableCell>
-                      <TableCell className="px-0 py-4">
-                        <Badge variant={STATUS_VARIANT[req.statusKey]}>{req.status}</Badge>
-                      </TableCell>
-                      <TableCell className="px-0 py-4">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          aria-label={`Ver detalle de ${req.name}`}
-                          className="h-8 w-8 p-0"
-                        >
-                          <ChevronRight size={18} />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                        </TableCell>
+                        <TableCell className="px-0 py-4">{requestItem.type}</TableCell>
+                        <TableCell className="px-0 py-4">{requestItem.period}</TableCell>
+                        <TableCell className="px-0 py-4">
+                          <StatusBadge status={statusMeta.status} label={statusMeta.label} showDot />
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>
           </Card>
 
           <Card
-            title="Nuevos Postulantes"
-            actions={
-              <div className="flex items-center gap-2">
-                <Button type="button" variant="secondary" size="sm" className="h-8 w-8 p-0" aria-label="Postulante anterior">
-                  <ChevronLeft size={16} />
-                </Button>
-                <Button type="button" size="sm" className="h-8 w-8 p-0" aria-label="Siguiente postulante">
-                  <ChevronRight size={16} />
-                </Button>
-              </div>
-            }
+            title="Reclutamiento"
+            subtitle="Vista previa operativa del módulo de vacantes y candidatos."
+            actions={<StatusBadge status="info" label="Próximamente" showDot />}
             className="rounded-[20px]"
           >
-            <div className="flex items-center gap-4 py-1">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-100 font-bold text-status-info">
-                JD
-              </div>
-
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-bold">Jensen Duane</p>
-                <p className="text-xs text-ui-text-secondary">
-                  Postuló para <span className="font-semibold text-ui-text-main">Diseñador Gráfico Senior</span>
-                </p>
-              </div>
-
-              <span className="mr-2 text-[0.6875rem] font-bold text-ui-text-secondary opacity-70">Hace 2h</span>
-
-              <Button type="button" variant="icon" aria-label="Ver postulante" className="h-9 w-9 p-0">
-                <Search size={16} />
-              </Button>
+            <div className="space-y-2 text-sm text-ui-text-secondary">
+              <p>
+                Nuevos candidatos hoy:
+                {' '}
+                <span className="font-semibold text-ui-dark-navy">4</span>
+              </p>
+              <p>
+                Vacantes con prioridad alta:
+                {' '}
+                <span className="font-semibold text-ui-dark-navy">8</span>
+              </p>
+              <p className="text-xs">
+                El flujo completo de reclutamiento se habilitará al cerrar la fase correspondiente del MVP.
+              </p>
             </div>
           </Card>
         </section>
 
         <section className="flex flex-col gap-6">
-          <Card
-            title="Clima Laboral"
-            actions={
-              <Button type="button" variant="ghost" size="sm">
-                Detalles
-              </Button>
-            }
-            className="rounded-[20px]"
-          >
+          <Card title="Clima laboral" className="rounded-[20px]">
             <div className="flex justify-center py-5">
               <div className="relative h-40 w-40">
                 <svg viewBox="0 0 36 36" className="block h-full w-full">
@@ -328,15 +282,7 @@ const Dashboard = () => {
             </ul>
           </Card>
 
-          <Card
-            title="Próximos Eventos"
-            actions={
-              <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" aria-label="Opciones de eventos">
-                <MoreVertical size={16} />
-              </Button>
-            }
-            className="rounded-[20px]"
-          >
+          <Card title="Próximos eventos" className="rounded-[20px]">
             <div className="flex items-center justify-between rounded-xl border-l-4 border-brand-primary bg-sky-100 p-4">
               <div>
                 <p className="text-sm font-bold text-ui-dark-navy">¡Cumpleaños de Shane Wiggins!</p>

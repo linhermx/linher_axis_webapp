@@ -123,9 +123,9 @@ function App() {
           <Route
             path="/documents"
             element={
-              <ProtectedRoute requiredPermissions={['view_employees']}>
+              <ProtectedRoute requiredPermissions={['view_documents', 'manage_documents', 'validate_documents']}>
                 <StatusView
-                  title="Módulo de documentos"
+                  title="Expediente digital"
                   description="Esta pantalla se habilitará al cerrar el flujo de Mis Documentos (autoservicio del empleado) y validaciones de RRHH."
                 />
               </ProtectedRoute>

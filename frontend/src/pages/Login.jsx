@@ -1,8 +1,8 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
 import { LogIn, Lock, Mail } from 'lucide-react';
-import { Button, Card, InputField } from '../components/ui';
+import { useAuth } from '../hooks/useAuth';
+import { Alert, Button, Card, InputField } from '../components/ui';
 
 const Login = () => {
   const { login, user } = useAuth();
@@ -18,8 +18,8 @@ const Login = () => {
     }
   }, [user, navigate]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     if (loading) return;
 
     setLoading(true);
@@ -28,8 +28,8 @@ const Login = () => {
     try {
       await login(email, password);
       navigate('/', { replace: true });
-    } catch (err) {
-      setError(err.response?.data?.message || 'Ocurrió un error al iniciar sesión');
+    } catch (requestError) {
+      setError(requestError.response?.data?.message || 'Ocurrió un error al iniciar sesión');
     } finally {
       setLoading(false);
     }
@@ -54,7 +54,7 @@ const Login = () => {
             label="Correo electrónico"
             placeholder="correo@empresa.com"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(event) => setEmail(event.target.value)}
             required
             leftIcon={<Mail size={18} />}
           />
@@ -66,30 +66,24 @@ const Login = () => {
             label="Contraseña"
             placeholder="Tu contraseña"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(event) => setPassword(event.target.value)}
             required
             leftIcon={<Lock size={18} />}
           />
 
-          {error && (
-            <div
-              role="alert"
-              className="rounded-md border border-status-error bg-red-50 px-3 py-3 text-center text-sm text-status-error"
-            >
+          {error ? (
+            <Alert variant="error" title="No se pudo iniciar sesión">
               {error}
-            </div>
-          )}
+            </Alert>
+          ) : null}
 
           <Button type="submit" size="lg" className="mt-2 w-full" disabled={loading}>
             {loading ? 'Cargando...' : 'Iniciar sesión'}
           </Button>
 
-          <a
-            href="#"
-            className="block pt-2 text-center text-sm font-semibold text-brand-primary hover:underline"
-          >
-            ¿Olvidaste tu contraseña?
-          </a>
+          <p className="pt-2 text-center text-sm text-ui-text-secondary">
+            Si olvidaste tu contraseña, solicita apoyo a RRHH o a Sistemas.
+          </p>
         </form>
       </Card>
     </div>

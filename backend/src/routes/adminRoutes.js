@@ -3,6 +3,7 @@ import { getAuditLogs, getRoles, getPermissions } from '../controllers/adminCont
 import {
     getMicrosipHealth,
     getMicrosipEmployeesSnapshot,
+    reconcileMicrosipLinks,
     getMicrosipSyncLogs,
     triggerMicrosipSync,
 } from '../controllers/microsipController.js';
@@ -25,5 +26,6 @@ router.get('/microsip/health', checkPermission('view_audit_logs'), getMicrosipHe
 router.get('/microsip/employees', checkPermission('view_audit_logs'), getMicrosipEmployeesSnapshot);
 router.get('/microsip/sync-logs', checkPermission('view_audit_logs'), getMicrosipSyncLogs);
 router.post('/microsip/sync', checkPermission(['sync_microsip', 'view_audit_logs']), triggerMicrosipSync);
+router.post('/microsip/reconcile-links', checkPermission(['sync_microsip', 'view_audit_logs']), reconcileMicrosipLinks);
 
 export default router;
