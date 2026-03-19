@@ -22,6 +22,7 @@ const Sidebar = () => {
     avatar: (user?.name?.charAt(0) || 'A').toUpperCase(),
   };
   const canViewEmployees = hasAnyPermission(user, ['view_employees']);
+  const canViewAdmin = hasAnyPermission(user, ['view_audit_logs']);
 
   return (
     <aside className="sidebar">
@@ -58,10 +59,12 @@ const Sidebar = () => {
           <span>Reportes</span>
         </NavLink>
 
-        <NavLink to="/settings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <Settings size={20} />
-          <span>Configuración</span>
-        </NavLink>
+        {canViewAdmin ? (
+          <NavLink to="/admin" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+            <Settings size={20} />
+            <span>Administración</span>
+          </NavLink>
+        ) : null}
       </nav>
 
       <div className="sidebar-footer">

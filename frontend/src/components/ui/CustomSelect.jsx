@@ -41,7 +41,7 @@ const CustomSelect = ({
       {label ? (
         <label
           htmlFor={selectId}
-          className={cn('form-label', srOnlyLabel && 'sr-only')}
+          className={cn(srOnlyLabel ? 'sr-only' : 'form-label')}
         >
           {label}
           {required ? <span className="ml-1 text-status-error">*</span> : null}

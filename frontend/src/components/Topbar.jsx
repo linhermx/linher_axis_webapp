@@ -14,6 +14,7 @@ const Topbar = () => {
     if (path.startsWith('/calendar')) return 'Calendario';
     if (path.startsWith('/recruitment')) return 'Reclutamiento';
     if (path.startsWith('/reports')) return 'Reportes';
+    if (path.startsWith('/admin')) return 'Administración';
     if (path.startsWith('/settings')) return 'Configuración';
     return 'Panel de Control';
   };
@@ -27,7 +28,7 @@ const Topbar = () => {
       </div>
 
       <div className="flex items-center gap-3">
-        <form role="search" className="w-full max-w-[360px]" onSubmit={(e) => e.preventDefault()}>
+        <form role="search" className="h-[42px] w-full max-w-[360px]" onSubmit={(e) => e.preventDefault()}>
           <InputField
             id="topbar-search"
             name="topbar_search"
@@ -38,7 +39,7 @@ const Topbar = () => {
             placeholder="Buscar empleados, cargos..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            containerClassName="space-y-0"
+            containerClassName="!space-y-0 h-full"
             inputClassName="bg-ui-background focus:bg-ui-surface"
             leftIcon={<Search size={17} />}
           />
@@ -47,7 +48,7 @@ const Topbar = () => {
         <Button
           variant="icon"
           aria-label="Ver notificaciones"
-          className="relative !h-[42px] !w-[42px] rounded-md border border-ui-light-slate bg-ui-surface text-ui-text-secondary shadow-sm hover:bg-ui-surface hover:text-ui-dark-navy focus-visible:ring-brand-primary"
+          className="relative rounded-md"
         >
           <Bell size={18} />
           <span

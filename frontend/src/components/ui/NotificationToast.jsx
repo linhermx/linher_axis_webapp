@@ -6,22 +6,22 @@ import Button from './Button';
 const VARIANT_MAP = {
   info: {
     Icon: Info,
-    className: 'border-status-info/35 bg-status-info/10 text-status-info',
+    className: 'border-status-info/35 bg-ui-surface text-status-info',
     role: 'status',
   },
   success: {
     Icon: CheckCircle2,
-    className: 'border-status-success/35 bg-status-success/10 text-status-success',
+    className: 'border-status-success/35 bg-ui-surface text-status-success',
     role: 'status',
   },
   warning: {
     Icon: TriangleAlert,
-    className: 'border-status-warning/35 bg-status-warning/10 text-status-warning',
+    className: 'border-status-warning/35 bg-ui-surface text-status-warning',
     role: 'alert',
   },
   error: {
     Icon: AlertCircle,
-    className: 'border-status-error/35 bg-status-error/10 text-status-error',
+    className: 'border-status-error/35 bg-ui-surface text-status-error',
     role: 'alert',
   },
 };
@@ -34,6 +34,7 @@ const NotificationToast = ({
   duration = 4500,
   onClose,
   className,
+  containerClassName,
 }) => {
   const config = VARIANT_MAP[variant] || VARIANT_MAP.info;
   const { Icon } = config;
@@ -48,11 +49,16 @@ const NotificationToast = ({
   if (!open) return null;
 
   return (
-    <div className="pointer-events-none fixed right-4 top-4 z-[130]">
+    <div
+      className={cn(
+        'pointer-events-none fixed right-4 top-4 z-[130]',
+        containerClassName
+      )}
+    >
       <div
         role={config.role}
         className={cn(
-          'pointer-events-auto flex min-w-[280px] max-w-[420px] items-start gap-3 rounded-lg border px-4 py-3 shadow-md',
+          'pointer-events-auto relative isolate flex min-w-[240px] max-w-[360px] items-start gap-3 rounded-lg border bg-ui-surface px-4 py-3 shadow-lg',
           config.className,
           className
         )}

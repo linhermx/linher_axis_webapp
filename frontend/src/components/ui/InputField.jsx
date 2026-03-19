@@ -28,8 +28,7 @@ const InputField = ({
         <label
           htmlFor={fieldId}
           className={cn(
-            'form-label',
-            srOnlyLabel && 'sr-only',
+            srOnlyLabel ? 'sr-only' : 'form-label',
             labelClassName
           )}
         >

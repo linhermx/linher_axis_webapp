@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard';
 import EmployeeDirectory from './pages/EmployeeDirectory';
 import CreateEmployee from './pages/CreateEmployee';
 import OrganizationStructure from './pages/OrganizationStructure';
+import MicrosipAdmin from './pages/MicrosipAdmin';
 
 const ProtectedRoute = ({ children, requiredPermissions = [] }) => {
   const { user, loading } = useAuth();
@@ -73,6 +74,42 @@ function App() {
           />
 
           <Route
+            path="/calendar"
+            element={
+              <ProtectedRoute requiredPermissions={['view_calendar']}>
+                <StatusView
+                  title="Calendario organizacional"
+                  description="Esta pantalla se habilitará cuando se complete el módulo de eventos, aniversarios y ausencias aprobadas."
+                />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/recruitment"
+            element={
+              <ProtectedRoute requiredPermissions={['manage_recruitment']}>
+                <StatusView
+                  title="Módulo de reclutamiento"
+                  description="Esta pantalla se habilitará cuando se active el flujo de vacantes, candidatos y etapas del pipeline."
+                />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/reports"
+            element={
+              <ProtectedRoute requiredPermissions={['view_dashboard']}>
+                <StatusView
+                  title="Módulo de reportes"
+                  description="Esta pantalla se habilitará cuando se complete la analítica operativa y los reportes exportables."
+                />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
             path="/documents"
             element={
               <ProtectedRoute requiredPermissions={['view_employees']}>
@@ -88,10 +125,16 @@ function App() {
             path="/admin"
             element={
               <ProtectedRoute requiredPermissions={['view_audit_logs']}>
-                <StatusView
-                  title="Módulo de administración"
-                  description="Esta pantalla se habilitará cuando se complete la bitácora avanzada, la gestión de roles y las herramientas de plataforma."
-                />
+                <MicrosipAdmin />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute requiredPermissions={['view_audit_logs']}>
+                <Navigate to="/admin" replace />
               </ProtectedRoute>
             }
           />
