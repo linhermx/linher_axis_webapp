@@ -1,9 +1,12 @@
 import {
-  Users,
+  Briefcase,
+  CalendarDays,
+  Clock3,
+  Sparkles,
   TrendingDown,
   TrendingUp,
-  Briefcase,
   Umbrella,
+  Users,
 } from 'lucide-react';
 import {
   Card,
@@ -23,10 +26,50 @@ const STATUS_META = {
   declined: { status: 'declined', label: 'Rechazado' },
 };
 
+const CALENDAR_WEEK_DAYS = ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'];
+
+const CALENDAR_DAYS = [
+  { key: 'prev-29', day: 29, muted: true },
+  { key: 'prev-30', day: 30, muted: true },
+  { key: 'current-1', day: 1 },
+  { key: 'current-2', day: 2 },
+  { key: 'current-3', day: 3, markers: 1 },
+  { key: 'current-4', day: 4 },
+  { key: 'current-5', day: 5 },
+  { key: 'current-6', day: 6 },
+  { key: 'current-7', day: 7 },
+  { key: 'current-8', day: 8, markers: 2 },
+  { key: 'current-9', day: 9 },
+  { key: 'current-10', day: 10 },
+  { key: 'current-11', day: 11 },
+  { key: 'current-12', day: 12 },
+  { key: 'current-13', day: 13 },
+  { key: 'current-14', day: 14, markers: 2 },
+  { key: 'current-15', day: 15 },
+  { key: 'current-16', day: 16 },
+  { key: 'current-17', day: 17 },
+  { key: 'current-18', day: 18 },
+  { key: 'current-19', day: 19 },
+  { key: 'current-20', day: 20 },
+  { key: 'current-21', day: 21 },
+  { key: 'current-22', day: 22, current: true },
+  { key: 'current-23', day: 23, markers: 1 },
+  { key: 'current-24', day: 24 },
+  { key: 'current-25', day: 25, accent: true },
+  { key: 'current-26', day: 26 },
+  { key: 'current-27', day: 27, markers: 2 },
+  { key: 'current-28', day: 28 },
+  { key: 'current-29', day: 29, markers: 3 },
+  { key: 'current-30', day: 30 },
+  { key: 'current-31', day: 31 },
+  { key: 'next-1', day: 1, muted: true },
+  { key: 'next-2', day: 2, muted: true },
+];
+
 const Dashboard = () => {
   const stats = [
     {
-      label: 'Total Empleados',
+      label: 'Total empleados',
       value: '1,248',
       icon: Users,
       iconTone: 'bg-sky-100 text-sky-600',
@@ -35,7 +78,7 @@ const Dashboard = () => {
       trendTone: 'text-status-success',
     },
     {
-      label: 'De Licencia Hoy',
+      label: 'De licencia hoy',
       value: '12',
       icon: Umbrella,
       iconTone: 'bg-amber-100 text-amber-600',
@@ -44,12 +87,26 @@ const Dashboard = () => {
       trendTone: 'text-status-success',
     },
     {
-      label: 'Vacantes Abiertas',
+      label: 'Vacantes abiertas',
       value: '45',
       icon: Briefcase,
       iconTone: 'bg-violet-100 text-violet-600',
       subtitle: '8 roles urgentes',
     },
+  ];
+
+  const leaveStats = [
+    { label: 'En vacaciones', total: 5, avatars: ['TJ', 'SN', 'MC'] },
+    { label: 'Home office', total: 12, avatars: ['AL', 'NW', 'BH'] },
+    { label: 'Licencia medica', total: 9, avatars: ['JR', 'DM', 'EC'] },
+    { label: 'Dia libre', total: 4, avatars: ['LP', 'AR'] },
+  ];
+
+  const highlightedCandidates = [
+    { id: 1, initials: 'NS', name: 'Niclas Salmon', role: 'Full Stack Developer' },
+    { id: 2, initials: 'JP', name: 'Jensen Padmore', role: 'Senior Graphic Designer' },
+    { id: 3, initials: 'MF', name: 'Melania Filkins', role: 'Copywriter' },
+    { id: 4, initials: 'TR', name: 'Tommie Russel', role: 'Full Stack Developer' },
   ];
 
   const requests = [
@@ -59,6 +116,7 @@ const Dashboard = () => {
       role: 'Especialista de Ventas',
       type: 'Vacaciones',
       period: '01 Ene - 10 Ene',
+      dateLabel: 'Hoy',
       statusKey: 'pending',
       avatar: 'T',
     },
@@ -66,125 +124,250 @@ const Dashboard = () => {
       id: 2,
       name: 'Salamon Newman',
       role: 'Senior Dev',
-      type: 'Licencia médica',
-      period: 'Hoy',
+      type: 'Home office',
+      period: '31 Dic',
+      dateLabel: 'Hoy',
       statusKey: 'approved',
       avatar: 'S',
     },
     {
       id: 3,
       name: 'Monica Cutcher',
-      role: 'Diseñadora',
-      type: 'Día libre',
+      role: 'Disenadora',
+      type: 'Dia libre',
       period: '29 Dic - 31 Dic',
+      dateLabel: 'Hoy',
       statusKey: 'declined',
       avatar: 'M',
     },
+    {
+      id: 4,
+      name: 'Juliette Lagache',
+      role: 'Project Manager',
+      type: 'Home office',
+      period: '04 Ene',
+      dateLabel: 'Ayer',
+      statusKey: 'approved',
+      avatar: 'J',
+    },
   ];
 
-  const moodSegments = [
+  const events = [
     {
-      key: 'happy',
-      label: 'Feliz (53%)',
-      dashArray: '53, 100',
-      dashOffset: '0',
-      strokeClass: 'text-brand-action',
-      dotClass: 'bg-brand-action',
+      id: 'evt-1',
+      title: 'Cumpleanos de Shane Wiggins',
+      time: 'Todo el dia',
+      badge: 'Feriado',
+      tone: 'text-status-warning',
+      badgeTone: 'bg-status-warning/15 text-status-warning',
     },
     {
-      key: 'neutral',
-      label: 'Neutral (23%)',
-      dashArray: '23, 100',
-      dashOffset: '-53',
-      strokeClass: 'text-status-success',
-      dotClass: 'bg-status-success',
+      id: 'evt-2',
+      title: 'Mikky Brongs - Reunion RH',
+      time: '12:00 pm - 12:30 pm',
+      badge: 'Reunion',
+      tone: 'text-brand-primary',
+      badgeTone: 'bg-brand-primary/10 text-brand-primary',
     },
     {
-      key: 'excited',
-      label: 'Entusiasmado (14%)',
-      dashArray: '14, 100',
-      dashOffset: '-76',
-      strokeClass: 'text-status-warning',
-      dotClass: 'bg-status-warning',
+      id: 'evt-3',
+      title: 'Weekly meeting',
+      time: '2:00 pm - 3:00 pm',
+      badge: 'Staff',
+      tone: 'text-status-info',
+      badgeTone: 'bg-status-info/10 text-status-info',
+    },
+  ];
+
+  const timelineDays = ['21 Dic', '22 Dic', '23 Dic', '24 Dic', '25 Dic'];
+
+  const timelineRows = [
+    {
+      id: 'row-1',
+      member: 'Elvina Moore',
+      role: 'Junior Full Stack Developer',
+      blocks: [{ day: 0, label: 'Meeting with RH', tone: 'bg-amber-100 text-amber-700' }],
     },
     {
-      key: 'upset',
-      label: 'Molesto (6%)',
-      dashArray: '6, 100',
-      dashOffset: '-90',
-      strokeClass: 'text-violet-500',
-      dotClass: 'bg-violet-500',
+      id: 'row-2',
+      member: 'Winona Wheelock',
+      role: 'Project Manager',
+      blocks: [{ day: 3, label: 'Meeting with RH', tone: 'bg-orange-100 text-orange-700' }],
+    },
+    {
+      id: 'row-3',
+      member: 'Mikky Brongs',
+      role: 'Junior PHP Developer',
+      blocks: [{ day: 1, label: 'End of probation', tone: 'bg-indigo-100 text-indigo-700' }],
+    },
+    {
+      id: 'row-4',
+      member: 'Adelaide Colton',
+      role: 'Senior Business Analyst',
+      blocks: [{ day: 2, label: 'Meeting with RH', tone: 'bg-amber-100 text-amber-700' }],
+    },
+    {
+      id: 'row-5',
+      member: 'Nathan Brasher',
+      role: 'Middle Graphic Designer',
+      blocks: [{ day: 4, label: 'End of probation', tone: 'bg-blue-100 text-blue-700' }],
     },
   ];
 
   return (
-    <div className="flex flex-col gap-6">
-      <section className="grid grid-cols-1 gap-6 xl:grid-cols-4">
-        {stats.map((stat) => {
-          const Icon = stat.icon;
-          const TrendIcon = stat.trendIcon;
+    <div className="grid gap-6 2xl:grid-cols-[330px_minmax(0,1fr)]">
+      <aside className="space-y-6">
+        <Card title="Diciembre" subtitle="Calendario operativo" className="rounded-2xl p-5">
+          <div className="grid grid-cols-7 gap-2">
+            {CALENDAR_WEEK_DAYS.map((weekDay) => (
+              <span
+                key={weekDay}
+                className="text-center text-[0.6875rem] font-semibold uppercase tracking-[0.05em] text-ui-text-secondary"
+              >
+                {weekDay}
+              </span>
+            ))}
 
-          return (
-            <Card key={stat.label} className="rounded-[20px] p-6">
-              <div className="mb-2 flex items-center justify-between gap-3">
-                <div className={`flex h-9 w-9 items-center justify-center rounded-[10px] ${stat.iconTone}`}>
-                  <Icon size={20} />
-                </div>
-                <p className="text-2xl font-extrabold text-ui-dark-navy">{stat.value}</p>
-              </div>
-
-              <p className="text-sm font-semibold text-ui-text-secondary">{stat.label}</p>
-
-              <div className="mt-3 flex items-center gap-2">
-                {TrendIcon ? (
-                  <span className={`inline-flex items-center text-xs font-bold ${stat.trendTone}`}>
-                    <TrendIcon size={16} />
+            {CALENDAR_DAYS.map((dayItem) => (
+              <div key={dayItem.key} className="flex flex-col items-center gap-1 rounded-lg py-1.5">
+                <span
+                  className={[
+                    'inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-semibold',
+                    dayItem.current ? 'bg-brand-primary text-white shadow-sm' : '',
+                    dayItem.accent ? 'text-status-error' : '',
+                    dayItem.muted ? 'text-ui-text-secondary/60' : 'text-ui-dark-navy',
+                    !dayItem.current && !dayItem.muted ? 'hover:bg-ui-surface-subtle' : '',
+                  ].join(' ')}
+                >
+                  {dayItem.day}
+                </span>
+                {dayItem.markers ? (
+                  <span className="inline-flex gap-0.5" aria-hidden="true">
+                    {Array.from({ length: dayItem.markers }).map((_, markerIndex) => (
+                      <span key={`${dayItem.key}-marker-${markerIndex}`} className="h-1 w-1 rounded-full bg-brand-primary/65" />
+                    ))}
                   </span>
-                ) : null}
-                {stat.trendText ? (
-                  <span className="text-xs text-ui-text-secondary opacity-80">{stat.trendText}</span>
-                ) : null}
-                {stat.subtitle ? (
-                  <span className="text-xs text-ui-text-secondary opacity-80">{stat.subtitle}</span>
-                ) : null}
+                ) : (
+                  <span className="h-1" aria-hidden="true" />
+                )}
               </div>
-            </Card>
-          );
-        })}
-
-        <Card className="rounded-[20px] border-none bg-[var(--gradient-primary)] p-6 text-white">
-          <div className="flex h-full flex-col justify-between gap-4">
-            <div>
-              <p className="text-[0.6875rem] font-bold uppercase tracking-[0.05em] opacity-80">Expediente digital</p>
-              <h3 className="my-1 text-lg font-bold">Validaciones pendientes</h3>
-              <p className="text-xs opacity-80">15 documentos en revisión por RRHH</p>
-            </div>
-            <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.04em] opacity-80">
-              Indicador operativo
-            </p>
+            ))}
           </div>
         </Card>
-      </section>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[2fr_1fr]">
-        <section className="flex flex-col gap-6">
-          <Card title="Solicitudes" className="rounded-[20px]">
+        <Card
+          title="Eventos"
+          subtitle="Agenda de hoy"
+          className="rounded-2xl p-5"
+          bodyClassName="space-y-3"
+        >
+          {events.map((eventItem) => (
+            <article key={eventItem.id} className="rounded-xl border border-ui-light-slate bg-ui-surface-subtle p-3.5">
+              <p className="text-sm font-semibold text-ui-dark-navy">{eventItem.title}</p>
+              <p className="mt-1 text-xs text-ui-text-secondary">{eventItem.time}</p>
+              <span className={`mt-2 inline-flex rounded-full px-2.5 py-1 text-[0.6875rem] font-semibold ${eventItem.badgeTone}`}>
+                {eventItem.badge}
+              </span>
+            </article>
+          ))}
+        </Card>
+      </aside>
+
+      <section className="space-y-6">
+        <div className="grid gap-6 xl:grid-cols-3">
+          {stats.map((stat) => {
+            const Icon = stat.icon;
+            const TrendIcon = stat.trendIcon;
+
+            return (
+              <Card key={stat.label} className="rounded-2xl p-5">
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${stat.iconTone}`}>
+                    <Icon size={20} />
+                  </div>
+                  <p className="text-2xl font-extrabold text-ui-dark-navy">{stat.value}</p>
+                </div>
+
+                <p className="text-sm font-semibold text-ui-text-secondary">{stat.label}</p>
+
+                <div className="mt-3 flex items-center gap-2">
+                  {TrendIcon ? (
+                    <span className={`inline-flex items-center text-xs font-bold ${stat.trendTone}`}>
+                      <TrendIcon size={16} />
+                    </span>
+                  ) : (
+                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-brand-primary/10 text-brand-primary">
+                      <Sparkles size={14} />
+                    </span>
+                  )}
+                  {stat.trendText ? <span className="text-xs text-ui-text-secondary opacity-90">{stat.trendText}</span> : null}
+                  {stat.subtitle ? <span className="text-xs text-ui-text-secondary opacity-90">{stat.subtitle}</span> : null}
+                </div>
+              </Card>
+            );
+          })}
+        </div>
+
+        <div className="grid gap-6 xl:grid-cols-[1.1fr_1.9fr]">
+          <Card title="Job applications" subtitle="Candidatos destacados" className="rounded-2xl p-5">
+            <ul className="space-y-3.5">
+              {highlightedCandidates.map((candidate) => (
+                <li key={candidate.id} className="flex items-center gap-3">
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-ui-surface-subtle text-xs font-bold text-brand-primary">
+                    {candidate.initials}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-ui-dark-navy">{candidate.name}</p>
+                    <p className="truncate text-xs text-ui-text-secondary">Applied for {candidate.role}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </Card>
+
+          <Card title="Ausencias hoy" subtitle="Distribucion diaria" className="rounded-2xl p-5">
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              {leaveStats.map((item) => (
+                <article key={item.label} className="rounded-xl border border-ui-light-slate bg-ui-surface-subtle p-3.5">
+                  <p className="text-[0.75rem] font-semibold uppercase tracking-[0.04em] text-ui-text-secondary">{item.label}</p>
+                  <p className="mt-1 text-2xl font-extrabold text-ui-dark-navy">{item.total}</p>
+                  <div className="mt-2 flex -space-x-2">
+                    {item.avatars.map((avatarCode) => (
+                      <span
+                        key={`${item.label}-${avatarCode}`}
+                        className="inline-flex h-7 w-7 items-center justify-center rounded-full border-2 border-ui-surface bg-brand-primary/10 text-[0.625rem] font-bold text-brand-primary"
+                      >
+                        {avatarCode}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </Card>
+        </div>
+
+        <div className="grid gap-6 xl:grid-cols-[2fr_1fr]">
+          <Card title="Solicitudes" subtitle="Ultimos movimientos" className="rounded-2xl p-5">
             <div className="overflow-x-auto">
-              <Table className="min-w-[680px]">
+              <Table className="min-w-[760px]">
                 <TableCaption>Solicitudes recientes de empleados</TableCaption>
                 <TableHead>
                   <TableRow className="hover:bg-transparent">
-                    <TableHeaderCell scope="col" className="bg-transparent px-0 py-3 text-ui-text-secondary opacity-70">
-                      Empleado
+                    <TableHeaderCell scope="col" className="bg-transparent px-0 py-3 text-ui-text-secondary opacity-80">
+                      Nombre
                     </TableHeaderCell>
-                    <TableHeaderCell scope="col" className="bg-transparent px-0 py-3 text-ui-text-secondary opacity-70">
-                      Tipo
-                    </TableHeaderCell>
-                    <TableHeaderCell scope="col" className="bg-transparent px-0 py-3 text-ui-text-secondary opacity-70">
+                    <TableHeaderCell scope="col" className="bg-transparent px-0 py-3 text-ui-text-secondary opacity-80">
                       Periodo
                     </TableHeaderCell>
-                    <TableHeaderCell scope="col" className="bg-transparent px-0 py-3 text-ui-text-secondary opacity-70">
+                    <TableHeaderCell scope="col" className="bg-transparent px-0 py-3 text-ui-text-secondary opacity-80">
+                      Tipo
+                    </TableHeaderCell>
+                    <TableHeaderCell scope="col" className="bg-transparent px-0 py-3 text-ui-text-secondary opacity-80">
                       Estado
+                    </TableHeaderCell>
+                    <TableHeaderCell scope="col" className="bg-transparent px-0 py-3 text-ui-text-secondary opacity-80">
+                      Fecha
                     </TableHeaderCell>
                   </TableRow>
                 </TableHead>
@@ -196,20 +379,21 @@ const Dashboard = () => {
                       <TableRow key={requestItem.id} className="hover:bg-ui-background">
                         <TableCell className="px-0 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ui-background text-xs font-bold text-brand-primary">
+                            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-ui-surface-subtle text-xs font-bold text-brand-primary">
                               {requestItem.avatar}
-                            </div>
+                            </span>
                             <div>
-                              <p className="font-bold text-ui-dark-navy">{requestItem.name}</p>
+                              <p className="font-semibold text-ui-dark-navy">{requestItem.name}</p>
                               <p className="text-[0.6875rem] text-ui-text-secondary">{requestItem.role}</p>
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="px-0 py-4">{requestItem.type}</TableCell>
                         <TableCell className="px-0 py-4">{requestItem.period}</TableCell>
+                        <TableCell className="px-0 py-4">{requestItem.type}</TableCell>
                         <TableCell className="px-0 py-4">
                           <StatusBadge status={statusMeta.status} label={statusMeta.label} showDot />
                         </TableCell>
+                        <TableCell className="px-0 py-4">{requestItem.dateLabel}</TableCell>
                       </TableRow>
                     );
                   })}
@@ -218,81 +402,111 @@ const Dashboard = () => {
             </div>
           </Card>
 
-          <Card
-            title="Reclutamiento"
-            subtitle="Vista previa operativa del módulo de vacantes y candidatos."
-            actions={<StatusBadge status="info" label="Próximamente" showDot />}
-            className="rounded-[20px]"
-          >
-            <div className="space-y-2 text-sm text-ui-text-secondary">
-              <p>
-                Nuevos candidatos hoy:
-                {' '}
-                <span className="font-semibold text-ui-dark-navy">4</span>
-              </p>
-              <p>
-                Vacantes con prioridad alta:
-                {' '}
-                <span className="font-semibold text-ui-dark-navy">8</span>
-              </p>
-              <p className="text-xs">
-                El flujo completo de reclutamiento se habilitará al cerrar la fase correspondiente del MVP.
-              </p>
-            </div>
-          </Card>
-        </section>
-
-        <section className="flex flex-col gap-6">
-          <Card title="Clima laboral" className="rounded-[20px]">
-            <div className="flex justify-center py-5">
-              <div className="relative h-40 w-40">
+          <Card title="Staff mood" subtitle="Pulso del equipo" className="rounded-2xl p-5">
+            <div className="flex justify-center py-2">
+              <div className="relative h-44 w-44">
                 <svg viewBox="0 0 36 36" className="block h-full w-full">
                   <path
                     className="fill-none stroke-current text-ui-light-slate"
                     strokeWidth="3.8"
                     d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                   />
-                  {moodSegments.map((segment) => (
-                    <path
-                      key={segment.key}
-                      className={`fill-none stroke-current ${segment.strokeClass}`}
-                      strokeWidth="3.8"
-                      strokeLinecap="round"
-                      strokeDasharray={segment.dashArray}
-                      strokeDashoffset={segment.dashOffset}
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                    />
-                  ))}
+                  <path
+                    className="fill-none stroke-current text-brand-action"
+                    strokeWidth="3.8"
+                    strokeLinecap="round"
+                    strokeDasharray="53, 100"
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                  <path
+                    className="fill-none stroke-current text-status-success"
+                    strokeWidth="3.8"
+                    strokeLinecap="round"
+                    strokeDasharray="23, 100"
+                    strokeDashoffset="-53"
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                  <path
+                    className="fill-none stroke-current text-status-warning"
+                    strokeWidth="3.8"
+                    strokeLinecap="round"
+                    strokeDasharray="14, 100"
+                    strokeDashoffset="-76"
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                  <path
+                    className="fill-none stroke-current text-violet-500"
+                    strokeWidth="3.8"
+                    strokeLinecap="round"
+                    strokeDasharray="6, 100"
+                    strokeDashoffset="-90"
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
                 </svg>
 
                 <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-xl font-extrabold text-ui-dark-navy">Bueno</span>
-                  <span className="text-xs font-medium text-ui-text-secondary">Promedio</span>
+                  <span className="text-xl font-extrabold text-ui-dark-navy">58%</span>
+                  <span className="text-xs font-semibold text-ui-text-secondary">Neutral</span>
                 </div>
               </div>
             </div>
 
-            <ul className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {moodSegments.map((segment) => (
-                <li key={segment.key} className="flex items-center gap-2 text-xs font-semibold text-ui-slate">
-                  <span className={`h-2 w-2 rounded-full ${segment.dotClass}`} />
-                  <span>{segment.label}</span>
-                </li>
-              ))}
+            <ul className="mt-4 space-y-2 text-xs font-semibold text-ui-text-secondary">
+              <li className="flex items-center justify-between rounded-lg bg-ui-surface-subtle px-3 py-2">
+                <span className="inline-flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-brand-action" /> Neutral</span>
+                <span>58%</span>
+              </li>
+              <li className="flex items-center justify-between rounded-lg bg-ui-surface-subtle px-3 py-2">
+                <span className="inline-flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-status-success" /> Happy</span>
+                <span>23%</span>
+              </li>
+              <li className="flex items-center justify-between rounded-lg bg-ui-surface-subtle px-3 py-2">
+                <span className="inline-flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-status-warning" /> Excited</span>
+                <span>14%</span>
+              </li>
             </ul>
           </Card>
+        </div>
 
-          <Card title="Próximos eventos" className="rounded-[20px]">
-            <div className="flex items-center justify-between rounded-xl border-l-4 border-brand-primary bg-sky-100 p-4">
-              <div>
-                <p className="text-sm font-bold text-ui-dark-navy">¡Cumpleaños de Shane Wiggins!</p>
-                <p className="mt-0.5 text-[0.6875rem] font-semibold text-brand-primary">Feriado</p>
+        <Card
+          title="Probation timeline"
+          subtitle="Seguimiento semanal de reuniones y fin de periodo"
+          className="rounded-2xl p-5"
+        >
+          <div className="overflow-x-auto">
+            <div className="min-w-[860px] space-y-3">
+              <div className="grid grid-cols-[240px_repeat(5,minmax(0,1fr))] gap-2 px-2 text-[0.6875rem] font-semibold uppercase tracking-[0.04em] text-ui-text-secondary">
+                <span>Colaborador</span>
+                {timelineDays.map((dayLabel) => (
+                  <span key={dayLabel} className="text-center">{dayLabel}</span>
+                ))}
               </div>
-              <p className="text-[0.6875rem] font-bold text-ui-text-secondary opacity-70">Todo el día</p>
+
+              {timelineRows.map((row) => (
+                <div key={row.id} className="grid grid-cols-[240px_repeat(5,minmax(0,1fr))] gap-2 rounded-xl border border-ui-light-slate bg-ui-surface-subtle px-2 py-2.5">
+                  <div className="px-2">
+                    <p className="text-sm font-semibold text-ui-dark-navy">{row.member}</p>
+                    <p className="text-xs text-ui-text-secondary">{row.role}</p>
+                  </div>
+
+                  {timelineDays.map((_, dayIndex) => {
+                    const block = row.blocks.find((item) => item.day === dayIndex);
+                    return (
+                      <div key={`${row.id}-day-${dayIndex}`} className="flex min-h-[38px] items-center justify-center rounded-lg border border-dashed border-ui-light-slate bg-ui-surface">
+                        {block ? (
+                          <span className={`rounded-md px-2 py-1 text-[0.6875rem] font-semibold ${block.tone}`}>
+                            {block.label}
+                          </span>
+                        ) : null}
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
             </div>
-          </Card>
-        </section>
-      </div>
+          </div>
+        </Card>
+      </section>
     </div>
   );
 };

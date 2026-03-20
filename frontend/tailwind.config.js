@@ -4,7 +4,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['Manrope', 'Segoe UI', 'sans-serif'],
       },
       colors: {
         brand: {
@@ -16,6 +16,7 @@ module.exports = {
         ui: {
           background: 'var(--background)',
           surface: 'var(--surface)',
+          'surface-subtle': 'var(--surface-subtle)',
           'dark-navy': 'var(--dark-navy)',
           slate: 'var(--slate)',
           'light-slate': 'var(--light-slate)',

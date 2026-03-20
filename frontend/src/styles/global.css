@@ -1,4 +1,4 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -26,7 +26,7 @@
   --overlay-backdrop: rgba(15, 23, 42, 0.5);
 
   /* Text */
-  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-family: 'Manrope', 'Segoe UI', sans-serif;
   --text-main: #1f2937;
   --text-secondary: #6b7280;
   --text-primary: var(--text-main);
@@ -45,14 +45,14 @@
 
   /* Spacing & Radius */
   --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 1rem;
   --spacing-unit: 8px;
 
   /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.08);
-  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
-  --shadow-lg: 0 14px 32px rgba(15, 23, 42, 0.12);
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 10px 28px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 18px 40px rgba(15, 23, 42, 0.1);
 
   /* Layout */
   --sidebar-width: 260px;
@@ -124,7 +124,7 @@
     border: 1px solid var(--light-slate);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
-    padding: 24px;
+    padding: 1.5rem;
   }
 
   .btn {

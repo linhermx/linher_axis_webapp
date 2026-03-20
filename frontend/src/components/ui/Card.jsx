@@ -14,13 +14,13 @@ const Card = ({
   return (
     <Component
       className={cn(
-        'rounded-lg border border-ui-light-slate bg-ui-surface p-6 shadow-sm',
+        'rounded-[1.05rem] border border-ui-light-slate bg-ui-surface p-6 shadow-sm',
         className
       )}
       {...props}
     >
       {(title || subtitle || actions) && (
-        <header className={cn('mb-5 flex items-start justify-between gap-4', headerClassName)}>
+        <header className={cn('mb-5 flex items-start justify-between gap-4 border-b border-ui-light-slate/70 pb-4', headerClassName)}>
           <div className="min-w-0">
             {title && <h2 className="text-lg font-extrabold text-ui-dark-navy">{title}</h2>}
             {subtitle && <p className="mt-1 text-sm text-ui-text-secondary">{subtitle}</p>}

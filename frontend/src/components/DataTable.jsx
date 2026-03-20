@@ -69,26 +69,28 @@ const DataTable = ({ columns, data, onRowClick }) => {
   return (
     <section className="mt-6">
       <TableShell>
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-ui-light-slate p-6">
-          <div className="w-full max-w-[340px]">
-            <InputField
-              id="employee-table-search"
-              name="employee_table_search"
-              label="Buscar en la tabla"
-              srOnlyLabel
-              type="search"
-              placeholder="Buscar..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              containerClassName="space-y-0"
-              leftIcon={<Search size={18} />}
-            />
-          </div>
+        <div className="border-b border-ui-light-slate p-6">
+          <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-ui-light-slate bg-ui-surface-subtle px-4 py-3">
+            <div className="w-full max-w-[340px]">
+              <InputField
+                id="employee-table-search"
+                name="employee_table_search"
+                label="Buscar en la tabla"
+                srOnlyLabel
+                type="search"
+                placeholder="Buscar..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                containerClassName="space-y-0"
+                leftIcon={<Search size={18} />}
+              />
+            </div>
 
-          <Button type="button" variant="secondary">
-            <Filter size={18} />
-            <span>Filtros</span>
-          </Button>
+            <Button type="button" variant="secondary">
+              <Filter size={18} />
+              <span>Filtros</span>
+            </Button>
+          </div>
         </div>
 
         <div className="overflow-x-auto">

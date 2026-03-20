@@ -4,11 +4,11 @@ const VARIANT_CLASSES = {
   primary:
     'bg-brand-primary text-white shadow-sm hover:bg-brand-primary-hover focus-visible:ring-brand-primary',
   secondary:
-    'border border-ui-light-slate bg-ui-surface text-ui-dark-navy shadow-sm hover:bg-ui-background focus-visible:ring-brand-primary',
-  ghost: 'text-ui-slate hover:bg-ui-background focus-visible:ring-brand-primary',
+    'border border-ui-light-slate bg-ui-surface-subtle text-ui-dark-navy shadow-sm hover:bg-ui-surface focus-visible:ring-brand-primary',
+  ghost: 'text-ui-slate hover:bg-ui-surface-subtle focus-visible:ring-brand-primary',
   danger:
     'bg-status-error text-white shadow-sm hover:opacity-90 focus-visible:ring-status-error',
-  icon: 'h-[42px] w-[42px] border border-ui-light-slate bg-ui-surface p-0 text-ui-dark-navy shadow-sm hover:bg-ui-background',
+  icon: 'h-[42px] w-[42px] border border-ui-light-slate bg-ui-surface-subtle p-0 text-ui-dark-navy shadow-sm hover:bg-ui-surface',
 };
 
 const SIZE_CLASSES = {
