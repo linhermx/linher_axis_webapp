@@ -201,16 +201,30 @@ CREATE TABLE employee_documents (
     file_name VARCHAR(255) NOT NULL,
     file_path TEXT NOT NULL,
     expiry_date DATE NULL,
+    status_code VARCHAR(20) NOT NULL DEFAULT 'pending',
+    review_note TEXT NULL,
+    reviewed_by_user_id BIGINT UNSIGNED NULL,
+    reviewed_at TIMESTAMP NULL,
+    uploaded_by_user_id BIGINT UNSIGNED NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_employee_documents_employee
         FOREIGN KEY (employee_id) REFERENCES employees(id)
         ON DELETE CASCADE,
     CONSTRAINT fk_employee_documents_category
-        FOREIGN KEY (category_id) REFERENCES document_categories(id)
+        FOREIGN KEY (category_id) REFERENCES document_categories(id),
+    CONSTRAINT fk_employee_documents_reviewed_by
+        FOREIGN KEY (reviewed_by_user_id) REFERENCES users(id)
+        ON DELETE SET NULL,
+    CONSTRAINT fk_employee_documents_uploaded_by
+        FOREIGN KEY (uploaded_by_user_id) REFERENCES users(id)
+        ON DELETE SET NULL
 );
 
 CREATE INDEX idx_employee_documents_employee_id ON employee_documents(employee_id);
 CREATE INDEX idx_employee_documents_category_id ON employee_documents(category_id);
+CREATE INDEX idx_employee_documents_status_code ON employee_documents(status_code);
+CREATE INDEX idx_employee_documents_expiry_date ON employee_documents(expiry_date);
 
 -- Audit
 CREATE TABLE audit_logs (

@@ -381,6 +381,35 @@ BEGIN
     END IF;
 END $$
 
+DROP PROCEDURE IF EXISTS ensure_foreign_key $$
+CREATE PROCEDURE ensure_foreign_key(
+    IN p_table VARCHAR(128),
+    IN p_constraint VARCHAR(128),
+    IN p_sql TEXT
+)
+BEGIN
+    DECLARE CONTINUE HANDLER FOR 1826 BEGIN END;
+
+    IF EXISTS (
+        SELECT 1
+        FROM information_schema.tables
+        WHERE table_schema = DATABASE()
+          AND table_name = p_table
+    ) AND NOT EXISTS (
+        SELECT 1
+        FROM information_schema.table_constraints
+        WHERE table_schema = DATABASE()
+          AND table_name = p_table
+          AND constraint_name = p_constraint
+          AND constraint_type = 'FOREIGN KEY'
+    ) THEN
+        SET @sql = p_sql;
+        PREPARE stmt FROM @sql;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;
+    END IF;
+END $$
+
 DELIMITER ;
 
 CALL ensure_column('ext_microsip_employee', 'employee_number', 'VARCHAR(50) NULL');
@@ -395,6 +424,13 @@ CALL ensure_column('ext_microsip_employee_social_security', 'employee_contributi
 CALL ensure_column('ext_microsip_employee_social_security', 'employer_contribution_amount', 'DECIMAL(15,2) NULL');
 CALL ensure_column('ext_microsip_employee_social_security', 'total_contribution_amount', 'DECIMAL(15,2) NULL');
 CALL ensure_column('ext_microsip_employee_social_security', 'source_payload', 'JSON NULL');
+
+CALL ensure_column('employee_documents', 'status_code', 'VARCHAR(20) NOT NULL DEFAULT ''pending''');
+CALL ensure_column('employee_documents', 'review_note', 'TEXT NULL');
+CALL ensure_column('employee_documents', 'reviewed_by_user_id', 'BIGINT UNSIGNED NULL');
+CALL ensure_column('employee_documents', 'reviewed_at', 'TIMESTAMP NULL');
+CALL ensure_column('employee_documents', 'uploaded_by_user_id', 'BIGINT UNSIGNED NULL');
+CALL ensure_column('employee_documents', 'updated_at', 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
 
 CALL ensure_index(
   'ext_microsip_state',
@@ -436,9 +472,35 @@ CALL ensure_index(
   'idx_ext_microsip_payroll_payment_employee_date',
   'CREATE INDEX `idx_ext_microsip_payroll_payment_employee_date` ON `ext_microsip_payroll_payment` (`employee_ext_id`, `payment_date`)'
 );
+CALL ensure_index(
+  'employee_documents',
+  'idx_employee_documents_status_code',
+  'CREATE INDEX `idx_employee_documents_status_code` ON `employee_documents` (`status_code`)'
+);
+CALL ensure_index(
+  'employee_documents',
+  'idx_employee_documents_expiry_date',
+  'CREATE INDEX `idx_employee_documents_expiry_date` ON `employee_documents` (`expiry_date`)'
+);
+
+CALL ensure_foreign_key(
+  'employee_documents',
+  'fk_employee_documents_reviewed_by',
+  'ALTER TABLE `employee_documents` ADD CONSTRAINT `fk_employee_documents_reviewed_by` FOREIGN KEY (`reviewed_by_user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL'
+);
+CALL ensure_foreign_key(
+  'employee_documents',
+  'fk_employee_documents_uploaded_by',
+  'ALTER TABLE `employee_documents` ADD CONSTRAINT `fk_employee_documents_uploaded_by` FOREIGN KEY (`uploaded_by_user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL'
+);
+
+UPDATE employee_documents
+SET status_code = 'pending'
+WHERE status_code IS NULL OR TRIM(status_code) = '';
 
 DROP PROCEDURE IF EXISTS ensure_column;
 DROP PROCEDURE IF EXISTS ensure_index;
+DROP PROCEDURE IF EXISTS ensure_foreign_key;
 
 INSERT IGNORE INTO ref_sync_status (code, label) VALUES
 ('pending', 'Pendiente'),
@@ -451,6 +513,18 @@ INSERT IGNORE INTO permissions (code, description) VALUES
 ('view_profile_employee', 'Puede consultar el perfil 360 de colaboradores'),
 ('view_payroll_self', 'Puede consultar su historial de pagos'),
 ('view_payroll_employee', 'Puede consultar historial de pagos de colaboradores');
+
+INSERT IGNORE INTO document_categories (name) VALUES
+('Acta de nacimiento'),
+('CURP'),
+('RFC'),
+('NSS/IMSS'),
+('INE'),
+('Comprobante de domicilio'),
+('Contrato firmado'),
+('Constancia de situacion fiscal'),
+('Certificados medicos'),
+('Otros');
 
 INSERT IGNORE INTO role_permissions (role_id, permission_id)
 SELECT r.id, p.id

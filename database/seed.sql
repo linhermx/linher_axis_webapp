@@ -18,6 +18,18 @@ INSERT IGNORE INTO organizational_unit_types (code, name, description, sort_orde
 ('department', 'Departamento', 'Area funcional de la empresa', 2),
 ('team', 'Equipo', 'Equipo operativo dentro de un departamento', 3);
 
+INSERT IGNORE INTO document_categories (name) VALUES
+('Acta de nacimiento'),
+('CURP'),
+('RFC'),
+('NSS/IMSS'),
+('INE'),
+('Comprobante de domicilio'),
+('Contrato firmado'),
+('Constancia de situacion fiscal'),
+('Certificados medicos'),
+('Otros');
+
 INSERT IGNORE INTO permissions (code, description) VALUES
 ('view_dashboard', 'Puede consultar el dashboard'),
 ('view_employees', 'Puede consultar el directorio de empleados'),
