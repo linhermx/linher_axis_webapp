@@ -102,7 +102,6 @@ const EmployeeProfile360 = () => {
     <section className="profile360-page">
       <PageHeader
         title="Perfil de Colaborador"
-        subtitle="Vista 360 de información administrativa sincronizada desde Microsip."
         actions={(
           <Button type="button" variant="secondary" onClick={() => navigate('/employees')}>
             <ArrowLeft size={16} />

@@ -1,19 +1,26 @@
 .microsip-admin {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
+  height: calc(100vh - var(--header-height-current, var(--header-height)) - 42px);
+  height: calc(100dvh - var(--header-height-current, var(--header-height)) - 42px);
+  min-height: 0;
 }
 
 .microsip-admin__grid {
   display: grid;
-  gap: 16px;
+  gap: 12px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .microsip-admin__stack {
   display: flex;
+  flex: 1;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
+  min-height: 0;
+  overflow: auto;
+  padding-right: 4px;
 }
 
 .microsip-admin__meta-list {
@@ -42,9 +49,9 @@
 }
 
 .microsip-admin__metrics .microsip-admin__meta-item {
-  background: color-mix(in srgb, var(--surface-muted) 82%, var(--surface));
-  border: 1px solid color-mix(in srgb, var(--border) 84%, transparent);
+  background: color-mix(in srgb, var(--surface-muted) 70%, var(--surface));
   border-radius: 10px;
+  box-shadow: var(--shadow-xs);
   padding: 8px 10px;
 }
 
@@ -59,6 +66,22 @@
   color: var(--text-secondary);
   font-size: 0.78rem;
   margin-top: 10px;
+}
+
+.microsip-admin__logs-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.microsip-admin__logs-card .ui-table-shell {
+  flex: 1;
+  min-height: 0;
+}
+
+.microsip-admin__logs-card .ui-table-scroll {
+  height: 100%;
+  max-height: none;
 }
 
 .microsip-admin__loading {
@@ -81,6 +104,10 @@
 }
 
 @media (max-width: 1180px) {
+  .microsip-admin {
+    height: auto;
+  }
+
   .microsip-admin__grid {
     grid-template-columns: 1fr;
   }

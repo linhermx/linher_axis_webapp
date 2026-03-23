@@ -11,38 +11,28 @@
 }
 
 .ui-card {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--surface) 96%, transparent) 0%,
-      color-mix(in srgb, var(--surface) 90%, var(--surface-muted)) 100%
-    );
-  border: 1px solid color-mix(in srgb, var(--border) 88%, transparent);
+  background: var(--surface);
+  border: 0;
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 8px 18px rgba(15, 23, 42, 0.08);
   position: relative;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .ui-card::after {
-  background: linear-gradient(90deg, color-mix(in srgb, var(--primary) 22%, transparent), transparent);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  content: '';
-  height: 2px;
-  left: 0;
-  opacity: 0.65;
-  position: absolute;
-  top: 0;
-  width: 100%;
+  display: none;
 }
 
 .ui-card:hover {
-  border-color: color-mix(in srgb, var(--primary) 24%, var(--border));
-  box-shadow: var(--shadow-md);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 8px 18px rgba(15, 23, 42, 0.08);
 }
 
 .ui-card--padded {
-  padding: 20px;
+  padding: 16px;
 }
 
 .ui-card__header {
@@ -51,21 +41,21 @@
   display: flex;
   gap: 12px;
   justify-content: space-between;
-  margin-bottom: 14px;
-  padding-bottom: 12px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
 }
 
 .ui-card__title {
   color: var(--text-main);
-  font-size: 1rem;
+  font-size: 0.98rem;
   font-weight: 800;
   letter-spacing: -0.01em;
 }
 
 .ui-card__subtitle {
   color: var(--text-secondary);
-  font-size: 0.8rem;
-  margin-top: 4px;
+  font-size: 0.76rem;
+  margin-top: 3px;
 }
 
 .ui-button {
@@ -112,7 +102,6 @@
 
 .ui-button--primary {
   background: var(--gradient-primary);
-  box-shadow: 0 10px 22px color-mix(in srgb, var(--primary) 24%, transparent);
   color: #fff;
 }
 
@@ -274,9 +263,9 @@
 .ui-page-header {
   align-items: flex-start;
   display: flex;
-  gap: 16px;
+  gap: 14px;
   justify-content: space-between;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .ui-page-header__main {
@@ -285,16 +274,16 @@
 
 .ui-page-header__title {
   color: var(--text-main);
-  font-size: 1.76rem;
+  font-size: 1.52rem;
   font-weight: 800;
   letter-spacing: -0.02em;
-  line-height: 1.08;
+  line-height: 1.1;
 }
 
 .ui-page-header__subtitle {
   color: var(--text-secondary);
-  font-size: 0.9rem;
-  margin-top: 8px;
+  font-size: 0.84rem;
+  margin-top: 6px;
   max-width: 72ch;
 }
 
@@ -452,10 +441,12 @@
 
 .ui-status-view {
   align-items: center;
-  background: var(--surface);
-  border: 1px dashed color-mix(in srgb, var(--border-strong) 82%, transparent);
+  background: color-mix(in srgb, var(--surface) 92%, var(--surface-muted));
+  border: 0;
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-xs);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 8px 18px rgba(15, 23, 42, 0.08);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -494,10 +485,10 @@
 }
 
 .ui-table-shell {
-  background: var(--surface);
-  border: 1px solid color-mix(in srgb, var(--border) 84%, transparent);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-xs);
+  background: color-mix(in srgb, var(--surface-muted) 52%, var(--surface));
+  border: 0;
+  border-radius: var(--radius-md);
+  box-shadow: none;
   overflow: hidden;
 }
 
@@ -514,13 +505,13 @@
 }
 
 .ui-table thead th {
-  background: color-mix(in srgb, var(--surface-muted) 90%, var(--surface));
-  border-bottom: 1px solid color-mix(in srgb, var(--border) 86%, transparent);
-  color: var(--text-secondary);
-  font-size: 0.7rem;
+  background: color-mix(in srgb, var(--surface-muted) 86%, var(--surface));
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 74%, transparent);
+  color: color-mix(in srgb, var(--text-secondary) 90%, var(--text));
+  font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.04em;
-  padding: 12px 14px;
+  padding: 11px 12px;
   position: sticky;
   text-align: left;
   text-transform: uppercase;
@@ -529,10 +520,10 @@
 }
 
 .ui-table td {
-  border-bottom: 1px solid color-mix(in srgb, var(--border) 72%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 54%, transparent);
   color: var(--text-main);
-  font-size: 0.82rem;
-  padding: 12px 14px;
+  font-size: 0.8rem;
+  padding: 10px 12px;
   vertical-align: middle;
 }
 

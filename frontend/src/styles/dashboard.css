@@ -2,10 +2,10 @@
   display: grid;
   gap: 20px;
   grid-template-columns: minmax(294px, 316px) minmax(0, 1fr);
-  height: calc(100vh - var(--header-height) - 42px);
-  height: calc(100dvh - var(--header-height) - 42px);
-  max-height: calc(100vh - var(--header-height) - 42px);
-  max-height: calc(100dvh - var(--header-height) - 42px);
+  height: calc(100vh - var(--header-height-current, var(--header-height)) - 42px);
+  height: calc(100dvh - var(--header-height-current, var(--header-height)) - 42px);
+  max-height: calc(100vh - var(--header-height-current, var(--header-height)) - 42px);
+  max-height: calc(100dvh - var(--header-height-current, var(--header-height)) - 42px);
   font-size: 0.93rem;
 }
 
@@ -140,7 +140,7 @@
 }
 
 .axis-calendar-day.is-current {
-  background: linear-gradient(160deg, #2e74ef 0%, #2a5fdf 100%);
+  background: var(--gradient-primary);
   box-shadow: 0 10px 16px color-mix(in srgb, var(--primary) 24%, transparent);
   color: #fff;
 }
@@ -150,7 +150,7 @@
 }
 
 .axis-calendar-day.is-accent {
-  color: #e84864;
+  color: color-mix(in srgb, var(--danger) 92%, black);
 }
 
 .axis-calendar-markers {
@@ -418,7 +418,7 @@
 }
 
 .axis-avatar--stacked {
-  background: #d9e2f5;
+  background: color-mix(in srgb, var(--primary) 16%, var(--surface));
   border: 2px solid var(--surface);
   border-radius: 999px;
   color: var(--primary);
@@ -473,7 +473,7 @@
 
 .axis-table thead th {
   background: color-mix(in srgb, var(--surface-muted) 86%, var(--surface));
-  color: #5f708c;
+  color: color-mix(in srgb, var(--text-secondary) 90%, var(--text));
   font-size: 0.69rem;
   font-weight: 800;
   letter-spacing: 0.03em;
@@ -599,7 +599,7 @@
 
 .axis-timeline-grid--header {
   border-bottom: 1px solid color-mix(in srgb, var(--border-strong) 44%, transparent);
-  color: #4f6484;
+  color: color-mix(in srgb, var(--text-secondary) 90%, var(--text));
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.04em;
@@ -745,19 +745,19 @@
 }
 
 .axis-dot--neutral {
-  background: #37a9e8;
+  background: var(--mood-neutral);
 }
 
 .axis-dot--happy {
-  background: #1ea55a;
+  background: var(--mood-happy);
 }
 
 .axis-dot--excited {
-  background: #d5961d;
+  background: var(--mood-excited);
 }
 
 .axis-dot--other {
-  background: #596ae5;
+  background: var(--mood-other);
 }
 
 .axis-sr-only {

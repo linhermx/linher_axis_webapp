@@ -4,7 +4,7 @@ import '../styles/employee-module-nav.css';
 
 const EmployeeModuleNav = () => {
   return (
-    <nav aria-label="Vistas del modulo de empleados" className="employee-module-nav">
+    <nav aria-label="Vistas del módulo de empleados" className="employee-module-nav">
       <NavLink
         to="/employees"
         end

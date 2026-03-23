@@ -202,7 +202,6 @@ const MicrosipAdmin = () => {
     <section className="microsip-admin">
       <PageHeader
         title="Integración Microsip"
-        subtitle="Monitorea conectividad, ejecuta sincronizaciones y revisa bitácora de ejecuciones."
         actions={(
           <Button
             type="button"
@@ -231,7 +230,6 @@ const MicrosipAdmin = () => {
           <div className="microsip-admin__grid">
             <Card
               title="Estado del conector"
-              subtitle="Disponibilidad del bridge y configuración activa."
               actions={<StatusBadge status={connectorBadge.status} label={connectorBadge.label} showDot />}
             >
               <div className="microsip-admin__meta-list">
@@ -241,7 +239,7 @@ const MicrosipAdmin = () => {
               </div>
             </Card>
 
-            <Card title="Política de retención" subtitle="Controla limpieza automática del historial de pagos sincronizados.">
+            <Card title="Política de retención">
               <div className="microsip-admin__meta-list">
                 <p>Meses de retención: <b>{retentionPolicy?.payroll_retention_months ?? 24}</b></p>
                 <p>Limpieza automática: <b>{retentionPolicy?.payroll_prune_enabled ? 'Activa' : 'Deshabilitada'}</b></p>
@@ -251,7 +249,6 @@ const MicrosipAdmin = () => {
 
             <Card
               title="Última sincronización"
-              subtitle="Resumen de la ejecución más reciente."
               actions={latestSyncLog ? (
                 <StatusBadge
                   status={toBadgeStatus(latestSyncLog.status_code)}
@@ -275,7 +272,7 @@ const MicrosipAdmin = () => {
             </Card>
           </div>
 
-          <Card title="Ejecución manual" subtitle="Lanza sincronizaciones puntuales bajo demanda.">
+          <Card title="Ejecución manual">
             <div className="microsip-admin__form-grid">
               <CustomSelect
                 id="microsip-sync-type"
@@ -292,7 +289,7 @@ const MicrosipAdmin = () => {
             </div>
           </Card>
 
-          <Card title="Conciliación AXIS y Microsip" subtitle="Vincula empleados internos con snapshots externos por employee_number.">
+          <Card title="Conciliación AXIS y Microsip">
             <div className="microsip-admin__form-grid">
               <CustomSelect
                 id="microsip-reconcile-mode"
@@ -317,7 +314,7 @@ const MicrosipAdmin = () => {
             </p>
           </Card>
 
-          <Card title="Bitácora de sincronización" subtitle="Historial reciente de ejecuciones.">
+          <Card title="Bitácora de sincronización" className="microsip-admin__logs-card">
             {syncLogs.length === 0 ? (
               <StatusView
                 title="Sin bitácora disponible"

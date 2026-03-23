@@ -14,14 +14,14 @@ const STATUS_META = {
   declined: { label: 'Rechazado', variant: 'declined' },
 };
 
-const CALENDAR_WEEK_DAYS = ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'];
+const CALENDAR_WEEK_DAYS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
 const CALENDAR_EVENT_TEMPLATES = [
   {
     id: 'evt-1',
     day: 5,
-    title: 'Cumpleanos de Shane Wiggins',
-    time: 'Todo el dia',
+    title: 'Cumpleaños de Shane Wiggins',
+    time: 'Todo el día',
     badge: 'Feriado',
     badgeTone: 'warning',
     featured: true,
@@ -29,9 +29,9 @@ const CALENDAR_EVENT_TEMPLATES = [
   {
     id: 'evt-2',
     day: 12,
-    title: 'Mikky Brongs - Reunion RH',
+    title: 'Mikky Brongs - Reunión RH',
     time: '12:00 pm - 12:30 pm',
-    badge: 'Reunion',
+    badge: 'Reunión',
     badgeTone: 'primary',
   },
   {
@@ -45,7 +45,7 @@ const CALENDAR_EVENT_TEMPLATES = [
   {
     id: 'evt-4',
     day: 22,
-    title: 'Reunion semanal',
+    title: 'Reunión semanal',
     time: '2:00 pm - 3:00 pm',
     badge: 'Staff',
     badgeTone: 'primary',
@@ -53,7 +53,7 @@ const CALENDAR_EVENT_TEMPLATES = [
   {
     id: 'evt-5',
     day: 29,
-    title: 'Revision de onboarding',
+    title: 'Revisión de onboarding',
     time: '3:30 pm - 4:00 pm',
     badge: 'Operacion',
     badgeTone: 'info',
@@ -153,26 +153,26 @@ const Dashboard = () => {
   };
 
   const moodData = [
-    { key: 'neutral', label: 'Neutral', value: 58, color: '#37a9e8' },
-    { key: 'happy', label: 'Feliz', value: 23, color: '#1ea55a' },
-    { key: 'excited', label: 'Entusiasmado', value: 14, color: '#d5961d' },
-    { key: 'other', label: 'Otros', value: 5, color: '#596ae5' },
+    { key: 'neutral', label: 'Neutral', value: 58, color: 'var(--mood-neutral)' },
+    { key: 'happy', label: 'Feliz', value: 23, color: 'var(--mood-happy)' },
+    { key: 'excited', label: 'Entusiasmado', value: 14, color: 'var(--mood-excited)' },
+    { key: 'other', label: 'Otros', value: 5, color: 'var(--mood-other)' },
   ];
 
   const absences = [
     { label: 'En vacaciones', total: 5, avatars: ['TJ', 'SN', 'MC'] },
     { label: 'Trabajo remoto', total: 12, avatars: ['AL', 'NW', 'BH'] },
-    { label: 'Licencia medica', total: 9, avatars: ['JR', 'DM', 'EC'] },
-    { label: 'Dia libre', total: 4, avatars: ['LP', 'AR'] },
+    { label: 'Licencia médica', total: 9, avatars: ['JR', 'DM', 'EC'] },
+    { label: 'Día libre', total: 4, avatars: ['LP', 'AR'] },
     { label: 'Viaje de negocio', total: 2, avatars: ['VH'] },
   ];
 
   const highlightedCandidates = [
     { id: 1, initials: 'NS', name: 'Niclas Salmon', role: 'Desarrollador Full Stack' },
-    { id: 2, initials: 'JP', name: 'Jensen Padmore', role: 'Disenador grafico senior' },
+    { id: 2, initials: 'JP', name: 'Jensen Padmore', role: 'Diseñador gráfico senior' },
     { id: 3, initials: 'MF', name: 'Melania Filkins', role: 'Redactora' },
     { id: 4, initials: 'TR', name: 'Tommie Russel', role: 'Desarrollador Full Stack' },
-    { id: 5, initials: 'AM', name: 'Anabelle Marshall', role: 'Disenadora senior' },
+    { id: 5, initials: 'AM', name: 'Anabelle Marshall', role: 'Diseñadora senior' },
     { id: 6, initials: 'AH', name: 'Allison Hooker', role: 'Desarrolladora Frontend' },
   ];
 
@@ -186,7 +186,7 @@ const Dashboard = () => {
       dateLabel: 'Hoy',
       statusKey: 'pending',
       avatar: 'T',
-      notes: 'Vacacion anual',
+      notes: 'Vacación anual',
     },
     {
       id: 2,
@@ -197,13 +197,13 @@ const Dashboard = () => {
       dateLabel: 'Hoy',
       statusKey: 'approved',
       avatar: 'S',
-      notes: 'Home office aprobado',
+      notes: 'Trabajo remoto aprobado',
     },
     {
       id: 3,
       name: 'Monica Cutcher',
-      role: 'Disenadora',
-      type: 'Dia libre',
+      role: 'Diseñadora',
+      type: 'Día libre',
       period: '29 Dic - 31 Dic',
       dateLabel: 'Hoy',
       statusKey: 'declined',
@@ -213,7 +213,7 @@ const Dashboard = () => {
     {
       id: 4,
       name: 'Juliette Lagache',
-      role: 'Lider de proyectos',
+      role: 'Líder de proyectos',
       type: 'Trabajo remoto',
       period: '04 Ene',
       dateLabel: 'Ayer',
@@ -230,31 +230,31 @@ const Dashboard = () => {
       id: 'row-1',
       member: 'Elvina Moore',
       role: 'Desarrolladora Full Stack junior',
-      blocks: [{ day: 0, label: 'Reunion con RH', tone: 'warning' }],
+      blocks: [{ day: 0, label: 'Reunión con RH', tone: 'warning' }],
     },
     {
       id: 'row-2',
       member: 'Winona Wheelock',
-      role: 'Lider de proyectos',
-      blocks: [{ day: 3, label: 'Reunion con RH', tone: 'warning' }],
+      role: 'Líder de proyectos',
+      blocks: [{ day: 3, label: 'Reunión con RH', tone: 'warning' }],
     },
     {
       id: 'row-3',
       member: 'Mikky Brongs',
       role: 'Desarrollador PHP junior',
-      blocks: [{ day: 1, label: 'Fin de periodo de prueba', tone: 'violet' }],
+      blocks: [{ day: 1, label: 'Fin de período de prueba', tone: 'violet' }],
     },
     {
       id: 'row-4',
       member: 'Adelaide Colton',
       role: 'Analista de negocio senior',
-      blocks: [{ day: 2, label: 'Reunion con RH', tone: 'warning' }],
+      blocks: [{ day: 2, label: 'Reunión con RH', tone: 'warning' }],
     },
     {
       id: 'row-5',
       member: 'Nathan Brasher',
-      role: 'Disenador grafico semi senior',
-      blocks: [{ day: 4, label: 'Fin de periodo de prueba', tone: 'info' }],
+      role: 'Diseñador gráfico semi senior',
+      blocks: [{ day: 4, label: 'Fin de período de prueba', tone: 'info' }],
     },
   ];
 
@@ -349,7 +349,7 @@ const Dashboard = () => {
                 </article>
               ))
             ) : (
-              <p className="axis-event-empty">No hay eventos para este dia.</p>
+              <p className="axis-event-empty">No hay eventos para este día.</p>
             )}
           </div>
         </section>
@@ -454,7 +454,7 @@ const Dashboard = () => {
         <div className="axis-bottom-grid">
           <section className="axis-panel axis-panel--timeline">
             <header className="axis-panel__header">
-              <h2 className="axis-panel__title">Timeline de periodos de prueba</h2>
+              <h2 className="axis-panel__title">Timeline de períodos de prueba</h2>
               <button type="button" className="axis-panel__link">Ver todo</button>
             </header>
 
@@ -465,7 +465,7 @@ const Dashboard = () => {
               ))}
             </div>
 
-            <div className="axis-timeline-scroll" role="region" aria-label="Timeline de periodo de prueba">
+            <div className="axis-timeline-scroll" role="region" aria-label="Timeline de período de prueba">
               {timelineRows.map((row) => (
                 <div key={row.id} className="axis-timeline-grid axis-timeline-row">
                   <div className="axis-timeline-member">

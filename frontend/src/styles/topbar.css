@@ -1,9 +1,6 @@
 .topbar {
   backdrop-filter: blur(14px);
-  background:
-    linear-gradient(180deg,
-      color-mix(in srgb, var(--background) 96%, transparent) 0%,
-      color-mix(in srgb, var(--background) 86%, transparent) 100%);
+  background: #ffffff;
   border-bottom: 1px solid color-mix(in srgb, var(--border) 88%, transparent);
   position: sticky;
   top: 0;
@@ -11,12 +8,17 @@
 }
 
 .topbar__content {
+  display: flex;
+  flex-direction: column;
+  padding: 0 24px;
+}
+
+.topbar__main-row {
   align-items: center;
   display: flex;
   gap: 16px;
   height: var(--header-height);
   justify-content: space-between;
-  padding: 0 24px;
 }
 
 .topbar__meta {
@@ -60,10 +62,32 @@
   width: 8px;
 }
 
+.topbar__tabs-row {
+  display: flex;
+  min-height: 42px;
+}
+
+.topbar__tabs-row .employee-module-nav {
+  border-bottom: 0;
+  gap: 20px;
+  min-height: 42px;
+  min-width: max-content;
+  overflow: visible;
+  padding: 0;
+}
+
+.topbar__tabs-row .employee-module-nav__item {
+  padding-bottom: 11px;
+}
+
 @media (max-width: 1120px) {
   .topbar__content {
+    padding: 0 12px;
+  }
+
+  .topbar__main-row {
     height: auto;
-    padding: 12px;
+    padding: 12px 0;
   }
 
   .topbar__actions {
@@ -78,7 +102,7 @@
 }
 
 @media (max-width: 760px) {
-  .topbar__content {
+  .topbar__main-row {
     align-items: stretch;
     flex-direction: column;
     gap: 12px;
@@ -90,5 +114,9 @@
 
   .topbar__actions {
     flex-wrap: wrap;
+  }
+
+  .topbar__tabs-row {
+    overflow-x: auto;
   }
 }

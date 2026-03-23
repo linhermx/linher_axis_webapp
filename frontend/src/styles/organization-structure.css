@@ -1,20 +1,26 @@
 .organization-structure {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
+  height: calc(100vh - var(--header-height-current, var(--header-height)) - 42px);
+  height: calc(100dvh - var(--header-height-current, var(--header-height)) - 42px);
+  min-height: 0;
 }
 
 .organization-structure__grid {
   display: grid;
-  gap: 16px;
+  flex: 1;
+  gap: 20px;
   grid-template-columns: minmax(320px, 380px) minmax(0, 1fr);
+  min-height: 0;
 }
 
 .organization-structure__aside,
 .organization-structure__detail {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
+  min-height: 0;
 }
 
 .organization-structure__loading {
@@ -23,9 +29,9 @@
 }
 
 .organization-company-box {
-  background: var(--gradient-highlight);
-  border: 1px solid color-mix(in srgb, var(--primary) 24%, var(--border));
+  background: color-mix(in srgb, var(--surface-muted) 72%, var(--surface));
   border-radius: 10px;
+  box-shadow: var(--shadow-xs);
   padding: 12px;
 }
 
@@ -43,9 +49,10 @@
 
 .organization-unit-list {
   display: flex;
+  flex: 1;
   flex-direction: column;
-  gap: 8px;
-  max-height: 640px;
+  gap: 6px;
+  min-height: 0;
   overflow: auto;
   padding-right: 4px;
 }
@@ -56,15 +63,16 @@
 
 .organization-unit-button {
   align-items: center;
-  background: var(--surface);
-  border: 1px solid color-mix(in srgb, var(--border) 84%, transparent);
+  background: color-mix(in srgb, var(--surface-muted) 64%, var(--surface));
+  border: 0;
   border-radius: 10px;
   display: flex;
   gap: 10px;
   justify-content: space-between;
-  padding: 10px 12px;
+  min-height: 56px;
+  padding: 9px 10px;
   text-align: left;
-  transition: 0.2s ease;
+  transition: background-color 0.2s ease;
   width: 100%;
 }
 
@@ -74,8 +82,12 @@
 
 .organization-unit-button.is-selected {
   background: color-mix(in srgb, var(--primary) 8%, var(--surface));
-  border-color: color-mix(in srgb, var(--primary) 42%, transparent);
-  box-shadow: 0 12px 22px color-mix(in srgb, var(--primary) 16%, transparent);
+  box-shadow: var(--shadow-xs);
+}
+
+.organization-unit-button:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 22%, transparent);
+  outline: none;
 }
 
 .organization-unit-main {
@@ -135,7 +147,7 @@
 
 .organization-unit-count {
   align-items: center;
-  background: color-mix(in srgb, var(--surface-muted) 84%, var(--surface));
+  background: color-mix(in srgb, var(--surface-muted) 74%, var(--surface));
   border-radius: 999px;
   color: var(--text-secondary);
   display: inline-flex;
@@ -152,9 +164,9 @@
 }
 
 .organization-stat-card {
-  background: color-mix(in srgb, var(--surface-muted) 82%, var(--surface));
-  border: 1px solid color-mix(in srgb, var(--border) 84%, transparent);
+  background: color-mix(in srgb, var(--surface-muted) 70%, var(--surface));
   border-radius: 10px;
+  box-shadow: var(--shadow-xs);
   padding: 12px;
 }
 
@@ -181,15 +193,19 @@
 
 .organization-members-grid {
   display: grid;
-  gap: 10px;
+  gap: 8px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .organization-member-card {
-  background: color-mix(in srgb, var(--surface-muted) 76%, var(--surface));
-  border: 1px solid color-mix(in srgb, var(--border) 84%, transparent);
+  background: color-mix(in srgb, var(--surface-muted) 66%, var(--surface));
   border-radius: 10px;
+  transition: background-color 0.2s ease;
   padding: 12px;
+}
+
+.organization-member-card:hover {
+  background: var(--ui-list-hover-bg);
 }
 
 .organization-member-header {
@@ -247,6 +263,10 @@
 }
 
 @media (max-width: 1320px) {
+  .organization-structure {
+    height: auto;
+  }
+
   .organization-structure__grid {
     grid-template-columns: 1fr;
   }

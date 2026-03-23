@@ -89,7 +89,6 @@ const MyProfile360 = () => {
     <section className="profile360-page">
       <PageHeader
         title="Mi Perfil 360"
-        subtitle="Consulta tu información administrativa y de pagos sincronizada desde Microsip."
       />
 
       {loading ? (

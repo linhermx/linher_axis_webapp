@@ -12,7 +12,6 @@ const CreateEmployee = () => {
     <section className="create-employee">
       <PageHeader
         title={`Nuevo Empleado - Paso ${step} de 4`}
-        subtitle="Asistente de alta de personal."
         actions={
           <Button type="button" variant="secondary" onClick={() => navigate(-1)}>
             <ArrowLeft size={18} />
@@ -21,7 +20,7 @@ const CreateEmployee = () => {
         }
       />
 
-      <Card title="Formulario en construcción" subtitle="La estructura base ya está integrada con el sistema de diseño.">
+      <Card title="Formulario en construcción">
         <p className="create-employee__description">
           En la siguiente fase se integrarán secciones del formulario, validaciones y guardado real.
         </p>

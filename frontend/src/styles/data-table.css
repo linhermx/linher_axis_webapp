@@ -14,9 +14,9 @@
 
 .data-table__toolbar-wrap {
   align-items: center;
-  background: color-mix(in srgb, var(--surface-muted) 84%, var(--surface));
-  border: 1px solid color-mix(in srgb, var(--border) 84%, transparent);
+  background: color-mix(in srgb, var(--surface-muted) 72%, var(--surface));
   border-radius: 10px;
+  box-shadow: var(--shadow-xs);
   display: flex;
   flex-wrap: wrap;
   gap: 10px;

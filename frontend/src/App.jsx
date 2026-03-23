@@ -23,7 +23,7 @@ const ProtectedRoute = ({ children, requiredPermissions = [] }) => {
       <Layout>
         <StatusView
           title="Acceso restringido"
-          description="No cuentas con permisos para ver esta seccion."
+          description="No cuentas con permisos para ver esta sección."
         />
       </Layout>
     );
@@ -102,7 +102,7 @@ function App() {
               <ProtectedRoute requiredPermissions={['manage_recruitment']}>
                 <StatusView
                   title="Módulo de reclutamiento"
-                  description="Esta pantalla se habilitará cuando se active el flujo de vacantes, candidatos y etapas del pipeline."
+                  description="Esta pantalla se habilitará cuando se active el flujo de vacantes, candidatos y etapas del proceso."
                 />
               </ProtectedRoute>
             }

@@ -1,7 +1,6 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
 import { Building2, ChevronRight, UserCircle2, Users } from 'lucide-react';
-import EmployeeModuleNav from '../components/EmployeeModuleNav';
-import { Card, PageHeader, StatusBadge, StatusView } from '../components/ui';
+import { Card, StatusBadge, StatusView } from '../components/ui';
 import api from '../services/api';
 import '../styles/organization-structure.css';
 
@@ -101,13 +100,6 @@ const OrganizationStructure = () => {
 
   return (
     <section className="organization-structure">
-      <PageHeader
-        title="Estructura organizacional"
-        subtitle="Vista maestro-detalle para empresa, departamentos y equipos."
-      >
-        <EmployeeModuleNav />
-      </PageHeader>
-
       {structureLoading ? (
         <Card>
           <p className="organization-structure__loading">Cargando estructura organizacional...</p>
@@ -121,14 +113,14 @@ const OrganizationStructure = () => {
       {!structureLoading && !structureError ? (
         <div className="organization-structure__grid">
           <aside className="organization-structure__aside">
-            <Card title="Empresa" subtitle="Unidad raíz">
+            <Card title="Empresa">
               <div className="organization-company-box">
                 <p className="organization-company-box__name">LINHER</p>
                 <p className="organization-company-box__meta">8 departamentos activos</p>
               </div>
             </Card>
 
-            <Card title="Mapa organizacional" subtitle="Selecciona una unidad para ver detalle.">
+            <Card title="Mapa organizacional">
               {flatUnits.length === 0 ? (
                 <StatusView
                   title="Estructura no configurada"
@@ -190,7 +182,6 @@ const OrganizationStructure = () => {
               <>
                 <Card
                   title={selectedUnitDetails.unit.name}
-                  subtitle={selectedUnitDetails.unit.type_name}
                   actions={(
                     <StatusBadge
                       status={selectedUnitDetails.unit.is_active ? 'approved' : 'inactive'}
@@ -219,7 +210,7 @@ const OrganizationStructure = () => {
                   </div>
                 </Card>
 
-                <Card title="Integrantes" subtitle="Equipo activo asociado a la unidad">
+                <Card title="Integrantes">
                   {selectedUnitDetails.members?.length ? (
                     <div className="organization-members-grid">
                       {selectedUnitDetails.members.map((member) => (
@@ -246,7 +237,7 @@ const OrganizationStructure = () => {
                   )}
                 </Card>
 
-                <Card title="Relaciones" subtitle="Conexiones jerárquicas de esta unidad">
+                <Card title="Relaciones">
                   <div className="organization-stat-grid">
                     <article className="organization-stat-card">
                       <p className="organization-stat-card__label">Unidad padre</p>

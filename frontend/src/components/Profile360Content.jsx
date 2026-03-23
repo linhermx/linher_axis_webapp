@@ -80,14 +80,14 @@ const DataSection = ({ title, subtitle, fields = [], columns = 2 }) => {
 const PayrollTable = ({ payments = [], loading = false, error = '' }) => {
   if (loading) {
     return (
-      <Card title="Pagos recientes" subtitle="Resumen de pagos sincronizados desde Microsip.">
+      <Card title="Pagos recientes">
         <p className="profile360__table-note">Cargando pagos recientes...</p>
       </Card>
     );
   }
 
   return (
-    <Card title="Pagos recientes" subtitle="Historial de pagos de nómina en modo de solo consulta.">
+    <Card title="Pagos recientes">
       {error ? (
         <StatusView title="No se pudo cargar pagos" description={error} />
       ) : (
@@ -172,7 +172,6 @@ const Profile360Content = ({
       <Card
         className="profile360__summary"
         title={formatPlain(identity.full_name)}
-        subtitle="Resumen ejecutivo del colaborador"
       >
         <div className="profile360__summary-grid">
           <article className="profile360__summary-item">
@@ -211,7 +210,6 @@ const Profile360Content = ({
         <>
           <DataSection
             title="Datos personales"
-            subtitle="Información fiscal y social del colaborador."
             fields={[
               { key: 'birth_date', label: 'Fecha de nacimiento', value: formatDate(personal.birth_date) },
               { key: 'sex_code', label: 'Sexo', value: formatPlain(personal.sex_code) },
@@ -224,7 +222,6 @@ const Profile360Content = ({
 
           <DataSection
             title="Contacto y dirección"
-            subtitle="Canales de contacto y ubicación del domicilio."
             fields={[
               { key: 'email', label: 'Correo', value: formatPlain(contact.email) },
               { key: 'phone_primary', label: 'Teléfono principal', value: formatPlain(contact.phone_primary) },
@@ -239,7 +236,6 @@ const Profile360Content = ({
 
           <DataSection
             title="Familia y cuenta de pago"
-            subtitle="Referencias familiares y cuenta de dispersión."
             fields={[
               { key: 'father_name', label: 'Nombre del padre', value: formatPlain(family?.father_name), show: Boolean(family) },
               { key: 'mother_name', label: 'Nombre de la madre', value: formatPlain(family?.mother_name), show: Boolean(family) },
@@ -255,7 +251,6 @@ const Profile360Content = ({
         <>
           <DataSection
             title="Datos laborales"
-            subtitle="Contrato, jornada y datos operativos del empleo."
             fields={[
               { key: 'manager_name', label: 'Jefe inmediato', value: formatPlain(labor.manager_name) },
               { key: 'contract_type', label: 'Tipo de contrato', value: formatPlain(labor.contract_type) },
@@ -268,7 +263,6 @@ const Profile360Content = ({
 
           <DataSection
             title="Compensación"
-            subtitle="Información salarial en modo de solo lectura."
             fields={[
               { key: 'salary_daily', label: 'Salario diario', value: formatMoney(compensation.salary_daily) },
               { key: 'salary_integrated_daily', label: 'Salario integrado diario', value: formatMoney(compensation.salary_integrated_daily) },
@@ -279,7 +273,6 @@ const Profile360Content = ({
 
           <DataSection
             title="Seguridad social"
-            subtitle="Datos de afiliación y aportaciones IMSS."
             fields={[
               { key: 'social_security_number', label: 'Número de seguridad social', value: formatPlain(socialSecurity?.social_security_number), show: Boolean(socialSecurity) },
               { key: 'imss_clinic_code', label: 'Clínica IMSS', value: formatPlain(socialSecurity?.imss_clinic_code), show: Boolean(socialSecurity) },
@@ -303,7 +296,6 @@ const Profile360Content = ({
             {payrollSummary ? (
               <DataSection
                 title="Resumen de pagos"
-                subtitle="Indicadores rápidos del historial de nómina sincronizada."
                 fields={[
                   { key: 'total_payments', label: 'Total de pagos', value: formatPlain(payrollSummary.total_payments) },
                   { key: 'net_last_90_days', label: 'Neto últimos 90 días', value: formatMoney(payrollSummary.net_last_90_days) },
@@ -327,7 +319,6 @@ const Profile360Content = ({
         <>
           <DataSection
             title="Trazabilidad de sincronización"
-            subtitle="Últimas marcas de actualización por bloque de datos."
             fields={[
               { key: 'employee_sync', label: 'Ficha base', value: formatDateTime(syncMeta.employee_synced_at) },
               { key: 'contact_sync', label: 'Contacto', value: formatDateTime(syncMeta.contact_synced_at) },
@@ -338,7 +329,7 @@ const Profile360Content = ({
             ]}
           />
 
-          <Card title="Timeline de actividad" subtitle="Secuencia de actualizaciones registradas.">
+          <Card title="Timeline de actividad">
             {activityEvents.length === 0 ? (
               <p className="profile360__placeholder">No hay eventos de sincronización registrados.</p>
             ) : (

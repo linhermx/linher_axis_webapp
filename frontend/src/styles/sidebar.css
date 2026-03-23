@@ -1,13 +1,6 @@
 .sidebar {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--primary) 8%, var(--surface)) 0%,
-      var(--surface) 180px,
-      color-mix(in srgb, var(--surface-muted) 66%, var(--surface)) 100%
-    );
+  background: #ffffff;
   border-right: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
-  box-shadow: 6px 0 24px rgba(15, 23, 42, 0.06);
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -65,7 +58,6 @@
 
 .nav-item {
   align-items: center;
-  border: 1px solid transparent;
   border-radius: 10px;
   color: var(--text-secondary);
   display: flex;
@@ -99,7 +91,6 @@
 
 .nav-item.active {
   background: color-mix(in srgb, var(--primary) 11%, var(--surface));
-  border-color: color-mix(in srgb, var(--primary) 34%, transparent);
   box-shadow: var(--shadow-xs);
   color: var(--primary);
 }
@@ -127,8 +118,8 @@
 .user-profile-widget {
   align-items: center;
   background: color-mix(in srgb, var(--surface) 92%, transparent);
-  border: 1px solid color-mix(in srgb, var(--border) 86%, transparent);
   border-radius: 11px;
+  box-shadow: var(--shadow-xs);
   display: flex;
   gap: 0.72rem;
   padding: 0.72rem;
