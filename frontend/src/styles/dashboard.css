@@ -405,6 +405,7 @@
 
 .axis-avatar--candidate {
   background: color-mix(in srgb, var(--primary) 14%, transparent);
+  border: 2px solid var(--surface);
   border-radius: 999px;
   color: var(--primary);
   font-size: 0.78rem;
@@ -510,6 +511,7 @@
 
 .axis-avatar--table {
   background: color-mix(in srgb, var(--primary) 14%, transparent);
+  border: 2px solid var(--surface);
   border-radius: 999px;
   color: var(--primary);
   font-size: 0.75rem;
