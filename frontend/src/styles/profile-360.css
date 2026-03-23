@@ -1,0 +1,171 @@
+.profile360,
+.profile360-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profile360-page__loading {
+  color: var(--text-secondary);
+  font-size: 0.86rem;
+}
+
+.profile360__summary {
+  background: var(--gradient-highlight);
+  border: 1px solid color-mix(in srgb, var(--primary) 24%, var(--border));
+}
+
+.profile360__summary-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.profile360__summary-item {
+  background: color-mix(in srgb, var(--surface-muted) 82%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--border) 84%, transparent);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.profile360__summary-label {
+  color: var(--text-secondary);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.profile360__summary-value {
+  color: var(--text-main);
+  font-size: 0.84rem;
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+.profile360__tabs {
+  background: color-mix(in srgb, var(--surface-muted) 84%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--border) 84%, transparent);
+  border-radius: 10px;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px;
+}
+
+.profile360__tab {
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 8px 12px;
+  transition: 0.2s ease;
+}
+
+.profile360__tab:hover {
+  background: var(--ui-list-hover-bg);
+  color: var(--text-main);
+}
+
+.profile360__tab.is-active {
+  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--primary) 24%, transparent);
+  box-shadow: var(--shadow-xs);
+  color: var(--primary);
+}
+
+.profile360__grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.profile360__grid--single {
+  grid-template-columns: 1fr;
+}
+
+.profile360__field {
+  background: color-mix(in srgb, var(--surface-muted) 82%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--border) 84%, transparent);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.profile360__field-label {
+  color: var(--text-secondary);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.profile360__field-value {
+  color: var(--text-main);
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-top: 7px;
+}
+
+.profile360__placeholder {
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+}
+
+.profile360__timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profile360__timeline-item {
+  align-items: flex-start;
+  background: color-mix(in srgb, var(--surface-muted) 82%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--border) 84%, transparent);
+  border-radius: 10px;
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+}
+
+.profile360__timeline-dot {
+  background: var(--primary);
+  border-radius: 999px;
+  height: 9px;
+  margin-top: 4px;
+  width: 9px;
+}
+
+.profile360__timeline-title {
+  color: var(--text-main);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.profile360__timeline-date {
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+  margin-top: 2px;
+}
+
+.profile360__table-note {
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+}
+
+@media (max-width: 1180px) {
+  .profile360__summary-grid,
+  .profile360__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 780px) {
+  .profile360__summary-grid,
+  .profile360__grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -10,12 +10,14 @@ import {
   MoreVertical,
   IdCard,
   FolderOpen,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { hasAnyPermission } from '../lib/permissions';
 import '../styles/sidebar.css';
 
-const Sidebar = () => {
+const Sidebar = ({ collapsed = false, onToggleCollapse }) => {
   const { user } = useAuth();
 
   const profile = {
@@ -23,6 +25,7 @@ const Sidebar = () => {
     role: user?.role_name || 'Admin de RRHH',
     avatar: (user?.name?.charAt(0) || 'A').toUpperCase(),
   };
+
   const canViewEmployees = hasAnyPermission(user, ['view_employees']);
   const canViewAdmin = hasAnyPermission(user, ['view_audit_logs']);
   const canViewProfile = hasAnyPermission(user, ['view_profile_self', 'view_profile_employee']);
@@ -31,62 +34,72 @@ const Sidebar = () => {
   const canManageRecruitment = hasAnyPermission(user, ['manage_recruitment']);
   const canViewReports = hasAnyPermission(user, ['view_dashboard']);
 
+  const navItemClass = ({ isActive }) => `nav-item ${isActive ? 'active' : ''}`;
+
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${collapsed ? 'is-collapsed' : ''}`}>
       <div className="sidebar-header">
         <img src={logo} alt="Linher Axis" className="sidebar-logo" />
+        <button
+          type="button"
+          className="sidebar-collapse"
+          onClick={onToggleCollapse}
+          aria-label={collapsed ? 'Expandir menú lateral' : 'Colapsar menú lateral'}
+        >
+          {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+        </button>
       </div>
 
       <nav className="sidebar-nav">
-        <NavLink to="/" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+        <NavLink to="/" className={navItemClass}>
           <LayoutDashboard size={20} />
           <span>Panel de Control</span>
         </NavLink>
 
         {canViewEmployees ? (
-          <NavLink to="/employees" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+          <NavLink to="/employees" className={navItemClass}>
             <Users size={20} />
             <span>Empleados</span>
           </NavLink>
         ) : null}
 
         {canViewProfile ? (
-          <NavLink to="/me/profile" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+          <NavLink to="/me/profile" className={navItemClass}>
             <IdCard size={20} />
             <span>Mi Perfil 360</span>
           </NavLink>
         ) : null}
 
         {canViewDocuments ? (
-          <NavLink to="/documents" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+          <NavLink to="/documents" className={navItemClass}>
             <FolderOpen size={20} />
             <span>Expediente</span>
           </NavLink>
         ) : null}
 
         {canViewCalendar ? (
-          <NavLink to="/calendar" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+          <NavLink to="/calendar" className={navItemClass}>
             <Calendar size={20} />
             <span>Calendario</span>
           </NavLink>
         ) : null}
 
         {canManageRecruitment ? (
-          <NavLink to="/recruitment" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+          <NavLink to="/recruitment" className={navItemClass}>
             <Target size={20} />
             <span>Reclutamiento</span>
           </NavLink>
         ) : null}
 
         {canViewReports ? (
-          <NavLink to="/reports" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+          <NavLink to="/reports" className={navItemClass}>
             <BarChart3 size={20} />
             <span>Reportes</span>
           </NavLink>
         ) : null}
 
         {canViewAdmin ? (
-          <NavLink to="/admin" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+          <NavLink to="/admin" className={navItemClass}>
             <Settings size={20} />
             <span>Administración</span>
           </NavLink>

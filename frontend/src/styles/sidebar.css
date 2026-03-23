@@ -1,132 +1,161 @@
 .sidebar {
-  width: var(--sidebar-width);
-  height: 100vh;
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--surface) 92%, var(--surface-subtle)), var(--surface) 220px);
-  border-right: 1px solid var(--light-slate);
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--primary) 8%, var(--surface)) 0%,
+      var(--surface) 180px,
+      color-mix(in srgb, var(--surface-muted) 66%, var(--surface)) 100%
+    );
+  border-right: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
+  box-shadow: 6px 0 24px rgba(15, 23, 42, 0.06);
   display: flex;
   flex-direction: column;
-  position: fixed;
+  height: 100vh;
   left: 0;
+  position: fixed;
   top: 0;
+  transition: width 0.25s ease;
+  width: var(--sidebar-width);
   z-index: 100;
 }
 
+.sidebar.is-collapsed {
+  width: var(--sidebar-collapsed-width);
+}
+
 .sidebar-header {
-  padding: 1.35rem 1.25rem 1.1rem;
-  display: flex;
   align-items: center;
-  justify-content: center;
+  display: flex;
+  gap: 0.6rem;
+  justify-content: space-between;
+  padding: 1rem 1rem 0.9rem;
 }
 
 .sidebar-logo {
-  max-height: 76px;
+  max-height: 52px;
   max-width: 176px;
-  width: auto;
   object-fit: contain;
+  width: auto;
+}
+
+.sidebar-collapse {
+  align-items: center;
+  background: color-mix(in srgb, var(--surface-muted) 84%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--border) 86%, transparent);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  display: inline-flex;
+  height: 32px;
+  justify-content: center;
+  width: 32px;
+}
+
+.sidebar-collapse:hover {
+  border-color: color-mix(in srgb, var(--primary) 30%, transparent);
+  color: var(--primary);
 }
 
 .sidebar-nav {
-  flex: 1;
-  padding: 0 0.85rem 1rem;
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 0.35rem;
+  padding: 0 0.85rem 1rem;
 }
 
 .nav-item {
-  display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.72rem 0.82rem;
-  color: var(--slate);
-  border-radius: 0.82rem;
-  font-size: 0.92rem;
-  font-weight: 600;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: var(--text-secondary);
+  display: flex;
+  font-size: 0.88rem;
+  font-weight: 700;
+  gap: 0.72rem;
+  padding: 0.72rem 0.84rem;
+  position: relative;
   text-decoration: none;
   transition: all 0.2s ease;
-  position: relative;
-  border: 1px solid transparent;
+  white-space: nowrap;
 }
 
 .nav-item::before {
+  background-color: transparent;
+  border-radius: 999px;
   content: '';
+  height: 1.2rem;
+  left: -0.56rem;
   position: absolute;
-  left: -0.55rem;
   top: 50%;
   transform: translateY(-50%);
-  height: 1.25rem;
-  width: 0.22rem;
-  border-radius: 999px;
-  background-color: transparent;
   transition: background-color 0.2s ease;
+  width: 0.2rem;
 }
 
 .nav-item:hover {
-  background-color: color-mix(in srgb, var(--surface-subtle) 78%, var(--surface));
+  background: var(--ui-list-hover-bg);
   color: var(--text-main);
-  border-color: color-mix(in srgb, var(--primary) 18%, transparent);
 }
 
 .nav-item.active {
-  background-color: var(--nav-active-bg);
-  color: var(--nav-active-text);
-  border-color: color-mix(in srgb, var(--primary) 28%, transparent);
-  box-shadow: var(--shadow-sm);
+  background: color-mix(in srgb, var(--primary) 11%, var(--surface));
+  border-color: color-mix(in srgb, var(--primary) 34%, transparent);
+  box-shadow: var(--shadow-xs);
+  color: var(--primary);
 }
 
 .nav-item.active::before {
-  background-color: var(--primary);
+  background: var(--primary);
 }
 
 .nav-badge {
-  margin-left: auto;
-  background-color: var(--primary);
-  color: #ffffff;
-  font-size: 0.6875rem;
-  padding: 0.12rem 0.45rem;
+  background: var(--primary);
   border-radius: 999px;
+  color: #ffffff;
+  font-size: 0.67rem;
   font-weight: 700;
+  margin-left: auto;
+  padding: 0.12rem 0.45rem;
 }
 
 .sidebar-footer {
+  background: color-mix(in srgb, var(--surface-muted) 62%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--border) 86%, transparent);
   padding: 1rem;
-  border-top: 1px solid var(--light-slate);
-  background: color-mix(in srgb, var(--surface-subtle) 55%, transparent);
 }
 
 .user-profile-widget {
-  display: flex;
   align-items: center;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border) 86%, transparent);
+  border-radius: 11px;
+  display: flex;
   gap: 0.72rem;
-  background-color: var(--surface);
-  border: 1px solid var(--light-slate);
   padding: 0.72rem;
-  border-radius: 0.9rem;
   position: relative;
 }
 
 .user-avatar-small {
-  width: 2.35rem;
-  height: 2.35rem;
-  background-color: var(--avatar-bg);
-  border-radius: 0.7rem;
-  display: flex;
   align-items: center;
-  justify-content: center;
-  font-weight: 700;
+  background: var(--avatar-bg);
+  border-radius: 9px;
   color: var(--avatar-text);
+  display: flex;
+  font-weight: 800;
+  height: 2.35rem;
+  justify-content: center;
   position: relative;
+  width: 2.35rem;
 }
 
 .status-indicator {
-  width: 0.62rem;
-  height: 0.62rem;
-  border-radius: 50%;
   border: 2px solid var(--surface);
-  position: absolute;
+  border-radius: 50%;
   bottom: -2px;
+  height: 0.62rem;
+  position: absolute;
   right: -2px;
+  width: 0.62rem;
 }
 
 .status-indicator.online {
@@ -140,23 +169,62 @@
 }
 
 .user-fullname {
-  font-size: 0.86rem;
-  font-weight: 700;
   color: var(--text-main);
-  white-space: nowrap;
+  font-size: 0.84rem;
+  font-weight: 700;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .user-jobrole {
-  font-size: 0.72rem;
   color: var(--text-secondary);
-  font-weight: 600;
+  font-size: 0.72rem;
+  font-weight: 700;
 }
 
 .user-options {
-  margin-left: auto;
   color: var(--text-secondary);
-  opacity: 0.75;
+  margin-left: auto;
+  opacity: 0.8;
+}
+
+.user-options:hover {
+  color: var(--primary);
+}
+
+.sidebar.is-collapsed .sidebar-logo,
+.sidebar.is-collapsed .nav-item span,
+.sidebar.is-collapsed .user-meta,
+.sidebar.is-collapsed .user-options {
+  display: none;
+}
+
+.sidebar.is-collapsed .sidebar-header {
+  justify-content: center;
+  padding-top: 0.9rem;
+}
+
+.sidebar.is-collapsed .sidebar-nav {
+  align-items: center;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.sidebar.is-collapsed .nav-item {
+  justify-content: center;
+  width: 100%;
+}
+
+.sidebar.is-collapsed .nav-item::before {
+  left: 0;
+}
+
+.sidebar.is-collapsed .sidebar-footer {
+  padding: 0.6rem;
+}
+
+.sidebar.is-collapsed .user-profile-widget {
+  justify-content: center;
 }
 
 @media (max-width: 960px) {

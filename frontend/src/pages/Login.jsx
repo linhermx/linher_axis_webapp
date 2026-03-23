@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LogIn, Lock, Mail } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { Alert, Button, Card, InputField } from '../components/ui';
+import '../styles/login.css';
 
 const Login = () => {
   const { login, user } = useAuth();
@@ -29,24 +30,22 @@ const Login = () => {
       await login(email, password);
       navigate('/', { replace: true });
     } catch (requestError) {
-      setError(requestError.response?.data?.message || 'Ocurrió un error al iniciar sesión');
+      setError(requestError.response?.data?.message || 'Ocurrió un error al iniciar sesión.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-ui-background p-5">
-      <Card className="w-full max-w-[440px] rounded-[20px] p-12 shadow-lg">
-        <div className="mb-10 text-center">
-          <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-brand-primary text-white">
-            <LogIn size={32} className="text-white" />
-          </div>
-          <h1 className="mb-2 text-[1.625rem] font-extrabold text-ui-dark-navy">LINHER Axis</h1>
-          <p className="text-[0.9375rem] text-ui-text-secondary">Accede a tu cuenta de RRHH</p>
+    <div className="login-page">
+      <Card className="login-page__card" bodyClassName="login-page__form">
+        <div className="login-page__hero">
+          <span className="login-page__icon"><LogIn size={30} /></span>
+          <h1 className="login-page__title">LINHER Axis</h1>
+          <p className="login-page__subtitle">Accede a tu cuenta de RRHH</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="login-page__form">
           <InputField
             id="login-email"
             name="email"
@@ -77,11 +76,11 @@ const Login = () => {
             </Alert>
           ) : null}
 
-          <Button type="submit" size="lg" className="mt-2 w-full" disabled={loading}>
+          <Button type="submit" size="lg" disabled={loading}>
             {loading ? 'Cargando...' : 'Iniciar sesión'}
           </Button>
 
-          <p className="pt-2 text-center text-sm text-ui-text-secondary">
+          <p className="login-page__footer-note">
             Si olvidaste tu contraseña, solicita apoyo a RRHH o a Sistemas.
           </p>
         </form>

@@ -1,11 +1,18 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { Building2, ChevronRight, UserCircle2, Users } from 'lucide-react';
 import EmployeeModuleNav from '../components/EmployeeModuleNav';
 import { Card, PageHeader, StatusBadge, StatusView } from '../components/ui';
-import { cn } from '../lib/cn';
 import api from '../services/api';
+import '../styles/organization-structure.css';
 
-const DEPTH_CLASS_MAP = ['pl-2', 'pl-6', 'pl-10', 'pl-14', 'pl-16'];
+const DEPTH_CLASS_MAP = [
+  'organization-unit-depth-0',
+  'organization-unit-depth-1',
+  'organization-unit-depth-2',
+  'organization-unit-depth-3',
+  'organization-unit-depth-4',
+  'organization-unit-depth-5',
+];
 
 const getDepthClass = (depth) => DEPTH_CLASS_MAP[Math.min(depth, DEPTH_CLASS_MAP.length - 1)];
 
@@ -43,7 +50,7 @@ const OrganizationStructure = () => {
         setSelectedUnitId(initialUnitId);
       } catch (error) {
         if (!active) return;
-        setStructureError(error?.response?.data?.message || 'No fue posible cargar la estructura organizacional');
+        setStructureError(error?.response?.data?.message || 'No fue posible cargar la estructura organizacional.');
       } finally {
         if (active) {
           setStructureLoading(false);
@@ -76,7 +83,7 @@ const OrganizationStructure = () => {
         setSelectedUnitDetails(data);
       } catch (error) {
         if (!active) return;
-        setUnitError(error?.response?.data?.message || 'No fue posible cargar el detalle de la unidad');
+        setUnitError(error?.response?.data?.message || 'No fue posible cargar el detalle de la unidad.');
         setSelectedUnitDetails(null);
       } finally {
         if (active) {
@@ -93,7 +100,7 @@ const OrganizationStructure = () => {
   }, [selectedUnitId]);
 
   return (
-    <section>
+    <section className="organization-structure">
       <PageHeader
         title="Estructura organizacional"
         subtitle="Vista maestro-detalle para empresa, departamentos y equipos."
@@ -102,84 +109,66 @@ const OrganizationStructure = () => {
       </PageHeader>
 
       {structureLoading ? (
-        <Card className="rounded-2xl">
-          <p className="text-sm text-ui-text-secondary">Cargando estructura organizacional...</p>
+        <Card>
+          <p className="organization-structure__loading">Cargando estructura organizacional...</p>
         </Card>
       ) : null}
 
       {!structureLoading && structureError ? (
-        <StatusView
-          title="No se pudo cargar la estructura"
-          description={structureError}
-        />
+        <StatusView title="No se pudo cargar la estructura" description={structureError} />
       ) : null}
 
       {!structureLoading && !structureError ? (
-        <div className="grid gap-6 xl:grid-cols-[370px_minmax(0,1fr)]">
-          <aside className="space-y-6">
-            <Card title="Company name" subtitle="Unidad raiz" className="rounded-2xl p-5">
-              <div className="rounded-xl border border-ui-light-slate bg-ui-surface-subtle p-4">
-                <p className="text-sm font-semibold text-ui-dark-navy">LINHER</p>
-                <p className="mt-1 text-xs text-ui-text-secondary">8 departments activos</p>
+        <div className="organization-structure__grid">
+          <aside className="organization-structure__aside">
+            <Card title="Empresa" subtitle="Unidad raíz">
+              <div className="organization-company-box">
+                <p className="organization-company-box__name">LINHER</p>
+                <p className="organization-company-box__meta">8 departamentos activos</p>
               </div>
             </Card>
 
-            <Card
-              title="Mapa organizacional"
-              subtitle="Selecciona una unidad para ver detalle."
-              className="rounded-2xl p-5"
-            >
+            <Card title="Mapa organizacional" subtitle="Selecciona una unidad para ver detalle.">
               {flatUnits.length === 0 ? (
                 <StatusView
                   title="Estructura no configurada"
-                  description="Aun no existen unidades organizacionales cargadas."
-                  className="min-h-[220px]"
+                  description="Aún no existen unidades organizacionales cargadas."
                 />
               ) : (
-                <ul className="max-h-[650px] space-y-2 overflow-y-auto pr-1">
-                  {flatUnits.map((unit) => (
-                    <li key={unit.id}>
-                      <button
-                        type="button"
-                        onClick={() => setSelectedUnitId(unit.id)}
-                        className={cn(
-                          'w-full rounded-xl border px-2 py-2.5 text-left transition-all',
-                          selectedUnitId === unit.id
-                            ? 'border-brand-primary/60 bg-brand-primary/5 shadow-sm'
-                            : 'border-ui-light-slate bg-ui-surface hover:border-brand-primary/35 hover:bg-ui-surface-subtle'
-                        )}
-                      >
-                        <div className="flex items-center justify-between gap-3">
-                          <div className={cn('flex min-w-0 items-center gap-2', getDepthClass(unit.depth))}>
-                            <ChevronRight
-                              size={14}
-                              className={cn(
-                                'shrink-0',
-                                selectedUnitId === unit.id ? 'text-brand-primary' : 'text-ui-text-secondary'
-                              )}
-                              aria-hidden="true"
-                            />
-
-                            <div className="min-w-0">
-                              <p className="truncate text-sm font-semibold text-ui-dark-navy">{unit.name}</p>
-                              <p className="text-xs text-ui-text-secondary">{unit.type_name}</p>
+                <ul className="organization-unit-list">
+                  {flatUnits.map((unit) => {
+                    const isSelected = selectedUnitId === unit.id;
+                    return (
+                      <li key={unit.id} className="organization-unit-item">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedUnitId(unit.id)}
+                          className={`organization-unit-button ${isSelected ? 'is-selected' : ''}`}
+                        >
+                          <div
+                            className={`organization-unit-main ${getDepthClass(unit.depth)} ${isSelected ? 'is-selected' : ''}`}
+                          >
+                            <ChevronRight size={14} aria-hidden="true" />
+                            <div>
+                              <p className="organization-unit-name">{unit.name}</p>
+                              <p className="organization-unit-type">{unit.type_name}</p>
                             </div>
                           </div>
 
-                          <span className="inline-flex items-center gap-1 rounded-full bg-ui-surface-subtle px-2 py-1 text-xs font-semibold text-ui-text-secondary">
+                          <span className="organization-unit-count">
                             <Users size={13} />
                             {unit.member_count}
                           </span>
-                        </div>
-                      </button>
-                    </li>
-                  ))}
+                        </button>
+                      </li>
+                    );
+                  })}
                 </ul>
               )}
             </Card>
           </aside>
 
-          <div className="space-y-6">
+          <div className="organization-structure__detail">
             {!selectedUnitId ? (
               <StatusView
                 title="Selecciona una unidad"
@@ -188,16 +177,13 @@ const OrganizationStructure = () => {
             ) : null}
 
             {selectedUnitId && unitLoading ? (
-              <Card className="rounded-2xl">
-                <p className="text-sm text-ui-text-secondary">Cargando detalle de unidad...</p>
+              <Card>
+                <p className="organization-structure__loading">Cargando detalle de unidad...</p>
               </Card>
             ) : null}
 
             {selectedUnitId && !unitLoading && unitError ? (
-              <StatusView
-                title="No se pudo cargar la unidad"
-                description={unitError}
-              />
+              <StatusView title="No se pudo cargar la unidad" description={unitError} />
             ) : null}
 
             {selectedUnitId && !unitLoading && !unitError && selectedUnitDetails ? (
@@ -212,52 +198,43 @@ const OrganizationStructure = () => {
                       showDot
                     />
                   )}
-                  className="rounded-2xl p-5"
                 >
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <article className="rounded-xl border border-ui-light-slate bg-ui-surface-subtle p-4">
-                      <p className="text-xs font-semibold uppercase tracking-[0.05em] text-ui-text-secondary">Head of the team</p>
-                      <p className="mt-2 text-sm font-semibold text-ui-dark-navy">
+                  <div className="organization-stat-grid">
+                    <article className="organization-stat-card">
+                      <p className="organization-stat-card__label">Responsable del equipo</p>
+                      <p className="organization-stat-card__value">
                         {selectedUnitDetails.unit.lead_name || 'Sin responsable asignado'}
                       </p>
                     </article>
 
-                    <article className="rounded-xl border border-ui-light-slate bg-ui-surface-subtle p-4">
-                      <p className="text-xs font-semibold uppercase tracking-[0.05em] text-ui-text-secondary">Resumen</p>
-                      <p className="mt-2 text-sm text-ui-text-secondary">
-                        <span className="font-semibold text-ui-dark-navy">{selectedUnitDetails.unit.member_count}</span>
-                        {' '}
-                        integrantes activos
+                    <article className="organization-stat-card">
+                      <p className="organization-stat-card__label">Resumen</p>
+                      <p className="organization-stat-card__meta">
+                        <b>{selectedUnitDetails.unit.member_count}</b> integrantes activos
                       </p>
-                      <p className="mt-1 text-sm text-ui-text-secondary">
-                        Codigo:
-                        {' '}
-                        <span className="font-semibold text-ui-dark-navy">{selectedUnitDetails.unit.code || 'Sin codigo'}</span>
+                      <p className="organization-stat-card__meta">
+                        Código: <b>{selectedUnitDetails.unit.code || 'Sin código'}</b>
                       </p>
                     </article>
                   </div>
                 </Card>
 
-                <Card title="Integrantes" subtitle="Equipo activo asociado a la unidad" className="rounded-2xl p-5">
+                <Card title="Integrantes" subtitle="Equipo activo asociado a la unidad">
                   {selectedUnitDetails.members?.length ? (
-                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                    <div className="organization-members-grid">
                       {selectedUnitDetails.members.map((member) => (
-                        <article key={member.id} className="rounded-xl border border-ui-light-slate bg-ui-surface p-4 shadow-sm">
-                          <div className="flex items-start gap-3">
-                            <span className="mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-full bg-brand-primary/10 text-brand-primary">
+                        <article key={member.id} className="organization-member-card">
+                          <div className="organization-member-header">
+                            <span className="organization-member-avatar">
                               <UserCircle2 size={17} />
                             </span>
-                            <div className="min-w-0">
-                              <p className="truncate text-sm font-semibold text-ui-dark-navy">
-                                {member.first_name}
-                                {' '}
-                                {member.last_name}
+                            <div>
+                              <p className="organization-member-name">
+                                {member.first_name} {member.last_name}
                               </p>
-                              <p className="truncate text-xs text-ui-text-secondary">{member.position_name || 'Sin puesto asignado'}</p>
-                              <p className="mt-2 text-xs text-ui-text-secondary">
-                                Rol en unidad:
-                                {' '}
-                                <span className="font-semibold text-ui-dark-navy">{member.role_in_unit || 'Colaborador'}</span>
+                              <p className="organization-member-role">{member.position_name || 'Sin puesto asignado'}</p>
+                              <p className="organization-member-meta">
+                                Rol en unidad: <b>{member.role_in_unit || 'Colaborador'}</b>
                               </p>
                             </div>
                           </div>
@@ -265,30 +242,30 @@ const OrganizationStructure = () => {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-ui-text-secondary">Esta unidad aun no tiene integrantes activos.</p>
+                    <p className="organization-structure__loading">Esta unidad aún no tiene integrantes activos.</p>
                   )}
                 </Card>
 
-                <Card title="Relaciones" subtitle="Conexiones jerarquicas de esta unidad" className="rounded-2xl p-5">
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <article className="rounded-xl border border-ui-light-slate bg-ui-surface-subtle p-4">
-                      <p className="text-xs font-semibold uppercase tracking-[0.05em] text-ui-text-secondary">Unidad padre</p>
-                      <p className="mt-2 text-sm font-semibold text-ui-dark-navy">{selectedUnitDetails.parent?.name || 'Sin unidad padre'}</p>
+                <Card title="Relaciones" subtitle="Conexiones jerárquicas de esta unidad">
+                  <div className="organization-stat-grid">
+                    <article className="organization-stat-card">
+                      <p className="organization-stat-card__label">Unidad padre</p>
+                      <p className="organization-stat-card__value">{selectedUnitDetails.parent?.name || 'Sin unidad padre'}</p>
                     </article>
 
-                    <article className="rounded-xl border border-ui-light-slate bg-ui-surface-subtle p-4">
-                      <p className="text-xs font-semibold uppercase tracking-[0.05em] text-ui-text-secondary">Unidades hijas</p>
+                    <article className="organization-stat-card">
+                      <p className="organization-stat-card__label">Unidades hijas</p>
                       {selectedUnitDetails.children?.length ? (
-                        <ul className="mt-2 space-y-1.5">
+                        <ul className="organization-children">
                           {selectedUnitDetails.children.map((child) => (
-                            <li key={child.id} className="flex items-center gap-2 text-sm text-ui-dark-navy">
-                              <Building2 size={14} className="text-ui-text-secondary" />
+                            <li key={child.id} className="organization-child-item">
+                              <Building2 size={14} />
                               <span>{child.name}</span>
                             </li>
                           ))}
                         </ul>
                       ) : (
-                        <p className="mt-2 text-sm text-ui-text-secondary">Sin unidades hijas registradas.</p>
+                        <p className="organization-stat-card__meta">Sin unidades hijas registradas.</p>
                       )}
                     </article>
                   </div>

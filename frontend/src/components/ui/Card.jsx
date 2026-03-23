@@ -1,4 +1,4 @@
-import { cn } from '../../lib/cn';
+﻿import { cn } from '../../lib/cn';
 
 const Card = ({
   as: Component = 'section',
@@ -13,21 +13,18 @@ const Card = ({
 }) => {
   return (
     <Component
-      className={cn(
-        'rounded-[1.05rem] border border-ui-light-slate bg-ui-surface p-6 shadow-sm',
-        className
-      )}
+      className={cn('ui-card ui-card--padded', className)}
       {...props}
     >
-      {(title || subtitle || actions) && (
-        <header className={cn('mb-5 flex items-start justify-between gap-4 border-b border-ui-light-slate/70 pb-4', headerClassName)}>
-          <div className="min-w-0">
-            {title && <h2 className="text-lg font-extrabold text-ui-dark-navy">{title}</h2>}
-            {subtitle && <p className="mt-1 text-sm text-ui-text-secondary">{subtitle}</p>}
+      {(title || subtitle || actions) ? (
+        <header className={cn('ui-card__header', headerClassName)}>
+          <div>
+            {title ? <h2 className="ui-card__title">{title}</h2> : null}
+            {subtitle ? <p className="ui-card__subtitle">{subtitle}</p> : null}
           </div>
-          {actions && <div className="shrink-0">{actions}</div>}
+          {actions ? <div>{actions}</div> : null}
         </header>
-      )}
+      ) : null}
 
       <div className={cn(bodyClassName)}>{children}</div>
     </Component>

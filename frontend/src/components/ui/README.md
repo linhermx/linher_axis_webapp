@@ -1,6 +1,6 @@
-﻿# UI Primitives (Phase 1)
+﻿# UI Primitives
 
-This folder contains the initial UI primitives for the design system:
+This folder contains reusable primitives for the AXIS design system:
 
 - `Button`
 - `InputField`
@@ -14,10 +14,10 @@ This folder contains the initial UI primitives for the design system:
 
 ## Token source
 
-Tailwind theme tokens are defined in:
+The visual token source is:
 
-- `frontend/tailwind.config.js`
 - `frontend/src/styles/global.css`
+- `frontend/src/styles/ui-primitives.css`
 
 ## Usage
 
@@ -26,7 +26,7 @@ import { Button, Card, PageHeader } from '../components/ui';
 
 const Example = () => (
   <>
-    <PageHeader title="Directorio" subtitle="Gestion de empleados" />
+    <PageHeader title="Directorio" subtitle="Gestión de empleados" />
     <Card title="Acciones">
       <Button>Nuevo</Button>
     </Card>

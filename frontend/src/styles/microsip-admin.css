@@ -1,0 +1,94 @@
+.microsip-admin {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.microsip-admin__grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.microsip-admin__stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.microsip-admin__meta-list {
+  color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  font-size: 0.82rem;
+  gap: 8px;
+}
+
+.microsip-admin__meta-item {
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+}
+
+.microsip-admin__meta-list b,
+.microsip-admin__meta-item b {
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.microsip-admin__metrics {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.microsip-admin__metrics .microsip-admin__meta-item {
+  background: color-mix(in srgb, var(--surface-muted) 82%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--border) 84%, transparent);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+.microsip-admin__form-grid {
+  align-items: end;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(260px, 360px) auto;
+}
+
+.microsip-admin__hint {
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  margin-top: 10px;
+}
+
+.microsip-admin__loading {
+  color: var(--text-secondary);
+  font-size: 0.86rem;
+}
+
+.microsip-admin__spin {
+  animation: microsip-spin 0.9s linear infinite;
+}
+
+@keyframes microsip-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1180px) {
+  .microsip-admin__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 860px) {
+  .microsip-admin__metrics,
+  .microsip-admin__form-grid {
+    grid-template-columns: 1fr;
+  }
+}

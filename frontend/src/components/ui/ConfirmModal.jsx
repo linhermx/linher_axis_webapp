@@ -35,7 +35,7 @@ const ConfirmModal = ({
         </>
       }
     >
-      {children ? <div className="text-sm text-ui-text-secondary">{children}</div> : null}
+      {children ? <div className="ui-field__hint">{children}</div> : null}
     </ModalShell>
   );
 };

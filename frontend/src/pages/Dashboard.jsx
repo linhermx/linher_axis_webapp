@@ -1,112 +1,179 @@
+import { useMemo, useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import '../styles/dashboard.css';
 import {
-  Briefcase,
-  CalendarDays,
-  Clock3,
-  Sparkles,
-  TrendingDown,
-  TrendingUp,
-  Umbrella,
-  Users,
-} from 'lucide-react';
-import {
-  Card,
-  StatusBadge,
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeaderCell,
-  TableRow,
-} from '../components/ui';
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+} from 'recharts';
 
 const STATUS_META = {
-  pending: { status: 'pending', label: 'Pendiente' },
-  approved: { status: 'approved', label: 'Aprobado' },
-  declined: { status: 'declined', label: 'Rechazado' },
+  pending: { label: 'Pendiente', variant: 'pending' },
+  approved: { label: 'Aprobado', variant: 'approved' },
+  declined: { label: 'Rechazado', variant: 'declined' },
 };
 
 const CALENDAR_WEEK_DAYS = ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'];
 
-const CALENDAR_DAYS = [
-  { key: 'prev-29', day: 29, muted: true },
-  { key: 'prev-30', day: 30, muted: true },
-  { key: 'current-1', day: 1 },
-  { key: 'current-2', day: 2 },
-  { key: 'current-3', day: 3, markers: 1 },
-  { key: 'current-4', day: 4 },
-  { key: 'current-5', day: 5 },
-  { key: 'current-6', day: 6 },
-  { key: 'current-7', day: 7 },
-  { key: 'current-8', day: 8, markers: 2 },
-  { key: 'current-9', day: 9 },
-  { key: 'current-10', day: 10 },
-  { key: 'current-11', day: 11 },
-  { key: 'current-12', day: 12 },
-  { key: 'current-13', day: 13 },
-  { key: 'current-14', day: 14, markers: 2 },
-  { key: 'current-15', day: 15 },
-  { key: 'current-16', day: 16 },
-  { key: 'current-17', day: 17 },
-  { key: 'current-18', day: 18 },
-  { key: 'current-19', day: 19 },
-  { key: 'current-20', day: 20 },
-  { key: 'current-21', day: 21 },
-  { key: 'current-22', day: 22, current: true },
-  { key: 'current-23', day: 23, markers: 1 },
-  { key: 'current-24', day: 24 },
-  { key: 'current-25', day: 25, accent: true },
-  { key: 'current-26', day: 26 },
-  { key: 'current-27', day: 27, markers: 2 },
-  { key: 'current-28', day: 28 },
-  { key: 'current-29', day: 29, markers: 3 },
-  { key: 'current-30', day: 30 },
-  { key: 'current-31', day: 31 },
-  { key: 'next-1', day: 1, muted: true },
-  { key: 'next-2', day: 2, muted: true },
+const CALENDAR_EVENT_TEMPLATES = [
+  {
+    id: 'evt-1',
+    day: 5,
+    title: 'Cumpleanos de Shane Wiggins',
+    time: 'Todo el dia',
+    badge: 'Feriado',
+    badgeTone: 'warning',
+    featured: true,
+  },
+  {
+    id: 'evt-2',
+    day: 12,
+    title: 'Mikky Brongs - Reunion RH',
+    time: '12:00 pm - 12:30 pm',
+    badge: 'Reunion',
+    badgeTone: 'primary',
+  },
+  {
+    id: 'evt-3',
+    day: 12,
+    title: 'Stephan Wallace - Entrevista',
+    time: '12:30 pm - 1:30 pm',
+    badge: 'Reclutamiento',
+    badgeTone: 'info',
+  },
+  {
+    id: 'evt-4',
+    day: 22,
+    title: 'Reunion semanal',
+    time: '2:00 pm - 3:00 pm',
+    badge: 'Staff',
+    badgeTone: 'primary',
+  },
+  {
+    id: 'evt-5',
+    day: 29,
+    title: 'Revision de onboarding',
+    time: '3:30 pm - 4:00 pm',
+    badge: 'Operacion',
+    badgeTone: 'info',
+  },
 ];
 
+const MONTH_FORMATTER = new Intl.DateTimeFormat('es-MX', { month: 'long' });
+const TODAY = new Date();
+const TODAY_KEY = `${TODAY.getFullYear()}-${String(TODAY.getMonth() + 1).padStart(2, '0')}-${String(TODAY.getDate()).padStart(2, '0')}`;
+
+const toDateKey = (date) => (
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+);
+
+const formatMonthLabel = (date) => {
+  const raw = MONTH_FORMATTER.format(date);
+  return raw.charAt(0).toUpperCase() + raw.slice(1);
+};
+
+const buildMonthEvents = (year, month) => (
+  CALENDAR_EVENT_TEMPLATES.map((template, index) => {
+    const date = new Date(year, month, template.day);
+    return {
+      ...template,
+      id: `${year}-${month}-${index}-${template.id}`,
+      date,
+      dateKey: toDateKey(date),
+    };
+  })
+);
+
+const buildCalendarDays = (visibleMonth, eventCountMap, selectedDateKey) => {
+  const monthStart = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), 1);
+  const gridStart = new Date(monthStart);
+  gridStart.setDate(monthStart.getDate() - monthStart.getDay());
+
+  return Array.from({ length: 35 }).map((_, index) => {
+    const date = new Date(gridStart);
+    date.setDate(gridStart.getDate() + index);
+    const dateKey = toDateKey(date);
+    const markers = Math.min(eventCountMap[dateKey] || 0, 3);
+
+    return {
+      date,
+      dateKey,
+      day: date.getDate(),
+      isInCurrentMonth:
+        date.getMonth() === visibleMonth.getMonth() && date.getFullYear() === visibleMonth.getFullYear(),
+      isSelected: dateKey === selectedDateKey,
+      isToday: dateKey === TODAY_KEY,
+      markers,
+    };
+  });
+};
+
 const Dashboard = () => {
-  const stats = [
-    {
-      label: 'Total empleados',
-      value: '1,248',
-      icon: Users,
-      iconTone: 'bg-sky-100 text-sky-600',
-      trendIcon: TrendingUp,
-      trendText: 'vs mes anterior',
-      trendTone: 'text-status-success',
-    },
-    {
-      label: 'De licencia hoy',
-      value: '12',
-      icon: Umbrella,
-      iconTone: 'bg-amber-100 text-amber-600',
-      trendIcon: TrendingDown,
-      trendText: '4% menos que ayer',
-      trendTone: 'text-status-success',
-    },
-    {
-      label: 'Vacantes abiertas',
-      value: '45',
-      icon: Briefcase,
-      iconTone: 'bg-violet-100 text-violet-600',
-      subtitle: '8 roles urgentes',
-    },
+  const currentYear = new Date().getFullYear();
+  const [visibleMonth, setVisibleMonth] = useState(() => new Date(currentYear, 11, 1));
+  const [selectedDateKey, setSelectedDateKey] = useState(() => toDateKey(new Date(currentYear, 11, 22)));
+
+  const calendarEvents = useMemo(() => {
+    const current = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), 1);
+    const prev = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() - 1, 1);
+    const next = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + 1, 1);
+
+    return [
+      ...buildMonthEvents(prev.getFullYear(), prev.getMonth()),
+      ...buildMonthEvents(current.getFullYear(), current.getMonth()),
+      ...buildMonthEvents(next.getFullYear(), next.getMonth()),
+    ];
+  }, [visibleMonth]);
+
+  const monthLabel = useMemo(() => formatMonthLabel(visibleMonth), [visibleMonth]);
+
+  const eventCountMap = useMemo(
+    () => calendarEvents.reduce((acc, eventItem) => {
+      acc[eventItem.dateKey] = (acc[eventItem.dateKey] || 0) + 1;
+      return acc;
+    }, {}),
+    [calendarEvents],
+  );
+
+  const calendarDays = useMemo(
+    () => buildCalendarDays(visibleMonth, eventCountMap, selectedDateKey),
+    [eventCountMap, selectedDateKey, visibleMonth],
+  );
+
+  const events = useMemo(
+    () => calendarEvents.filter((eventItem) => eventItem.dateKey === selectedDateKey),
+    [calendarEvents, selectedDateKey],
+  );
+
+  const handleMonthChange = (offset) => {
+    const nextMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + offset, 1);
+    setVisibleMonth(nextMonth);
+    setSelectedDateKey(toDateKey(nextMonth));
+  };
+
+  const moodData = [
+    { key: 'neutral', label: 'Neutral', value: 58, color: '#37a9e8' },
+    { key: 'happy', label: 'Feliz', value: 23, color: '#1ea55a' },
+    { key: 'excited', label: 'Entusiasmado', value: 14, color: '#d5961d' },
+    { key: 'other', label: 'Otros', value: 5, color: '#596ae5' },
   ];
 
-  const leaveStats = [
+  const absences = [
     { label: 'En vacaciones', total: 5, avatars: ['TJ', 'SN', 'MC'] },
-    { label: 'Home office', total: 12, avatars: ['AL', 'NW', 'BH'] },
+    { label: 'Trabajo remoto', total: 12, avatars: ['AL', 'NW', 'BH'] },
     { label: 'Licencia medica', total: 9, avatars: ['JR', 'DM', 'EC'] },
     { label: 'Dia libre', total: 4, avatars: ['LP', 'AR'] },
+    { label: 'Viaje de negocio', total: 2, avatars: ['VH'] },
   ];
 
   const highlightedCandidates = [
-    { id: 1, initials: 'NS', name: 'Niclas Salmon', role: 'Full Stack Developer' },
-    { id: 2, initials: 'JP', name: 'Jensen Padmore', role: 'Senior Graphic Designer' },
-    { id: 3, initials: 'MF', name: 'Melania Filkins', role: 'Copywriter' },
-    { id: 4, initials: 'TR', name: 'Tommie Russel', role: 'Full Stack Developer' },
+    { id: 1, initials: 'NS', name: 'Niclas Salmon', role: 'Desarrollador Full Stack' },
+    { id: 2, initials: 'JP', name: 'Jensen Padmore', role: 'Disenador grafico senior' },
+    { id: 3, initials: 'MF', name: 'Melania Filkins', role: 'Redactora' },
+    { id: 4, initials: 'TR', name: 'Tommie Russel', role: 'Desarrollador Full Stack' },
+    { id: 5, initials: 'AM', name: 'Anabelle Marshall', role: 'Disenadora senior' },
+    { id: 6, initials: 'AH', name: 'Allison Hooker', role: 'Desarrolladora Frontend' },
   ];
 
   const requests = [
@@ -119,16 +186,18 @@ const Dashboard = () => {
       dateLabel: 'Hoy',
       statusKey: 'pending',
       avatar: 'T',
+      notes: 'Vacacion anual',
     },
     {
       id: 2,
       name: 'Salamon Newman',
-      role: 'Senior Dev',
-      type: 'Home office',
+      role: 'Desarrollador senior',
+      type: 'Trabajo remoto',
       period: '31 Dic',
       dateLabel: 'Hoy',
       statusKey: 'approved',
       avatar: 'S',
+      notes: 'Home office aprobado',
     },
     {
       id: 3,
@@ -139,43 +208,18 @@ const Dashboard = () => {
       dateLabel: 'Hoy',
       statusKey: 'declined',
       avatar: 'M',
+      notes: 'Sin cobertura',
     },
     {
       id: 4,
       name: 'Juliette Lagache',
-      role: 'Project Manager',
-      type: 'Home office',
+      role: 'Lider de proyectos',
+      type: 'Trabajo remoto',
       period: '04 Ene',
       dateLabel: 'Ayer',
       statusKey: 'approved',
       avatar: 'J',
-    },
-  ];
-
-  const events = [
-    {
-      id: 'evt-1',
-      title: 'Cumpleanos de Shane Wiggins',
-      time: 'Todo el dia',
-      badge: 'Feriado',
-      tone: 'text-status-warning',
-      badgeTone: 'bg-status-warning/15 text-status-warning',
-    },
-    {
-      id: 'evt-2',
-      title: 'Mikky Brongs - Reunion RH',
-      time: '12:00 pm - 12:30 pm',
-      badge: 'Reunion',
-      tone: 'text-brand-primary',
-      badgeTone: 'bg-brand-primary/10 text-brand-primary',
-    },
-    {
-      id: 'evt-3',
-      title: 'Weekly meeting',
-      time: '2:00 pm - 3:00 pm',
-      badge: 'Staff',
-      tone: 'text-status-info',
-      badgeTone: 'bg-status-info/10 text-status-info',
+      notes: 'Aprobado por supervisor',
     },
   ];
 
@@ -185,318 +229,257 @@ const Dashboard = () => {
     {
       id: 'row-1',
       member: 'Elvina Moore',
-      role: 'Junior Full Stack Developer',
-      blocks: [{ day: 0, label: 'Meeting with RH', tone: 'bg-amber-100 text-amber-700' }],
+      role: 'Desarrolladora Full Stack junior',
+      blocks: [{ day: 0, label: 'Reunion con RH', tone: 'warning' }],
     },
     {
       id: 'row-2',
       member: 'Winona Wheelock',
-      role: 'Project Manager',
-      blocks: [{ day: 3, label: 'Meeting with RH', tone: 'bg-orange-100 text-orange-700' }],
+      role: 'Lider de proyectos',
+      blocks: [{ day: 3, label: 'Reunion con RH', tone: 'warning' }],
     },
     {
       id: 'row-3',
       member: 'Mikky Brongs',
-      role: 'Junior PHP Developer',
-      blocks: [{ day: 1, label: 'End of probation', tone: 'bg-indigo-100 text-indigo-700' }],
+      role: 'Desarrollador PHP junior',
+      blocks: [{ day: 1, label: 'Fin de periodo de prueba', tone: 'violet' }],
     },
     {
       id: 'row-4',
       member: 'Adelaide Colton',
-      role: 'Senior Business Analyst',
-      blocks: [{ day: 2, label: 'Meeting with RH', tone: 'bg-amber-100 text-amber-700' }],
+      role: 'Analista de negocio senior',
+      blocks: [{ day: 2, label: 'Reunion con RH', tone: 'warning' }],
     },
     {
       id: 'row-5',
       member: 'Nathan Brasher',
-      role: 'Middle Graphic Designer',
-      blocks: [{ day: 4, label: 'End of probation', tone: 'bg-blue-100 text-blue-700' }],
+      role: 'Disenador grafico semi senior',
+      blocks: [{ day: 4, label: 'Fin de periodo de prueba', tone: 'info' }],
     },
   ];
 
   return (
-    <div className="grid gap-6 2xl:grid-cols-[330px_minmax(0,1fr)]">
-      <aside className="space-y-6">
-        <Card title="Diciembre" subtitle="Calendario operativo" className="rounded-2xl p-5">
-          <div className="grid grid-cols-7 gap-2">
+    <div className="axis-dashboard" role="region" aria-label="Dashboard operativo de RRHH">
+      <aside className="axis-dashboard__aside">
+        <section className="axis-panel axis-panel--agenda">
+          <header className="axis-panel__header axis-panel__header--calendar">
+            <button
+              type="button"
+              className="axis-calendar-nav__button"
+              onClick={() => handleMonthChange(-1)}
+              aria-label="Mes anterior"
+            >
+              <ChevronLeft size={15} />
+            </button>
+            <h2 className="axis-panel__title">{monthLabel}</h2>
+            <button
+              type="button"
+              className="axis-calendar-nav__button"
+              onClick={() => handleMonthChange(1)}
+              aria-label="Mes siguiente"
+            >
+              <ChevronRight size={15} />
+            </button>
+          </header>
+
+          <div className="axis-calendar-grid">
             {CALENDAR_WEEK_DAYS.map((weekDay) => (
-              <span
-                key={weekDay}
-                className="text-center text-[0.6875rem] font-semibold uppercase tracking-[0.05em] text-ui-text-secondary"
-              >
+              <span key={weekDay} className="axis-calendar-weekday">
                 {weekDay}
               </span>
             ))}
 
-            {CALENDAR_DAYS.map((dayItem) => (
-              <div key={dayItem.key} className="flex flex-col items-center gap-1 rounded-lg py-1.5">
-                <span
+            {calendarDays.map((dayItem) => (
+              <div key={dayItem.dateKey} className="axis-calendar-cell">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedDateKey(dayItem.dateKey);
+                    if (!dayItem.isInCurrentMonth) {
+                      setVisibleMonth(new Date(dayItem.date.getFullYear(), dayItem.date.getMonth(), 1));
+                    }
+                  }}
+                  aria-pressed={dayItem.isSelected}
                   className={[
-                    'inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-semibold',
-                    dayItem.current ? 'bg-brand-primary text-white shadow-sm' : '',
-                    dayItem.accent ? 'text-status-error' : '',
-                    dayItem.muted ? 'text-ui-text-secondary/60' : 'text-ui-dark-navy',
-                    !dayItem.current && !dayItem.muted ? 'hover:bg-ui-surface-subtle' : '',
-                  ].join(' ')}
+                    'axis-calendar-day',
+                    dayItem.isSelected ? 'is-current' : '',
+                    dayItem.isToday ? 'is-accent' : '',
+                    !dayItem.isInCurrentMonth ? 'is-muted' : '',
+                  ].join(' ').trim()}
                 >
                   {dayItem.day}
-                </span>
+                </button>
                 {dayItem.markers ? (
-                  <span className="inline-flex gap-0.5" aria-hidden="true">
+                  <span className="axis-calendar-markers" aria-hidden="true">
                     {Array.from({ length: dayItem.markers }).map((_, markerIndex) => (
-                      <span key={`${dayItem.key}-marker-${markerIndex}`} className="h-1 w-1 rounded-full bg-brand-primary/65" />
+                      <span key={`${dayItem.dateKey}-marker-${markerIndex}`} className="axis-calendar-marker" />
                     ))}
                   </span>
                 ) : (
-                  <span className="h-1" aria-hidden="true" />
+                  <span className="axis-calendar-markers axis-calendar-markers--empty" aria-hidden="true" />
                 )}
               </div>
             ))}
           </div>
-        </Card>
 
-        <Card
-          title="Eventos"
-          subtitle="Agenda de hoy"
-          className="rounded-2xl p-5"
-          bodyClassName="space-y-3"
-        >
-          {events.map((eventItem) => (
-            <article key={eventItem.id} className="rounded-xl border border-ui-light-slate bg-ui-surface-subtle p-3.5">
-              <p className="text-sm font-semibold text-ui-dark-navy">{eventItem.title}</p>
-              <p className="mt-1 text-xs text-ui-text-secondary">{eventItem.time}</p>
-              <span className={`mt-2 inline-flex rounded-full px-2.5 py-1 text-[0.6875rem] font-semibold ${eventItem.badgeTone}`}>
-                {eventItem.badge}
-              </span>
-            </article>
-          ))}
-        </Card>
+          <div className="axis-agenda-divider" />
+
+          <div className="axis-agenda-events-head">
+            <h3>Eventos</h3>
+            <button type="button" className="axis-panel__link">Todos</button>
+          </div>
+
+          <div className="axis-event-list">
+            {events.length ? (
+              events.map((eventItem) => (
+                <article
+                  key={eventItem.id}
+                  className={[
+                    `axis-event-item axis-event-item--${eventItem.badgeTone}`,
+                    eventItem.featured ? 'is-featured' : '',
+                  ].join(' ').trim()}
+                >
+                  <div className="axis-event-item__row">
+                    <p className="axis-event-item__title">{eventItem.title}</p>
+                    <span className="axis-event-item__time">{eventItem.time}</span>
+                  </div>
+                  <div className="axis-event-item__meta">
+                    <span className={`axis-chip axis-chip--${eventItem.badgeTone}`}>{eventItem.badge}</span>
+                  </div>
+                </article>
+              ))
+            ) : (
+              <p className="axis-event-empty">No hay eventos para este dia.</p>
+            )}
+          </div>
+        </section>
       </aside>
 
-      <section className="space-y-6">
-        <div className="grid gap-6 xl:grid-cols-3">
-          {stats.map((stat) => {
-            const Icon = stat.icon;
-            const TrendIcon = stat.trendIcon;
+      <section className="axis-dashboard__main">
+        <div className="axis-top-grid">
+          <section className="axis-panel axis-panel--applications">
+            <header className="axis-panel__header">
+              <h2 className="axis-panel__title">Postulaciones</h2>
+              <button type="button" className="axis-panel__link">Ver todo</button>
+            </header>
 
-            return (
-              <Card key={stat.label} className="rounded-2xl p-5">
-                <div className="mb-2 flex items-center justify-between gap-3">
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${stat.iconTone}`}>
-                    <Icon size={20} />
-                  </div>
-                  <p className="text-2xl font-extrabold text-ui-dark-navy">{stat.value}</p>
-                </div>
-
-                <p className="text-sm font-semibold text-ui-text-secondary">{stat.label}</p>
-
-                <div className="mt-3 flex items-center gap-2">
-                  {TrendIcon ? (
-                    <span className={`inline-flex items-center text-xs font-bold ${stat.trendTone}`}>
-                      <TrendIcon size={16} />
-                    </span>
-                  ) : (
-                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-brand-primary/10 text-brand-primary">
-                      <Sparkles size={14} />
-                    </span>
-                  )}
-                  {stat.trendText ? <span className="text-xs text-ui-text-secondary opacity-90">{stat.trendText}</span> : null}
-                  {stat.subtitle ? <span className="text-xs text-ui-text-secondary opacity-90">{stat.subtitle}</span> : null}
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-
-        <div className="grid gap-6 xl:grid-cols-[1.1fr_1.9fr]">
-          <Card title="Job applications" subtitle="Candidatos destacados" className="rounded-2xl p-5">
-            <ul className="space-y-3.5">
+            <ul className="axis-candidate-list axis-candidate-list--scroll">
               {highlightedCandidates.map((candidate) => (
-                <li key={candidate.id} className="flex items-center gap-3">
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-ui-surface-subtle text-xs font-bold text-brand-primary">
-                    {candidate.initials}
-                  </span>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-ui-dark-navy">{candidate.name}</p>
-                    <p className="truncate text-xs text-ui-text-secondary">Applied for {candidate.role}</p>
+                <li key={candidate.id} className="axis-candidate-item">
+                  <span className="axis-avatar axis-avatar--candidate">{candidate.initials}</span>
+                  <div className="axis-candidate-item__content">
+                    <p className="axis-candidate-item__name">{candidate.name}</p>
+                    <p className="axis-candidate-item__role">Postulado para {candidate.role}</p>
                   </div>
                 </li>
               ))}
             </ul>
-          </Card>
+          </section>
 
-          <Card title="Ausencias hoy" subtitle="Distribucion diaria" className="rounded-2xl p-5">
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              {leaveStats.map((item) => (
-                <article key={item.label} className="rounded-xl border border-ui-light-slate bg-ui-surface-subtle p-3.5">
-                  <p className="text-[0.75rem] font-semibold uppercase tracking-[0.04em] text-ui-text-secondary">{item.label}</p>
-                  <p className="mt-1 text-2xl font-extrabold text-ui-dark-navy">{item.total}</p>
-                  <div className="mt-2 flex -space-x-2">
-                    {item.avatars.map((avatarCode) => (
-                      <span
-                        key={`${item.label}-${avatarCode}`}
-                        className="inline-flex h-7 w-7 items-center justify-center rounded-full border-2 border-ui-surface bg-brand-primary/10 text-[0.625rem] font-bold text-brand-primary"
-                      >
-                        {avatarCode}
-                      </span>
-                    ))}
+          <div className="axis-top-right">
+            <section className="axis-absence-strip" aria-label="Ausencias de hoy">
+              {absences.map((item) => (
+                <article key={item.label} className="axis-absence-item">
+                  <p className="axis-absence-item__label">{item.label}</p>
+                  <div className="axis-absence-item__row">
+                    <div className="axis-avatar-stack">
+                      {item.avatars.map((avatarCode) => (
+                        <span key={`${item.label}-${avatarCode}`} className="axis-avatar axis-avatar--stacked">
+                          {avatarCode}
+                        </span>
+                      ))}
+                    </div>
+                    <p className="axis-absence-item__value">{item.total}</p>
                   </div>
                 </article>
               ))}
-            </div>
-          </Card>
-        </div>
+            </section>
 
-        <div className="grid gap-6 xl:grid-cols-[2fr_1fr]">
-          <Card title="Solicitudes" subtitle="Ultimos movimientos" className="rounded-2xl p-5">
-            <div className="overflow-x-auto">
-              <Table className="min-w-[760px]">
-                <TableCaption>Solicitudes recientes de empleados</TableCaption>
-                <TableHead>
-                  <TableRow className="hover:bg-transparent">
-                    <TableHeaderCell scope="col" className="bg-transparent px-0 py-3 text-ui-text-secondary opacity-80">
-                      Nombre
-                    </TableHeaderCell>
-                    <TableHeaderCell scope="col" className="bg-transparent px-0 py-3 text-ui-text-secondary opacity-80">
-                      Periodo
-                    </TableHeaderCell>
-                    <TableHeaderCell scope="col" className="bg-transparent px-0 py-3 text-ui-text-secondary opacity-80">
-                      Tipo
-                    </TableHeaderCell>
-                    <TableHeaderCell scope="col" className="bg-transparent px-0 py-3 text-ui-text-secondary opacity-80">
-                      Estado
-                    </TableHeaderCell>
-                    <TableHeaderCell scope="col" className="bg-transparent px-0 py-3 text-ui-text-secondary opacity-80">
-                      Fecha
-                    </TableHeaderCell>
-                  </TableRow>
-                </TableHead>
+            <section className="axis-panel axis-panel--requests">
+              <header className="axis-panel__header">
+                <h2 className="axis-panel__title">Solicitudes</h2>
+                <button type="button" className="axis-panel__link">Ver todo</button>
+              </header>
 
-                <TableBody>
-                  {requests.map((requestItem) => {
-                    const statusMeta = STATUS_META[requestItem.statusKey] || STATUS_META.pending;
-                    return (
-                      <TableRow key={requestItem.id} className="hover:bg-ui-background">
-                        <TableCell className="px-0 py-4">
-                          <div className="flex items-center gap-3">
-                            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-ui-surface-subtle text-xs font-bold text-brand-primary">
-                              {requestItem.avatar}
-                            </span>
-                            <div>
-                              <p className="font-semibold text-ui-dark-navy">{requestItem.name}</p>
-                              <p className="text-[0.6875rem] text-ui-text-secondary">{requestItem.role}</p>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="px-0 py-4">{requestItem.period}</TableCell>
-                        <TableCell className="px-0 py-4">{requestItem.type}</TableCell>
-                        <TableCell className="px-0 py-4">
-                          <StatusBadge status={statusMeta.status} label={statusMeta.label} showDot />
-                        </TableCell>
-                        <TableCell className="px-0 py-4">{requestItem.dateLabel}</TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
-          </Card>
+              <div className="axis-table-shell">
+                <div className="axis-table-scroll" role="region" aria-label="Solicitudes recientes">
+                  <table className="axis-table">
+                    <caption className="axis-sr-only">Solicitudes recientes de empleados</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Periodo</th>
+                        <th scope="col">Tipo</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">Fecha</th>
+                        <th scope="col">Notas</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {requests.map((requestItem) => {
+                        const statusMeta = STATUS_META[requestItem.statusKey] || STATUS_META.pending;
 
-          <Card title="Staff mood" subtitle="Pulso del equipo" className="rounded-2xl p-5">
-            <div className="flex justify-center py-2">
-              <div className="relative h-44 w-44">
-                <svg viewBox="0 0 36 36" className="block h-full w-full">
-                  <path
-                    className="fill-none stroke-current text-ui-light-slate"
-                    strokeWidth="3.8"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  />
-                  <path
-                    className="fill-none stroke-current text-brand-action"
-                    strokeWidth="3.8"
-                    strokeLinecap="round"
-                    strokeDasharray="53, 100"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  />
-                  <path
-                    className="fill-none stroke-current text-status-success"
-                    strokeWidth="3.8"
-                    strokeLinecap="round"
-                    strokeDasharray="23, 100"
-                    strokeDashoffset="-53"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  />
-                  <path
-                    className="fill-none stroke-current text-status-warning"
-                    strokeWidth="3.8"
-                    strokeLinecap="round"
-                    strokeDasharray="14, 100"
-                    strokeDashoffset="-76"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  />
-                  <path
-                    className="fill-none stroke-current text-violet-500"
-                    strokeWidth="3.8"
-                    strokeLinecap="round"
-                    strokeDasharray="6, 100"
-                    strokeDashoffset="-90"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  />
-                </svg>
-
-                <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-xl font-extrabold text-ui-dark-navy">58%</span>
-                  <span className="text-xs font-semibold text-ui-text-secondary">Neutral</span>
+                        return (
+                          <tr key={requestItem.id}>
+                            <td>
+                              <div className="axis-table-user">
+                                <span className="axis-avatar axis-avatar--table">{requestItem.avatar}</span>
+                                <div>
+                                  <p className="axis-table-user__name">{requestItem.name}</p>
+                                  <p className="axis-table-user__role">{requestItem.role}</p>
+                                </div>
+                              </div>
+                            </td>
+                            <td>{requestItem.period}</td>
+                            <td>{requestItem.type}</td>
+                            <td>
+                              <span className={`axis-status axis-status--${statusMeta.variant}`}>
+                                <span className="axis-status__dot" aria-hidden="true" />
+                                {statusMeta.label}
+                              </span>
+                            </td>
+                            <td>{requestItem.dateLabel}</td>
+                            <td>{requestItem.notes}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
                 </div>
               </div>
-            </div>
-
-            <ul className="mt-4 space-y-2 text-xs font-semibold text-ui-text-secondary">
-              <li className="flex items-center justify-between rounded-lg bg-ui-surface-subtle px-3 py-2">
-                <span className="inline-flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-brand-action" /> Neutral</span>
-                <span>58%</span>
-              </li>
-              <li className="flex items-center justify-between rounded-lg bg-ui-surface-subtle px-3 py-2">
-                <span className="inline-flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-status-success" /> Happy</span>
-                <span>23%</span>
-              </li>
-              <li className="flex items-center justify-between rounded-lg bg-ui-surface-subtle px-3 py-2">
-                <span className="inline-flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-status-warning" /> Excited</span>
-                <span>14%</span>
-              </li>
-            </ul>
-          </Card>
+            </section>
+          </div>
         </div>
 
-        <Card
-          title="Probation timeline"
-          subtitle="Seguimiento semanal de reuniones y fin de periodo"
-          className="rounded-2xl p-5"
-        >
-          <div className="overflow-x-auto">
-            <div className="min-w-[860px] space-y-3">
-              <div className="grid grid-cols-[240px_repeat(5,minmax(0,1fr))] gap-2 px-2 text-[0.6875rem] font-semibold uppercase tracking-[0.04em] text-ui-text-secondary">
-                <span>Colaborador</span>
-                {timelineDays.map((dayLabel) => (
-                  <span key={dayLabel} className="text-center">{dayLabel}</span>
-                ))}
-              </div>
+        <div className="axis-bottom-grid">
+          <section className="axis-panel axis-panel--timeline">
+            <header className="axis-panel__header">
+              <h2 className="axis-panel__title">Timeline de periodos de prueba</h2>
+              <button type="button" className="axis-panel__link">Ver todo</button>
+            </header>
 
+            <div className="axis-timeline-grid axis-timeline-grid--header">
+              <span>Colaborador</span>
+              {timelineDays.map((dayLabel) => (
+                <span key={dayLabel}>{dayLabel}</span>
+              ))}
+            </div>
+
+            <div className="axis-timeline-scroll" role="region" aria-label="Timeline de periodo de prueba">
               {timelineRows.map((row) => (
-                <div key={row.id} className="grid grid-cols-[240px_repeat(5,minmax(0,1fr))] gap-2 rounded-xl border border-ui-light-slate bg-ui-surface-subtle px-2 py-2.5">
-                  <div className="px-2">
-                    <p className="text-sm font-semibold text-ui-dark-navy">{row.member}</p>
-                    <p className="text-xs text-ui-text-secondary">{row.role}</p>
+                <div key={row.id} className="axis-timeline-grid axis-timeline-row">
+                  <div className="axis-timeline-member">
+                    <p>{row.member}</p>
+                    <small>{row.role}</small>
                   </div>
 
                   {timelineDays.map((_, dayIndex) => {
                     const block = row.blocks.find((item) => item.day === dayIndex);
+
                     return (
-                      <div key={`${row.id}-day-${dayIndex}`} className="flex min-h-[38px] items-center justify-center rounded-lg border border-dashed border-ui-light-slate bg-ui-surface">
+                      <div key={`${row.id}-day-${dayIndex}`} className="axis-timeline-slot">
                         {block ? (
-                          <span className={`rounded-md px-2 py-1 text-[0.6875rem] font-semibold ${block.tone}`}>
-                            {block.label}
-                          </span>
+                          <span className={`axis-block-chip axis-block-chip--${block.tone}`}>{block.label}</span>
                         ) : null}
                       </div>
                     );
@@ -504,8 +487,58 @@ const Dashboard = () => {
                 </div>
               ))}
             </div>
-          </div>
-        </Card>
+          </section>
+
+          <section className="axis-panel axis-panel--mood">
+            <header className="axis-panel__header">
+              <h2 className="axis-panel__title">Clima del equipo</h2>
+              <button type="button" className="axis-panel__link">Detalles</button>
+            </header>
+
+            <div className="axis-mood-center">
+              <div className="axis-mood-chart">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={moodData}
+                      dataKey="value"
+                      nameKey="label"
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={76}
+                      outerRadius={120}
+                      paddingAngle={0.9}
+                      stroke="none"
+                      startAngle={90}
+                      endAngle={-270}
+                    >
+                      {moodData.map((entry) => (
+                        <Cell key={entry.key} fill={entry.color} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+
+                <div className="axis-mood-value">
+                  <span>58%</span>
+                  <small>Neutral</small>
+                </div>
+              </div>
+            </div>
+
+            <ul className="axis-mood-list">
+              {moodData.map((item) => (
+                <li key={item.key}>
+                  <span className="axis-mood-list__label">
+                    <span className={`axis-dot axis-dot--${item.key}`} />
+                    {item.label}
+                  </span>
+                  <span>{item.value}%</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
       </section>
     </div>
   );

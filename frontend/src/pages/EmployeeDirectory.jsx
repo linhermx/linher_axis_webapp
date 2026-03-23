@@ -7,6 +7,7 @@ import { Button, Card, PageHeader } from '../components/ui';
 import { useAuth } from '../hooks/useAuth';
 import { hasAnyPermission } from '../lib/permissions';
 import api from '../services/api';
+import '../styles/employee-directory.css';
 
 const EmployeeDirectory = () => {
   const [employees, setEmployees] = useState([]);
@@ -39,7 +40,7 @@ const EmployeeDirectory = () => {
   }, []);
 
   return (
-    <section>
+    <section className="employee-directory">
       <PageHeader
         title="Directorio de Empleados"
         subtitle="Consulta, filtra y navega por el personal activo."
@@ -55,13 +56,13 @@ const EmployeeDirectory = () => {
 
       {loading ? (
         <Card>
-          <p className="text-sm text-ui-text-secondary">Cargando empleados...</p>
+          <p className="employee-directory__loading">Cargando empleados...</p>
         </Card>
       ) : (
         <DataTable
           columns={columns}
           data={employees}
-          onRowClick={(emp) => navigate(`/employees/${emp.id}/profile-360`)}
+          onRowClick={(employee) => navigate(`/employees/${employee.id}/profile-360`)}
         />
       )}
     </section>

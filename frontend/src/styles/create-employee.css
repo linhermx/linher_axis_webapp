@@ -1,0 +1,19 @@
+.create-employee {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.create-employee__description {
+  color: var(--text-secondary);
+  font-size: 0.86rem;
+  line-height: 1.6;
+  max-width: 72ch;
+}
+
+.create-employee__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}

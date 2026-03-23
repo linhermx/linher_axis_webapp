@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useId, useRef, useState } from 'react';
+﻿import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '../../lib/cn';
 import Button from './Button';
 
 const alignClasses = {
-  left: 'left-0',
-  right: 'right-0',
+  left: 'ui-menu__panel--left',
+  right: 'ui-menu__panel--right',
 };
 
 const CustomMenu = ({
@@ -52,23 +52,19 @@ const CustomMenu = ({
   }, [open, setMenuOpen]);
 
   return (
-    <div ref={containerRef} className={cn('relative inline-flex', className)}>
+    <div ref={containerRef} className={cn('ui-menu', className)}>
       <Button
         id={buttonId}
         type="button"
         variant="secondary"
-        className={cn('min-w-[120px] justify-between', triggerClassName)}
+        className={cn(triggerClassName)}
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={menuId}
         onClick={() => setMenuOpen(!open)}
       >
         <span>{label}</span>
-        <ChevronDown
-          size={16}
-          className={cn('transition-transform', open && 'rotate-180')}
-          aria-hidden="true"
-        />
+        <ChevronDown size={16} aria-hidden="true" />
       </Button>
 
       {open ? (
@@ -76,11 +72,7 @@ const CustomMenu = ({
           id={menuId}
           role="menu"
           aria-labelledby={buttonId}
-          className={cn(
-            'absolute top-[calc(100%+8px)] z-50 min-w-[200px] overflow-hidden rounded-md border border-ui-light-slate bg-ui-surface py-1 shadow-md',
-            alignClasses[align] || alignClasses.right,
-            menuClassName
-          )}
+          className={cn('ui-menu__panel', alignClasses[align] || alignClasses.right, menuClassName)}
         >
           {items.map((item) => (
             <button
@@ -88,17 +80,14 @@ const CustomMenu = ({
               type="button"
               role="menuitem"
               disabled={item.disabled}
-              className={cn(
-                'flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-ui-text-main transition-colors hover:bg-ui-background',
-                item.disabled && 'cursor-not-allowed opacity-60 hover:bg-transparent'
-              )}
+              className="ui-menu__item"
               onClick={() => {
                 if (item.disabled) return;
                 item.onClick?.();
                 setMenuOpen(false);
               }}
             >
-              {item.icon ? <span className="text-ui-text-secondary">{item.icon}</span> : null}
+              {item.icon ? <span>{item.icon}</span> : null}
               <span>{item.label}</span>
             </button>
           ))}

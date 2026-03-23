@@ -6,6 +6,7 @@ import Profile360Content from '../components/Profile360Content';
 import { useAuth } from '../hooks/useAuth';
 import { hasAnyPermission } from '../lib/permissions';
 import api from '../services/api';
+import '../styles/profile-360.css';
 
 const EmployeeProfile360 = () => {
   const { id } = useParams();
@@ -98,10 +99,10 @@ const EmployeeProfile360 = () => {
   }, [id, profile, visibilityScope, canViewPayroll]);
 
   return (
-    <section>
+    <section className="profile360-page">
       <PageHeader
         title="Perfil de Colaborador"
-        subtitle="Vista 360 de informacion administrativa sincronizada desde Microsip."
+        subtitle="Vista 360 de información administrativa sincronizada desde Microsip."
         actions={(
           <Button type="button" variant="secondary" onClick={() => navigate('/employees')}>
             <ArrowLeft size={16} />
@@ -112,20 +113,20 @@ const EmployeeProfile360 = () => {
 
       {loading ? (
         <Card>
-          <p className="text-sm text-ui-text-secondary">Cargando perfil del colaborador...</p>
+          <p className="profile360-page__loading">Cargando perfil del colaborador...</p>
         </Card>
       ) : null}
 
       {!loading && error ? (
-        <Alert variant="error" title="No se pudo cargar el perfil" className="mb-6">
+        <Alert variant="error" title="No se pudo cargar el perfil">
           {error}
         </Alert>
       ) : null}
 
       {!loading && !error && linkMissing ? (
         <StatusView
-          title="Colaborador sin vinculo Microsip"
-          description="Este colaborador todavia no tiene una ficha enlazada en Microsip."
+          title="Colaborador sin vínculo Microsip"
+          description="Este colaborador todavía no tiene una ficha enlazada en Microsip."
         />
       ) : null}
 

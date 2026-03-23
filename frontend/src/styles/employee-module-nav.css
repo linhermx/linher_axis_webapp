@@ -1,0 +1,31 @@
+.employee-module-nav {
+  background: color-mix(in srgb, var(--surface-muted) 84%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--border) 84%, transparent);
+  border-radius: 10px;
+  display: inline-flex;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 6px;
+}
+
+.employee-module-nav__item {
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 9px 12px;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.employee-module-nav__item:hover {
+  background: var(--ui-list-hover-bg);
+  color: var(--text-main);
+}
+
+.employee-module-nav__item.is-active {
+  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--primary) 24%, transparent);
+  box-shadow: var(--shadow-xs);
+  color: var(--primary);
+}
