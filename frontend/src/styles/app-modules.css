@@ -60,14 +60,19 @@
 
 /* Source: dashboard.css */
 .axis-dashboard {
+  --axis-fs-title: var(--fs-title-md);
+  --axis-fs-body: var(--fs-body-sm);
+  --axis-fs-body-strong: var(--fs-body-md);
+  --axis-fs-caption: var(--fs-caption);
+  --axis-fs-label: var(--fs-label);
   display: grid;
+  font-size: var(--fs-body-md);
   gap: 20px;
   grid-template-columns: minmax(294px, 316px) minmax(0, 1fr);
   height: calc(100vh - var(--header-height-current, var(--header-height)) - 42px);
   height: calc(100dvh - var(--header-height-current, var(--header-height)) - 42px);
   max-height: calc(100vh - var(--header-height-current, var(--header-height)) - 42px);
   max-height: calc(100dvh - var(--header-height-current, var(--header-height)) - 42px);
-  font-size: 0.93rem;
 }
 
 .axis-dashboard__aside,
@@ -127,20 +132,20 @@
 
 .axis-panel__title {
   color: var(--text-main);
-  font-size: 0.87rem;
+  font-size: var(--axis-fs-title);
   font-weight: 800;
   letter-spacing: -0.01em;
 }
 
 .axis-panel__subtitle {
   color: var(--text-secondary);
-  font-size: 0.76rem;
+  font-size: var(--axis-fs-caption);
   margin-top: 4px;
 }
 
 .axis-panel__link {
   color: var(--text-secondary);
-  font-size: 0.72rem;
+  font-size: var(--axis-fs-caption);
   font-weight: 700;
   transition: color 0.2s ease;
 }
@@ -164,7 +169,7 @@
 
 .axis-calendar-weekday {
   color: var(--text-secondary);
-  font-size: 0.66rem;
+  font-size: var(--axis-fs-label);
   font-weight: 800;
   letter-spacing: 0.04em;
   text-align: center;
@@ -188,7 +193,7 @@
   color: var(--text-main);
   cursor: pointer;
   display: inline-flex;
-  font-size: 0.9rem;
+  font-size: var(--axis-fs-body-strong);
   font-weight: 700;
   height: 33px;
   justify-content: center;
@@ -247,7 +252,7 @@
 
 .axis-agenda-events-head h3 {
   color: var(--text-main);
-  font-size: 0.94rem;
+  font-size: var(--axis-fs-title);
   font-weight: 800;
   letter-spacing: -0.01em;
 }
@@ -284,7 +289,7 @@
 
 .axis-event-item__title {
   color: var(--text-main);
-  font-size: 0.78rem;
+  font-size: var(--axis-fs-body);
   font-weight: 700;
   max-width: 168px;
   overflow: hidden;
@@ -295,7 +300,7 @@
 .axis-event-item__time {
   color: var(--text-secondary);
   flex-shrink: 0;
-  font-size: 0.74rem;
+  font-size: var(--axis-fs-caption);
   font-weight: 700;
 }
 
@@ -305,7 +310,7 @@
 
 .axis-event-empty {
   color: var(--text-secondary);
-  font-size: 0.76rem;
+  font-size: var(--axis-fs-caption);
   font-weight: 600;
   padding: 8px 2px;
 }
@@ -313,7 +318,7 @@
 .axis-chip {
   border-radius: 999px;
   display: inline-flex;
-  font-size: 0.64rem;
+  font-size: var(--axis-fs-label);
   font-weight: 700;
   line-height: 1;
   padding: 4px 8px;
@@ -388,7 +393,7 @@
 
 .axis-candidate-item__name {
   color: var(--text-main);
-  font-size: 0.86rem;
+  font-size: var(--axis-fs-body-strong);
   font-weight: 700;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -397,7 +402,7 @@
 
 .axis-candidate-item__role {
   color: var(--text-secondary);
-  font-size: 0.73rem;
+  font-size: var(--axis-fs-caption);
   margin-top: 1px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -437,7 +442,7 @@
 
 .axis-absence-item__label {
   color: var(--text-main);
-  font-size: 0.87rem;
+  font-size: var(--axis-fs-body-strong);
   font-weight: 700;
   line-height: 1.2;
 }
@@ -469,7 +474,7 @@
   border: 2px solid var(--surface);
   border-radius: 999px;
   color: var(--primary);
-  font-size: 0.78rem;
+  font-size: var(--axis-fs-caption);
   height: 42px;
   width: 42px;
 }
@@ -483,7 +488,7 @@
   border: 2px solid var(--surface);
   border-radius: 999px;
   color: var(--primary);
-  font-size: 0.69rem;
+  font-size: var(--axis-fs-label);
   height: 32px;
   margin-left: -15px;
   width: 32px;
@@ -522,7 +527,7 @@
 .axis-table th,
 .axis-table td {
   border-bottom: 0;
-  font-size: 0.82rem;
+  font-size: var(--axis-fs-body, var(--fs-body-sm));
   padding: 9px 9px;
   text-align: left;
   vertical-align: middle;
@@ -535,7 +540,7 @@
 .axis-table thead th {
   background: color-mix(in srgb, var(--surface-muted) 86%, var(--surface));
   color: color-mix(in srgb, var(--text-secondary) 90%, var(--text));
-  font-size: 0.69rem;
+  font-size: var(--axis-fs-label, var(--fs-label));
   font-weight: 800;
   letter-spacing: 0.03em;
   position: sticky;
@@ -575,20 +580,20 @@
   border: 2px solid var(--surface);
   border-radius: 999px;
   color: var(--primary);
-  font-size: 0.75rem;
+  font-size: var(--axis-fs-caption);
   height: 40px;
   width: 40px;
 }
 
 .axis-table-user__name {
   color: var(--text-main);
-  font-size: 0.87rem;
+  font-size: var(--axis-fs-body-strong, var(--fs-body-md));
   font-weight: 700;
 }
 
 .axis-table-user__role {
   color: var(--text-secondary);
-  font-size: 0.72rem;
+  font-size: var(--axis-fs-caption, var(--fs-caption));
   margin-top: 1px;
 }
 
@@ -596,7 +601,7 @@
   align-items: center;
   display: inline-flex;
   gap: 7px;
-  font-size: 0.82rem;
+  font-size: var(--axis-fs-body, var(--fs-body-sm));
   font-weight: 700;
 }
 
@@ -661,7 +666,7 @@
 .axis-timeline-grid--header {
   border-bottom: 1px solid color-mix(in srgb, var(--border-strong) 44%, transparent);
   color: color-mix(in srgb, var(--text-secondary) 90%, var(--text));
-  font-size: 0.72rem;
+  font-size: var(--axis-fs-label);
   font-weight: 800;
   letter-spacing: 0.04em;
   margin-bottom: 2px;
@@ -686,14 +691,14 @@
 
 .axis-timeline-member p {
   color: var(--text-main);
-  font-size: 0.84rem;
+  font-size: var(--axis-fs-body);
   font-weight: 700;
 }
 
 .axis-timeline-member small {
   color: var(--text-secondary);
   display: block;
-  font-size: 0.72rem;
+  font-size: var(--axis-fs-caption);
   margin-top: 2px;
 }
 
@@ -708,7 +713,7 @@
 
 .axis-block-chip {
   border-radius: 9px;
-  font-size: 0.7rem;
+  font-size: var(--axis-fs-label);
   font-weight: 700;
   line-height: 1.2;
   padding: 5px 8px;
@@ -770,7 +775,7 @@
 
 .axis-mood-value small {
   color: var(--text-secondary);
-  font-size: 0.84rem;
+  font-size: var(--axis-fs-body);
   font-weight: 700;
   margin-top: 4px;
 }
@@ -779,7 +784,7 @@
   border-top: 1px solid color-mix(in srgb, var(--border-strong) 42%, transparent);
   color: var(--text-secondary);
   display: grid;
-  font-size: 0.8rem;
+  font-size: var(--axis-fs-body);
   font-weight: 700;
   gap: 7px 14px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -962,8 +967,14 @@
 .employee-directory {
   --employee-selected-bg: color-mix(in srgb, var(--primary) 8%, var(--surface));
   --employee-row-bg: color-mix(in srgb, var(--surface-muted) 66%, var(--surface));
+  --employee-fs-title: var(--fs-title-md);
+  --employee-fs-label: var(--fs-label);
+  --employee-fs-value: var(--fs-body-md);
+  --employee-fs-body: var(--fs-body-sm);
+  --employee-fs-caption: var(--fs-caption);
   display: flex;
   flex-direction: column;
+  font-size: var(--fs-body-md);
   gap: 12px;
   height: calc(100vh - var(--header-height-current, var(--header-height)) - 42px);
   height: calc(100dvh - var(--header-height-current, var(--header-height)) - 42px);
@@ -1008,7 +1019,7 @@
 
 .employee-directory__loading {
   color: var(--text-secondary);
-  font-size: 0.84rem;
+  font-size: var(--employee-fs-body);
 }
 
 .employee-directory__department-summary {
@@ -1027,7 +1038,7 @@
 
 .employee-directory__department-metric-label {
   color: var(--text-secondary);
-  font-size: 0.66rem;
+  font-size: var(--employee-fs-label);
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -1035,7 +1046,7 @@
 
 .employee-directory__department-metric-value {
   color: var(--text-main);
-  font-size: 0.92rem;
+  font-size: var(--employee-fs-title);
   font-weight: 800;
   margin-top: 4px;
 }
@@ -1102,7 +1113,7 @@
 
 .employee-directory__department-item-name {
   color: var(--text-main);
-  font-size: 0.84rem;
+  font-size: var(--employee-fs-body);
   font-weight: 700;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1111,7 +1122,7 @@
 
 .employee-directory__department-item-meta {
   color: var(--text-secondary);
-  font-size: 0.74rem;
+  font-size: var(--employee-fs-caption);
   font-weight: 600;
 }
 
@@ -1122,7 +1133,7 @@
   color: var(--text-main);
   display: inline-flex;
   flex-shrink: 0;
-  font-size: 0.74rem;
+  font-size: var(--employee-fs-caption);
   font-weight: 800;
   height: 26px;
   justify-content: center;
@@ -1161,7 +1172,7 @@
 
 .employee-directory__summary-label {
   color: var(--text-secondary);
-  font-size: 0.65rem;
+  font-size: var(--employee-fs-label);
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -1169,7 +1180,7 @@
 
 .employee-directory__summary-value {
   color: var(--text-main);
-  font-size: 0.95rem;
+  font-size: var(--employee-fs-title);
   font-weight: 800;
   margin-top: 2px;
 }
@@ -1262,13 +1273,13 @@
 
 .employee-directory__person-avatar,
 .employee-directory__related-avatar {
-  font-size: 0.73rem;
+  font-size: var(--employee-fs-caption);
   height: 40px;
   width: 40px;
 }
 
 .employee-directory__detail-avatar {
-  font-size: 0.88rem;
+  font-size: var(--employee-fs-value);
   height: 50px;
   width: 50px;
 }
@@ -1288,7 +1299,7 @@
 
 .employee-directory__person-name,
 .employee-directory__related-name {
-  font-size: 0.88rem;
+  font-size: var(--employee-fs-value);
 }
 
 .employee-directory__person-name {
@@ -1301,14 +1312,14 @@
 }
 
 .employee-directory__detail-name {
-  font-size: 0.97rem;
+  font-size: var(--employee-fs-title);
 }
 
 .employee-directory__person-role,
 .employee-directory__related-role,
 .employee-directory__detail-role {
   color: var(--text-secondary);
-  font-size: 0.77rem;
+  font-size: var(--employee-fs-body);
   overflow-wrap: anywhere;
 }
 
@@ -1330,7 +1341,7 @@
   border-radius: 999px;
   color: var(--department-chip-fg, color-mix(in srgb, var(--primary) 84%, black));
   display: inline-flex;
-  font-size: 0.68rem;
+  font-size: var(--employee-fs-label);
   font-weight: 700;
   justify-self: flex-start;
   max-width: 100%;
@@ -1451,7 +1462,7 @@
 
 .employee-directory__detail-item dt {
   color: var(--text-secondary);
-  font-size: 0.65rem;
+  font-size: var(--employee-fs-label);
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -1459,7 +1470,7 @@
 
 .employee-directory__detail-item dd {
   color: var(--text-main);
-  font-size: 0.82rem;
+  font-size: var(--employee-fs-body);
   font-weight: 700;
   margin-top: 5px;
 }
@@ -1487,7 +1498,7 @@
 
 .employee-directory__related-title {
   color: var(--text-main);
-  font-size: 0.83rem;
+  font-size: var(--employee-fs-body);
   font-weight: 800;
   letter-spacing: -0.01em;
 }
@@ -1541,7 +1552,7 @@
 }
 
 .employee-directory__related-chip {
-  font-size: 0.66rem;
+  font-size: var(--employee-fs-label);
   margin-top: 1px;
 }
 
@@ -1559,7 +1570,7 @@
 
 .employee-directory__related-empty {
   color: var(--text-secondary);
-  font-size: 0.8rem;
+  font-size: var(--employee-fs-body);
 }
 
 @media (max-width: 1540px) {
@@ -1645,14 +1656,15 @@
 }
 
 .profile360 {
-  --profile360-fs-name: 1.2rem;
-  --profile360-fs-role: 0.88rem;
-  --profile360-fs-tab: 0.86rem;
-  --profile360-fs-section-title: 1rem;
-  --profile360-fs-label: 0.7rem;
-  --profile360-fs-value: 0.92rem;
-  --profile360-fs-caption: 0.8rem;
+  --profile360-fs-name: var(--fs-title-xl);
+  --profile360-fs-role: var(--fs-body-md);
+  --profile360-fs-tab: var(--fs-tab);
+  --profile360-fs-section-title: var(--fs-title-md);
+  --profile360-fs-label: var(--fs-label);
+  --profile360-fs-value: var(--fs-body-md);
+  --profile360-fs-caption: var(--fs-caption);
   flex: 1;
+  font-size: var(--fs-body-md);
   min-height: 0;
   overflow: auto;
   padding-right: 4px;
@@ -1660,7 +1672,7 @@
 
 .profile360-page__loading {
   color: var(--text-secondary);
-  font-size: var(--profile360-fs-caption, 0.8rem);
+  font-size: var(--profile360-fs-caption);
 }
 
 .profile360__workspace {
