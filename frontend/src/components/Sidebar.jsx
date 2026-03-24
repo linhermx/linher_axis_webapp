@@ -15,7 +15,6 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { hasAnyPermission } from '../lib/permissions';
-import '../styles/sidebar.css';
 
 const Sidebar = ({ collapsed = false, onToggleCollapse }) => {
   const { user } = useAuth();

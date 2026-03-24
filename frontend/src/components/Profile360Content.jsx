@@ -12,7 +12,6 @@ import {
   TableRow,
   TableShell,
 } from './ui';
-import '../styles/profile-360.css';
 
 const TAB_OPTIONS = [
   { key: 'personal', label: 'Información personal' },

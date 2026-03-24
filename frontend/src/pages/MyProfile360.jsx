@@ -2,7 +2,6 @@
 import { Alert, Card, PageHeader, StatusView } from '../components/ui';
 import Profile360Content from '../components/Profile360Content';
 import api from '../services/api';
-import '../styles/profile-360.css';
 
 const MyProfile360 = () => {
   const [profile, setProfile] = useState(null);

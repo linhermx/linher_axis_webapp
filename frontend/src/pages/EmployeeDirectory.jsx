@@ -21,7 +21,6 @@ import { useAuth } from '../hooks/useAuth';
 import { cn } from '../lib/cn';
 import { hasAnyPermission } from '../lib/permissions';
 import api from '../services/api';
-import '../styles/employee-directory.css';
 
 const normalizeText = (value) => String(value || '').trim();
 const normalizeKey = (value) => normalizeText(value).toLowerCase();

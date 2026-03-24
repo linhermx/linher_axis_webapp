@@ -2,7 +2,6 @@
 import { Building2, ChevronRight, UserCircle2, Users } from 'lucide-react';
 import { Card, StatusBadge, StatusView } from '../components/ui';
 import api from '../services/api';
-import '../styles/organization-structure.css';
 
 const DEPTH_CLASS_MAP = [
   'organization-unit-depth-0',

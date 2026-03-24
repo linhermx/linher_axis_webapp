@@ -2,7 +2,6 @@
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save } from 'lucide-react';
 import { Button, Card, PageHeader } from '../components/ui';
-import '../styles/create-employee.css';
 
 const CreateEmployee = () => {
   const navigate = useNavigate();

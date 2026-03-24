@@ -20,7 +20,6 @@ import {
   TableShell,
 } from '../components/ui';
 import api from '../services/api';
-import '../styles/microsip-admin.css';
 
 const SYNC_TYPE_OPTIONS = [
   { value: 'full', label: 'Sincronización completa' },

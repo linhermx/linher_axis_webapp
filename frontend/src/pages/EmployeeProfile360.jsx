@@ -6,7 +6,6 @@ import Profile360Content from '../components/Profile360Content';
 import { useAuth } from '../hooks/useAuth';
 import { hasAnyPermission } from '../lib/permissions';
 import api from '../services/api';
-import '../styles/profile-360.css';
 
 const EmployeeProfile360 = () => {
   const { id } = useParams();

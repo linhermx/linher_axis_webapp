@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { LogIn, Lock, Mail } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { Alert, Button, Card, InputField } from '../components/ui';
-import '../styles/login.css';
 
 const Login = () => {
   const { login, user } = useAuth();

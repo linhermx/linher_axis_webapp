@@ -3,7 +3,6 @@ import { Bell, Search } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { Button, InputField, ThemeToggle } from './ui';
 import EmployeeModuleNav from './EmployeeModuleNav';
-import '../styles/topbar.css';
 
 const Topbar = ({ hasTabs = false }) => {
   const location = useLocation();
@@ -19,8 +18,8 @@ const Topbar = ({ hasTabs = false }) => {
     if (path.startsWith('/recruitment')) return 'Reclutamiento';
     if (path.startsWith('/reports')) return 'Reportes';
     if (path.startsWith('/documents')) return 'Expediente';
-    if (path.startsWith('/admin')) return 'Administración';
-    if (path.startsWith('/settings')) return 'Configuración';
+    if (path.startsWith('/admin')) return 'AdministraciÃ³n';
+    if (path.startsWith('/settings')) return 'ConfiguraciÃ³n';
     return 'Panel de control';
   };
 

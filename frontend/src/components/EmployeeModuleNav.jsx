@@ -1,6 +1,5 @@
 ﻿import { NavLink } from 'react-router-dom';
 import { cn } from '../lib/cn';
-import '../styles/employee-module-nav.css';
 
 const EmployeeModuleNav = () => {
   return (

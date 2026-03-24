@@ -14,7 +14,6 @@ import {
   TableRow,
   TableShell,
 } from './ui';
-import '../styles/data-table.css';
 
 const DEFAULT_PAGE_SIZE = 10;
 
