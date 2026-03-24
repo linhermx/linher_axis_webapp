@@ -1,7 +1,7 @@
 ﻿import { useEffect, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Alert, Button, Card, PageHeader, StatusView } from '../components/ui';
+import { Alert, Button, Card, StatusView } from '../components/ui';
 import Profile360Content from '../components/Profile360Content';
 import { useAuth } from '../hooks/useAuth';
 import { hasAnyPermission } from '../lib/permissions';
@@ -99,16 +99,6 @@ const EmployeeProfile360 = () => {
 
   return (
     <section className="profile360-page">
-      <PageHeader
-        title="Perfil de Colaborador"
-        actions={(
-          <Button type="button" variant="secondary" onClick={() => navigate('/employees')}>
-            <ArrowLeft size={16} />
-            <span>Volver al directorio</span>
-          </Button>
-        )}
-      />
-
       {loading ? (
         <Card>
           <p className="profile360-page__loading">Cargando perfil del colaborador...</p>
@@ -135,6 +125,12 @@ const EmployeeProfile360 = () => {
           showPayments={visibilityScope === 'full' && canViewPayroll}
           loadingPayments={loadingPayments}
           paymentsError={paymentsError}
+          headerAction={(
+            <Button type="button" variant="secondary" onClick={() => navigate('/employees')}>
+              <ArrowLeft size={16} />
+              <span>Volver al directorio</span>
+            </Button>
+          )}
         />
       ) : null}
     </section>
