@@ -48,6 +48,26 @@ const clone = (value) => JSON.parse(JSON.stringify(value));
 export class EmployeeProfileService {
     constructor(db) {
         this.db = db;
+        this.usersPhotoPathChecked = false;
+        this.hasUsersPhotoPath = false;
+    }
+
+    async hasUsersPhotoPathColumn() {
+        if (this.usersPhotoPathChecked) {
+            return this.hasUsersPhotoPath;
+        }
+
+        const [rows] = await this.db.query(
+            `SELECT COUNT(*) AS column_count
+             FROM information_schema.COLUMNS
+             WHERE TABLE_SCHEMA = DATABASE()
+               AND TABLE_NAME = 'users'
+               AND COLUMN_NAME = 'photo_path'`
+        );
+
+        this.hasUsersPhotoPath = Number(rows?.[0]?.column_count || 0) > 0;
+        this.usersPhotoPathChecked = true;
+        return this.hasUsersPhotoPath;
     }
 
     async findInternalEmployeeIdByUserId(userId) {
@@ -98,6 +118,11 @@ export class EmployeeProfileService {
             return null;
         }
 
+        const hasUsersPhotoPath = await this.hasUsersPhotoPathColumn();
+        const userPhotoSelect = hasUsersPhotoPath
+            ? 'u.photo_path AS user_photo_path,'
+            : 'NULL AS user_photo_path,';
+
         const [rows] = await this.db.query(
             `SELECT
                 e.id AS internal_employee_id,
@@ -105,6 +130,7 @@ export class EmployeeProfileService {
                 e.internal_id,
                 e.first_name AS internal_first_name,
                 e.last_name AS internal_last_name,
+                ${userPhotoSelect}
                 eml.id AS link_id,
                 eml.link_source,
                 eml.linked_at,
@@ -192,6 +218,7 @@ export class EmployeeProfileService {
                 birth_country.microsip_country_id AS birth_country_id,
                 birth_country.name AS birth_country_name
              FROM employees e
+             LEFT JOIN users u ON u.id = e.user_id
              LEFT JOIN employee_microsip_links eml ON eml.employee_id = e.id
              LEFT JOIN ext_microsip_employee ext ON ext.id = eml.microsip_employee_ext_id
              LEFT JOIN ext_microsip_department dep ON dep.id = ext.department_ext_id
@@ -364,6 +391,7 @@ export class EmployeeProfileService {
                 full_name: fullName,
                 first_name: row.first_name,
                 last_name: row.last_name,
+                photo_path: row.user_photo_path,
                 employment_status: row.employment_status,
                 hired_at: row.hired_at,
                 terminated_at: row.terminated_at,

@@ -6,7 +6,8 @@ import Topbar from './Topbar';
 const Layout = ({ children }) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const location = useLocation();
-  const hasTopbarTabs = location.pathname.startsWith('/employees');
+  const hasTopbarTabs = location.pathname === '/employees'
+    || location.pathname === '/employees/organization';
 
   return (
     <div className={`app-layout ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
