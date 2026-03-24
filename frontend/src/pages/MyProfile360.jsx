@@ -1,5 +1,5 @@
 ﻿import { useEffect, useState } from 'react';
-import { Alert, Card, PageHeader, StatusView } from '../components/ui';
+import { Alert, Card, StatusView } from '../components/ui';
 import Profile360Content from '../components/Profile360Content';
 import api from '../services/api';
 
@@ -86,10 +86,6 @@ const MyProfile360 = () => {
 
   return (
     <section className="profile360-page">
-      <PageHeader
-        title="Mi Perfil 360"
-      />
-
       {loading ? (
         <Card>
           <p className="profile360-page__loading">Cargando perfil del colaborador...</p>
