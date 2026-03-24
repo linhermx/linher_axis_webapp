@@ -14,6 +14,7 @@ import {
   TableRow,
   TableShell,
 } from './ui';
+import { getDepartmentTone } from '../lib/departmentTone';
 
 const TAB_OPTIONS = [
   { key: 'personal', label: 'Información personal' },
@@ -265,6 +266,7 @@ const Profile360Content = ({
   const fullName = formatPlain(identity.full_name);
   const roleName = formatPlain(identity.job_title?.name);
   const departmentName = formatPlain(identity.department?.name);
+  const departmentTone = getDepartmentTone(identity.department?.name || departmentName);
   const genderLabel = formatGender(personal.sex_code);
   const employmentStatus = toEmploymentStatusView(identity.employment_status);
   const photoSource = resolvePhotoSource(
@@ -321,7 +323,12 @@ const Profile360Content = ({
               <h2 className="profile360__name">{fullName}</h2>
               <p className="profile360__role">{roleName}</p>
               <div className="profile360__chips">
-                <Badge variant="info">{departmentName}</Badge>
+                <Badge
+                  variant="neutral"
+                  className={`profile360__department-chip employee-directory__department-tone--${departmentTone}`}
+                >
+                  {departmentName}
+                </Badge>
               </div>
             </div>
 

@@ -429,7 +429,7 @@
 }
 
 .employee-module-nav__item::after {
-  background: var(--primary);
+  background: linear-gradient(90deg, var(--primary), var(--accent-cyan));
   border-radius: 999px;
   bottom: -1px;
   content: '';

@@ -48,6 +48,17 @@
 
   --font-family: 'Manrope', 'Segoe UI', sans-serif;
 
+  /* Global typography scale (semantic) */
+  --fs-display: 1.52rem;
+  --fs-title-xl: 1.22rem;
+  --fs-title-lg: 1rem;
+  --fs-title-md: 0.92rem;
+  --fs-body-md: 0.86rem;
+  --fs-body-sm: 0.82rem;
+  --fs-caption: 0.76rem;
+  --fs-label: 0.7rem;
+  --fs-tab: 0.86rem;
+
   --sidebar-width: 272px;
   --sidebar-collapsed-width: 86px;
   --header-height: 84px;
