@@ -1645,6 +1645,13 @@
 }
 
 .profile360 {
+  --profile360-fs-name: 1.2rem;
+  --profile360-fs-role: 0.88rem;
+  --profile360-fs-tab: 0.86rem;
+  --profile360-fs-section-title: 1rem;
+  --profile360-fs-label: 0.7rem;
+  --profile360-fs-value: 0.92rem;
+  --profile360-fs-caption: 0.8rem;
   flex: 1;
   min-height: 0;
   overflow: auto;
@@ -1653,7 +1660,7 @@
 
 .profile360-page__loading {
   color: var(--text-secondary);
-  font-size: 0.86rem;
+  font-size: var(--profile360-fs-caption, 0.8rem);
 }
 
 .profile360__workspace {
@@ -1720,7 +1727,7 @@
 
 .profile360__name {
   color: var(--text-main);
-  font-size: 1.22rem;
+  font-size: var(--profile360-fs-name);
   font-weight: 800;
   letter-spacing: -0.01em;
   line-height: 1.15;
@@ -1729,7 +1736,7 @@
 
 .profile360__role {
   color: var(--text-secondary);
-  font-size: 0.9rem;
+  font-size: var(--profile360-fs-role);
   font-weight: 700;
   margin-top: 3px;
 }
@@ -1742,10 +1749,16 @@
 }
 
 .profile360__chips .ui-badge {
-  font-size: 0.71rem;
+  font-size: var(--profile360-fs-label);
   font-weight: 800;
   letter-spacing: 0.01em;
   text-transform: none;
+}
+
+.profile360__department-chip {
+  background: var(--department-chip-bg, color-mix(in srgb, var(--primary) 12%, transparent));
+  border: 1px solid color-mix(in srgb, var(--department-chip-fg, var(--primary)) 24%, transparent);
+  color: var(--department-chip-fg, color-mix(in srgb, var(--primary) 84%, black));
 }
 
 .profile360__identity-status {
@@ -1784,7 +1797,7 @@
   align-items: center;
   color: var(--text-secondary);
   display: inline-flex;
-  font-size: 0.7rem;
+  font-size: var(--profile360-fs-label);
   font-weight: 800;
   gap: 6px;
   letter-spacing: 0.04em;
@@ -1805,7 +1818,7 @@
 
 .profile360__quick-fact dd {
   color: var(--text-main);
-  font-size: 0.9rem;
+  font-size: var(--profile360-fs-value);
   font-weight: 800;
   line-height: 1.15;
   margin-top: 8px;
@@ -1843,7 +1856,7 @@
   color: var(--text-secondary);
   cursor: pointer;
   font-family: inherit;
-  font-size: 0.88rem;
+  font-size: var(--profile360-fs-tab);
   font-weight: 700;
   line-height: 1;
   padding: 0 1px 12px;
@@ -1928,7 +1941,7 @@
 
 .profile360-sheet__title {
   color: var(--text-main);
-  font-size: 1rem;
+  font-size: var(--profile360-fs-section-title);
   font-weight: 800;
   letter-spacing: -0.01em;
 }
@@ -1974,7 +1987,7 @@
 
 .profile360-sheet__label {
   color: var(--text-secondary);
-  font-size: 0.7rem;
+  font-size: var(--profile360-fs-label);
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -1982,7 +1995,7 @@
 
 .profile360-sheet__value {
   color: var(--text-main);
-  font-size: 0.95rem;
+  font-size: var(--profile360-fs-value);
   font-weight: 700;
   line-height: 1.25;
   margin-top: 4px;
@@ -1991,7 +2004,7 @@
 
 .profile360__placeholder {
   color: var(--text-secondary);
-  font-size: 0.84rem;
+  font-size: var(--profile360-fs-caption);
 }
 
 .profile360__timeline {
@@ -2029,19 +2042,19 @@
 
 .profile360__timeline-title {
   color: var(--text-main);
-  font-size: 0.84rem;
+  font-size: var(--profile360-fs-value);
   font-weight: 700;
 }
 
 .profile360__timeline-date {
   color: var(--text-secondary);
-  font-size: 0.76rem;
+  font-size: calc(var(--profile360-fs-caption) - 0.02rem);
   margin-top: 2px;
 }
 
 .profile360__table-note {
   color: var(--text-secondary);
-  font-size: 0.82rem;
+  font-size: var(--profile360-fs-caption);
   padding: 12px 14px;
 }
 

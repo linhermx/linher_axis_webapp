@@ -47,14 +47,14 @@
 
 .ui-card__title {
   color: var(--text-main);
-  font-size: 0.98rem;
+  font-size: var(--fs-title-lg);
   font-weight: 800;
   letter-spacing: -0.01em;
 }
 
 .ui-card__subtitle {
   color: var(--text-secondary);
-  font-size: 0.76rem;
+  font-size: var(--fs-caption);
   margin-top: 3px;
 }
 
@@ -83,19 +83,19 @@
 }
 
 .ui-button--sm {
-  font-size: 0.8rem;
+  font-size: var(--fs-body-sm);
   height: 36px;
   padding: 0 12px;
 }
 
 .ui-button--md {
-  font-size: 0.85rem;
+  font-size: var(--fs-body-md);
   height: 42px;
   padding: 0 16px;
 }
 
 .ui-button--lg {
-  font-size: 0.93rem;
+  font-size: var(--fs-title-md);
   height: 46px;
   padding: 0 22px;
 }
@@ -169,7 +169,7 @@
 
 .ui-field__label {
   color: var(--text-secondary);
-  font-size: 0.7rem;
+  font-size: var(--fs-label);
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -201,7 +201,7 @@
   border-radius: var(--radius-md);
   color: var(--text-main);
   font-family: inherit;
-  font-size: 0.85rem;
+  font-size: var(--fs-body-md);
   height: 42px;
   padding: 0 12px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -253,7 +253,7 @@
 
 .ui-field__hint {
   color: var(--text-secondary);
-  font-size: 0.75rem;
+  font-size: var(--fs-caption);
 }
 
 .ui-field__hint--error {
@@ -274,7 +274,7 @@
 
 .ui-page-header__title {
   color: var(--text-main);
-  font-size: 1.52rem;
+  font-size: var(--fs-display);
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.1;
@@ -282,7 +282,7 @@
 
 .ui-page-header__subtitle {
   color: var(--text-secondary);
-  font-size: 0.84rem;
+  font-size: var(--fs-body-md);
   margin-top: 6px;
   max-width: 72ch;
 }
@@ -296,7 +296,7 @@
   align-items: center;
   border-radius: 999px;
   display: inline-flex;
-  font-size: 0.7rem;
+  font-size: var(--fs-label);
   font-weight: 800;
   gap: 6px;
   letter-spacing: 0.03em;
@@ -339,7 +339,7 @@
   border: 1px solid transparent;
   border-radius: 999px;
   display: inline-flex;
-  font-size: 0.72rem;
+  font-size: var(--fs-label);
   font-weight: 700;
   gap: 6px;
   padding: 4px 10px;
@@ -406,12 +406,12 @@
 }
 
 .ui-alert__title {
-  font-size: 0.86rem;
+  font-size: var(--fs-body-md);
   font-weight: 800;
 }
 
 .ui-alert__content {
-  font-size: 0.84rem;
+  font-size: var(--fs-body-sm);
   margin-top: 4px;
 }
 
@@ -469,13 +469,13 @@
 
 .ui-status-view__title {
   color: var(--text-main);
-  font-size: 1rem;
+  font-size: var(--fs-title-lg);
   font-weight: 800;
 }
 
 .ui-status-view__description {
   color: var(--text-secondary);
-  font-size: 0.86rem;
+  font-size: var(--fs-body-md);
   margin-top: 8px;
   max-width: 64ch;
 }
@@ -508,7 +508,7 @@
   background: color-mix(in srgb, var(--surface-muted) 86%, var(--surface));
   border-bottom: 1px solid color-mix(in srgb, var(--border) 74%, transparent);
   color: color-mix(in srgb, var(--text-secondary) 90%, var(--text));
-  font-size: 0.68rem;
+  font-size: var(--fs-label);
   font-weight: 800;
   letter-spacing: 0.04em;
   padding: 11px 12px;
@@ -522,7 +522,7 @@
 .ui-table td {
   border-bottom: 1px solid color-mix(in srgb, var(--border) 54%, transparent);
   color: var(--text-main);
-  font-size: 0.8rem;
+  font-size: var(--fs-body-sm);
   padding: 10px 12px;
   vertical-align: middle;
 }
@@ -578,7 +578,7 @@
 
 .ui-table__empty {
   color: var(--text-secondary);
-  font-size: 0.88rem;
+  font-size: var(--fs-body-md);
   padding: 26px 14px;
   text-align: center;
 }
@@ -597,7 +597,7 @@
   align-items: center;
   color: var(--text-secondary);
   display: flex;
-  font-size: 0.82rem;
+  font-size: var(--fs-body-sm);
   gap: 8px;
 }
 
@@ -610,7 +610,7 @@
 
 .ui-pagination__range {
   color: var(--text-secondary);
-  font-size: 0.82rem;
+  font-size: var(--fs-body-sm);
   margin-right: 2px;
 }
 
@@ -648,7 +648,7 @@
   color: var(--text-main);
   cursor: pointer;
   display: flex;
-  font-size: 0.82rem;
+  font-size: var(--fs-body-sm);
   gap: 8px;
   padding: 9px 10px;
   text-align: left;
@@ -720,13 +720,13 @@
 
 .ui-modal__title {
   color: var(--text-main);
-  font-size: 1rem;
+  font-size: var(--fs-title-lg);
   font-weight: 800;
 }
 
 .ui-modal__description {
   color: var(--text-secondary);
-  font-size: 0.82rem;
+  font-size: var(--fs-body-sm);
   margin-top: 4px;
 }
 
@@ -761,13 +761,13 @@
 }
 
 .ui-toast__title {
-  font-size: 0.84rem;
+  font-size: var(--fs-body-md);
   font-weight: 800;
 }
 
 .ui-toast__message {
   color: var(--text-main);
-  font-size: 0.82rem;
+  font-size: var(--fs-body-sm);
   margin-top: 2px;
 }
 
