@@ -85,28 +85,27 @@ const MyProfile360 = () => {
   }, [profile]);
 
   return (
-    <section>
+    <section className="profile360-page">
       <PageHeader
         title="Mi Perfil 360"
-        subtitle="Consulta tu informacion administrativa y de pagos sincronizada desde Microsip."
       />
 
       {loading ? (
         <Card>
-          <p className="text-sm text-ui-text-secondary">Cargando perfil del colaborador...</p>
+          <p className="profile360-page__loading">Cargando perfil del colaborador...</p>
         </Card>
       ) : null}
 
       {!loading && error ? (
-        <Alert variant="error" title="No se pudo cargar el perfil" className="mb-6">
+        <Alert variant="error" title="No se pudo cargar el perfil">
           {error}
         </Alert>
       ) : null}
 
       {!loading && !error && linkMissing ? (
         <StatusView
-          title="Perfil sin vinculo Microsip"
-          description="Tu cuenta todavia no esta enlazada con una ficha administrativa en Microsip. Solicita a RRHH completar el enlace para habilitar esta vista."
+          title="Perfil sin vínculo Microsip"
+          description="Tu cuenta todavía no está enlazada con una ficha administrativa en Microsip. Solicita a RRHH completar el enlace para habilitar esta vista."
         />
       ) : null}
 

@@ -1,4 +1,4 @@
-import { useId, useMemo } from 'react';
+﻿import { useId, useMemo } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '../../lib/cn';
 import Button from './Button';
@@ -44,34 +44,25 @@ const Pagination = ({
   };
 
   return (
-    <div
-      className={cn(
-        'flex flex-wrap items-center justify-between gap-3 border-t border-ui-light-slate px-4 py-3',
-        className
-      )}
-    >
-      <div className="flex items-center gap-2 text-sm text-ui-text-secondary">
+    <div className={cn('ui-pagination', className)}>
+      <div className="ui-pagination__left">
         <label htmlFor={pageSizeControlId}>Mostrar</label>
         <select
           id={pageSizeControlId}
           name="page_size"
-          className="form-field w-[90px]"
+          className="ui-select"
           value={pageSize}
           onChange={(event) => onPageSizeChange?.(Number(event.target.value))}
           aria-label="Cantidad de resultados por pagina"
         >
           {pageSizeOptions.map((size) => (
-            <option key={size} value={size}>
-              {size}
-            </option>
+            <option key={size} value={size}>{size}</option>
           ))}
         </select>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="mr-1 text-sm text-ui-text-secondary">
-          {from}-{to} de {totalItems}
-        </span>
+      <div className="ui-pagination__pages">
+        <span className="ui-pagination__range">{from}-{to} de {totalItems}</span>
 
         <Button
           type="button"
@@ -86,11 +77,7 @@ const Pagination = ({
 
         {pages.map((item) => {
           if (typeof item === 'string') {
-            return (
-              <span key={item} className="px-1 text-ui-text-secondary" aria-hidden="true">
-                ...
-              </span>
-            );
+            return <span key={item} aria-hidden="true">...</span>;
           }
 
           return (

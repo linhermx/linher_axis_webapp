@@ -1,4 +1,4 @@
-import { useId } from 'react';
+﻿import { useId } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '../../lib/cn';
 
@@ -37,18 +37,15 @@ const CustomSelect = ({
   const resolvedAriaLabel = label ? undefined : ariaLabel || name || 'Selector';
 
   return (
-    <div className={cn('space-y-2', containerClassName)}>
+    <div className={cn('ui-field', containerClassName)}>
       {label ? (
-        <label
-          htmlFor={selectId}
-          className={cn(srOnlyLabel ? 'sr-only' : 'form-label')}
-        >
+        <label htmlFor={selectId} className={cn(srOnlyLabel ? 'ui-visually-hidden' : 'ui-field__label')}>
           {label}
-          {required ? <span className="ml-1 text-status-error">*</span> : null}
+          {required ? <span className="ui-field__required">*</span> : null}
         </label>
       ) : null}
 
-      <div className="form-select-container">
+      <div className="ui-select-wrap">
         <select
           id={selectId}
           name={name}
@@ -60,9 +57,9 @@ const CustomSelect = ({
           aria-invalid={Boolean(error)}
           aria-describedby={descriptionId}
           className={cn(
-            'form-field pr-10',
-            disabled && 'cursor-not-allowed opacity-70',
-            error && 'border-status-error',
+            'ui-select',
+            disabled && 'is-disabled',
+            error && 'ui-select--error',
             className
           )}
         >
@@ -75,27 +72,20 @@ const CustomSelect = ({
           {options.map((option) => {
             const normalized = normalizeOption(option);
             return (
-              <option
-                key={normalized.value}
-                value={normalized.value}
-                disabled={normalized.disabled}
-              >
+              <option key={normalized.value} value={normalized.value} disabled={normalized.disabled}>
                 {normalized.label}
               </option>
             );
           })}
         </select>
 
-        <span className="pointer-events-none absolute inset-y-0 right-3 inline-flex items-center text-ui-text-secondary">
+        <span className="ui-select__arrow">
           <ChevronDown size={16} />
         </span>
       </div>
 
       {error || helperText ? (
-        <p
-          id={descriptionId}
-          className={cn('text-xs', error ? 'text-status-error' : 'text-ui-text-secondary')}
-        >
+        <p id={descriptionId} className={cn('ui-field__hint', error ? 'ui-field__hint--error' : '')}>
           {error || helperText}
         </p>
       ) : null}

@@ -1,14 +1,8 @@
-import { cn } from '../../lib/cn';
+﻿import { cn } from '../../lib/cn';
 
 export const TableShell = ({ className, children, ...props }) => {
   return (
-    <div
-      className={cn(
-        'overflow-hidden rounded-lg border border-ui-light-slate bg-ui-surface shadow-sm',
-        className
-      )}
-      {...props}
-    >
+    <div className={cn('ui-table-shell', className)} {...props}>
       {children}
     </div>
   );
@@ -16,15 +10,17 @@ export const TableShell = ({ className, children, ...props }) => {
 
 export const Table = ({ className, children, ...props }) => {
   return (
-    <table className={cn('w-full border-collapse', className)} {...props}>
-      {children}
-    </table>
+    <div className="ui-table-scroll">
+      <table className={cn('ui-table', className)} {...props}>
+        {children}
+      </table>
+    </div>
   );
 };
 
 export const TableCaption = ({ className, children, ...props }) => {
   return (
-    <caption className={cn('sr-only', className)} {...props}>
+    <caption className={cn('ui-visually-hidden', className)} {...props}>
       {children}
     </caption>
   );
@@ -48,13 +44,7 @@ export const TableBody = ({ className, children, ...props }) => {
 
 export const TableRow = ({ className, children, ...props }) => {
   return (
-    <tr
-      className={cn(
-        'border-b border-ui-background last:border-b-0 hover:bg-red-50/40',
-        className
-      )}
-      {...props}
-    >
+    <tr className={cn(className)} {...props}>
       {children}
     </tr>
   );
@@ -62,13 +52,7 @@ export const TableRow = ({ className, children, ...props }) => {
 
 export const TableHeaderCell = ({ className, children, ...props }) => {
   return (
-    <th
-      className={cn(
-        'bg-ui-background px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-ui-slate',
-        className
-      )}
-      {...props}
-    >
+    <th className={cn(className)} {...props}>
       {children}
     </th>
   );
@@ -76,27 +60,18 @@ export const TableHeaderCell = ({ className, children, ...props }) => {
 
 export const TableCell = ({ className, children, ...props }) => {
   return (
-    <td className={cn('px-6 py-4 text-sm text-ui-text-main', className)} {...props}>
+    <td className={cn(className)} {...props}>
       {children}
     </td>
   );
 };
 
-export const TableEmptyState = ({
-  colSpan,
-  children = 'Sin resultados',
-  className,
-  ...props
-}) => {
+export const TableEmptyState = ({ colSpan, children = 'Sin resultados', className, ...props }) => {
   return (
-    <TableRow className="hover:bg-transparent">
-      <TableCell
-        colSpan={colSpan}
-        className={cn('py-14 text-center text-ui-text-secondary', className)}
-        {...props}
-      >
+    <tr>
+      <td colSpan={colSpan} className={cn('ui-table__empty', className)} {...props}>
         {children}
-      </TableCell>
-    </TableRow>
+      </td>
+    </tr>
   );
 };

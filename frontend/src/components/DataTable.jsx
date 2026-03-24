@@ -1,8 +1,9 @@
 ﻿import { useMemo, useState } from 'react';
-import { ChevronDown, ChevronUp, Search, Filter } from 'lucide-react';
+import { ChevronDown, ChevronUp, Filter, Search } from 'lucide-react';
 import {
   Button,
   InputField,
+  Pagination,
   Table,
   TableBody,
   TableCaption,
@@ -14,9 +15,13 @@ import {
   TableShell,
 } from './ui';
 
+const DEFAULT_PAGE_SIZE = 10;
+
 const DataTable = ({ columns, data, onRowClick }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
 
   const handleSort = (key) => {
     let direction = 'asc';
@@ -24,6 +29,7 @@ const DataTable = ({ columns, data, onRowClick }) => {
       direction = 'desc';
     }
     setSortConfig({ key, direction });
+    setPage(1);
   };
 
   const sortedData = useMemo(() => {
@@ -51,6 +57,11 @@ const DataTable = ({ columns, data, onRowClick }) => {
     [searchTerm, sortedData]
   );
 
+  const paginatedData = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return filteredData.slice(start, start + pageSize);
+  }, [filteredData, page, pageSize]);
+
   const isRowInteractive = typeof onRowClick === 'function';
 
   const getAriaSort = (key) => {
@@ -67,11 +78,11 @@ const DataTable = ({ columns, data, onRowClick }) => {
   };
 
   return (
-    <section className="mt-6">
+    <section className="data-table">
       <TableShell>
-        <div className="border-b border-ui-light-slate p-6">
-          <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-ui-light-slate bg-ui-surface-subtle px-4 py-3">
-            <div className="w-full max-w-[340px]">
+        <div className="data-table__toolbar">
+          <div className="data-table__toolbar-wrap">
+            <div className="data-table__search">
               <InputField
                 id="employee-table-search"
                 name="employee_table_search"
@@ -80,8 +91,10 @@ const DataTable = ({ columns, data, onRowClick }) => {
                 type="search"
                 placeholder="Buscar..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                containerClassName="space-y-0"
+                onChange={(event) => {
+                  setSearchTerm(event.target.value);
+                  setPage(1);
+                }}
                 leftIcon={<Search size={18} />}
               />
             </div>
@@ -93,54 +106,54 @@ const DataTable = ({ columns, data, onRowClick }) => {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <Table>
-            <TableCaption>Listado de empleados con búsqueda y ordenamiento</TableCaption>
-            <TableHead>
-              <TableRow className="hover:bg-transparent">
-                {columns.map((col) => (
-                  <TableHeaderCell key={col.key} scope="col" aria-sort={getAriaSort(col.key)}>
-                    <button
-                      type="button"
-                      onClick={() => handleSort(col.key)}
-                      className="flex w-full items-center gap-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
-                    >
-                      <span>{col.label}</span>
-                      {sortConfig.key === col.key &&
-                        (sortConfig.direction === 'asc' ? (
-                          <ChevronUp size={14} aria-hidden="true" />
-                        ) : (
-                          <ChevronDown size={14} aria-hidden="true" />
-                        ))}
-                    </button>
-                  </TableHeaderCell>
-                ))}
-              </TableRow>
-            </TableHead>
+        <Table>
+          <TableCaption>Listado de empleados con búsqueda, ordenamiento y paginación</TableCaption>
+          <TableHead>
+            <TableRow>
+              {columns.map((col) => (
+                <TableHeaderCell key={col.key} scope="col" aria-sort={getAriaSort(col.key)}>
+                  <button type="button" onClick={() => handleSort(col.key)} className="data-table__sort-button">
+                    <span>{col.label}</span>
+                    {sortConfig.key === col.key
+                      ? (sortConfig.direction === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />)
+                      : null}
+                  </button>
+                </TableHeaderCell>
+              ))}
+            </TableRow>
+          </TableHead>
 
-            <TableBody>
-              {filteredData.length > 0 ? (
-                filteredData.map((row, idx) => (
-                  <TableRow
-                    key={row.id ?? idx}
-                    className={isRowInteractive ? 'cursor-pointer' : ''}
-                    onClick={isRowInteractive ? () => onRowClick(row) : undefined}
-                    onKeyDown={(event) => handleRowKeyDown(event, row)}
-                    tabIndex={isRowInteractive ? 0 : undefined}
-                  >
-                    {columns.map((col) => (
-                      <TableCell key={col.key}>{row[col.key] ?? '-'}</TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableEmptyState colSpan={columns.length}>
-                  No se encontraron resultados
-                </TableEmptyState>
-              )}
-            </TableBody>
-          </Table>
-        </div>
+          <TableBody>
+            {paginatedData.length > 0 ? (
+              paginatedData.map((row, idx) => (
+                <TableRow
+                  key={row.id ?? idx}
+                  className={isRowInteractive ? 'data-table__row--interactive' : ''}
+                  onClick={isRowInteractive ? () => onRowClick(row) : undefined}
+                  onKeyDown={(event) => handleRowKeyDown(event, row)}
+                  tabIndex={isRowInteractive ? 0 : undefined}
+                >
+                  {columns.map((col) => (
+                    <TableCell key={col.key}>{row[col.key] ?? '-'}</TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableEmptyState colSpan={columns.length}>No se encontraron resultados</TableEmptyState>
+            )}
+          </TableBody>
+        </Table>
+
+        <Pagination
+          page={page}
+          pageSize={pageSize}
+          totalItems={filteredData.length}
+          onPageChange={setPage}
+          onPageSizeChange={(nextSize) => {
+            setPageSize(nextSize);
+            setPage(1);
+          }}
+        />
       </TableShell>
     </section>
   );

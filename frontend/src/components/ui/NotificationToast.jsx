@@ -1,29 +1,13 @@
-import { useEffect } from 'react';
+﻿import { useEffect } from 'react';
 import { AlertCircle, CheckCircle2, Info, TriangleAlert, X } from 'lucide-react';
 import { cn } from '../../lib/cn';
 import Button from './Button';
 
 const VARIANT_MAP = {
-  info: {
-    Icon: Info,
-    className: 'border-status-info/35 bg-ui-surface text-status-info',
-    role: 'status',
-  },
-  success: {
-    Icon: CheckCircle2,
-    className: 'border-status-success/35 bg-ui-surface text-status-success',
-    role: 'status',
-  },
-  warning: {
-    Icon: TriangleAlert,
-    className: 'border-status-warning/35 bg-ui-surface text-status-warning',
-    role: 'alert',
-  },
-  error: {
-    Icon: AlertCircle,
-    className: 'border-status-error/35 bg-ui-surface text-status-error',
-    role: 'alert',
-  },
+  info: { Icon: Info, className: 'ui-toast--info', role: 'status' },
+  success: { Icon: CheckCircle2, className: 'ui-toast--success', role: 'status' },
+  warning: { Icon: TriangleAlert, className: 'ui-toast--warning', role: 'alert' },
+  error: { Icon: AlertCircle, className: 'ui-toast--error', role: 'alert' },
 };
 
 const NotificationToast = ({
@@ -49,35 +33,23 @@ const NotificationToast = ({
   if (!open) return null;
 
   return (
-    <div
-      className={cn(
-        'pointer-events-none fixed right-4 top-4 z-[130]',
-        containerClassName
-      )}
-    >
-      <div
-        role={config.role}
-        className={cn(
-          'pointer-events-auto relative isolate flex min-w-[240px] max-w-[360px] items-start gap-3 rounded-lg border bg-ui-surface px-4 py-3 shadow-lg',
-          config.className,
-          className
-        )}
-      >
-        <Icon size={18} className="mt-0.5 shrink-0" />
+    <div className={cn('ui-toast-container', containerClassName)}>
+      <div role={config.role} className={cn('ui-toast', config.className, className)}>
+        <Icon size={18} />
 
-        <div className="min-w-0 flex-1">
-          {title ? <p className="text-sm font-semibold">{title}</p> : null}
-          {message ? <p className="mt-1 text-sm text-ui-text-main">{message}</p> : null}
+        <div className="ui-toast__body">
+          {title ? <p className="ui-toast__title">{title}</p> : null}
+          {message ? <p className="ui-toast__message">{message}</p> : null}
         </div>
 
         <Button
           type="button"
           variant="icon"
-          className="!h-8 !w-8 shrink-0 border-transparent bg-transparent text-current hover:bg-ui-background"
+          size="sm"
           onClick={() => onClose?.()}
           aria-label="Cerrar notificacion"
         >
-          <X size={16} />
+          <X size={14} />
         </Button>
       </div>
     </div>

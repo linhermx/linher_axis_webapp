@@ -32,11 +32,22 @@ const normalizeText = (value) => String(value || '').trim();
 export const getAllEmployees = async (req, res) => {
     try {
         const [employees] = await pool.query(`
-            SELECT e.*, d.name as department_name, p.name as position_name 
+            SELECT
+                e.*,
+                d.name AS department_name,
+                p.name AS position_name,
+                personal.sex_code AS sex_code,
+                CASE
+                    WHEN UPPER(TRIM(COALESCE(e.gender, personal.sex_code, ''))) IN ('F', 'FEMENINO', 'FEMALE') THEN 'Femenino'
+                    WHEN UPPER(TRIM(COALESCE(e.gender, personal.sex_code, ''))) IN ('M', 'MASCULINO', 'MALE') THEN 'Masculino'
+                    ELSE NULL
+                END AS gender_label
             FROM employees e
             LEFT JOIN employee_jobs ej ON e.id = ej.employee_id AND ej.current_job_flag = 1
             LEFT JOIN departments d ON ej.department_id = d.id
             LEFT JOIN positions p ON ej.position_id = p.id
+            LEFT JOIN employee_microsip_links eml ON eml.employee_id = e.id
+            LEFT JOIN ext_microsip_employee_personal personal ON personal.employee_ext_id = eml.microsip_employee_ext_id
         `);
         return res.json(employees);
     } catch (error) {
