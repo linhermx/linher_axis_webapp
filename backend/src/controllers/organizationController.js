@@ -64,12 +64,21 @@ export const getOrganizationStructure = async (req, res) => {
                 ou.name,
                 ou.code,
                 ou.lead_employee_id,
-                CONCAT_WS(' ', lead_emp.first_name, lead_emp.last_name) AS lead_name,
+                TRIM(
+                    CONCAT_WS(
+                        ' ',
+                        COALESCE(NULLIF(TRIM(lead_ext.first_name), ''), NULLIF(TRIM(lead_ai.first_name), '')),
+                        COALESCE(NULLIF(TRIM(lead_ext.last_name), ''), NULLIF(TRIM(lead_ai.last_name), ''))
+                    )
+                ) AS lead_name,
                 ou.is_active,
                 COALESCE(member_totals.total, 0) AS member_count
              FROM organizational_units ou
              JOIN organizational_unit_types outype ON outype.id = ou.unit_type_id
              LEFT JOIN employees lead_emp ON lead_emp.id = ou.lead_employee_id
+             LEFT JOIN employee_microsip_links lead_link ON lead_link.employee_id = lead_emp.id
+             LEFT JOIN ext_microsip_employee lead_ext ON lead_ext.id = lead_link.microsip_employee_ext_id
+             LEFT JOIN employee_axis_identity lead_ai ON lead_ai.employee_id = lead_emp.id
              LEFT JOIN (
                 SELECT unit_id, COUNT(*) AS total
                 FROM organizational_unit_members
@@ -123,12 +132,21 @@ export const getOrganizationUnit = async (req, res) => {
                 ou.name,
                 ou.code,
                 ou.lead_employee_id,
-                CONCAT_WS(' ', lead_emp.first_name, lead_emp.last_name) AS lead_name,
+                TRIM(
+                    CONCAT_WS(
+                        ' ',
+                        COALESCE(NULLIF(TRIM(lead_ext.first_name), ''), NULLIF(TRIM(lead_ai.first_name), '')),
+                        COALESCE(NULLIF(TRIM(lead_ext.last_name), ''), NULLIF(TRIM(lead_ai.last_name), ''))
+                    )
+                ) AS lead_name,
                 ou.is_active,
                 COALESCE(member_totals.total, 0) AS member_count
              FROM organizational_units ou
              JOIN organizational_unit_types outype ON outype.id = ou.unit_type_id
              LEFT JOIN employees lead_emp ON lead_emp.id = ou.lead_employee_id
+             LEFT JOIN employee_microsip_links lead_link ON lead_link.employee_id = lead_emp.id
+             LEFT JOIN ext_microsip_employee lead_ext ON lead_ext.id = lead_link.microsip_employee_ext_id
+             LEFT JOIN employee_axis_identity lead_ai ON lead_ai.employee_id = lead_emp.id
              LEFT JOIN (
                 SELECT unit_id, COUNT(*) AS total
                 FROM organizational_unit_members
@@ -148,8 +166,8 @@ export const getOrganizationUnit = async (req, res) => {
             `SELECT
                 e.id,
                 e.internal_id,
-                e.first_name,
-                e.last_name,
+                COALESCE(NULLIF(TRIM(ext.first_name), ''), NULLIF(TRIM(ai.first_name), '')) AS first_name,
+                COALESCE(NULLIF(TRIM(ext.last_name), ''), NULLIF(TRIM(ai.last_name), '')) AS last_name,
                 m.role_in_unit,
                 m.is_primary,
                 m.started_at,
@@ -157,11 +175,14 @@ export const getOrganizationUnit = async (req, res) => {
                 p.name AS position_name
              FROM organizational_unit_members m
              JOIN employees e ON e.id = m.employee_id
+             LEFT JOIN employee_microsip_links eml ON eml.employee_id = e.id
+             LEFT JOIN ext_microsip_employee ext ON ext.id = eml.microsip_employee_ext_id
+             LEFT JOIN employee_axis_identity ai ON ai.employee_id = e.id
              LEFT JOIN employee_jobs ej ON ej.employee_id = e.id AND ej.current_job_flag = 1
              LEFT JOIN positions p ON p.id = ej.position_id
              WHERE m.unit_id = ?
                AND (m.ended_at IS NULL OR m.ended_at >= CURDATE())
-             ORDER BY m.is_primary DESC, e.first_name ASC, e.last_name ASC`,
+             ORDER BY m.is_primary DESC, first_name ASC, last_name ASC`,
             [unitId]
         );
 

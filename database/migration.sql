@@ -116,6 +116,19 @@ CREATE TABLE IF NOT EXISTS employee_microsip_links (
         ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS employee_axis_identity (
+    employee_id BIGINT UNSIGNED PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    birth_date DATE NULL,
+    gender VARCHAR(20) NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_employee_axis_identity_employee
+        FOREIGN KEY (employee_id) REFERENCES employees(id)
+        ON DELETE CASCADE
+);
+
 
 CREATE TABLE IF NOT EXISTS ext_microsip_employee_compensation (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -410,6 +423,26 @@ BEGIN
     END IF;
 END $$
 
+DROP PROCEDURE IF EXISTS ensure_drop_column $$
+CREATE PROCEDURE ensure_drop_column(
+    IN p_table VARCHAR(128),
+    IN p_column VARCHAR(128)
+)
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_schema = DATABASE()
+          AND table_name = p_table
+          AND column_name = p_column
+    ) THEN
+        SET @sql = CONCAT('ALTER TABLE `', p_table, '` DROP COLUMN `', p_column, '`');
+        PREPARE stmt FROM @sql;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;
+    END IF;
+END $$
+
 DELIMITER ;
 
 CALL ensure_column('ext_microsip_employee', 'employee_number', 'VARCHAR(50) NULL');
@@ -431,6 +464,64 @@ CALL ensure_column('employee_documents', 'reviewed_by_user_id', 'BIGINT UNSIGNED
 CALL ensure_column('employee_documents', 'reviewed_at', 'TIMESTAMP NULL');
 CALL ensure_column('employee_documents', 'uploaded_by_user_id', 'BIGINT UNSIGNED NULL');
 CALL ensure_column('employee_documents', 'updated_at', 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS normalize_employee_canonical $$
+CREATE PROCEDURE normalize_employee_canonical()
+BEGIN
+    DECLARE has_first_name INT DEFAULT 0;
+    DECLARE has_last_name INT DEFAULT 0;
+
+    SELECT COUNT(*) INTO has_first_name
+    FROM information_schema.columns
+    WHERE table_schema = DATABASE()
+      AND table_name = 'employees'
+      AND column_name = 'first_name';
+
+    SELECT COUNT(*) INTO has_last_name
+    FROM information_schema.columns
+    WHERE table_schema = DATABASE()
+      AND table_name = 'employees'
+      AND column_name = 'last_name';
+
+    IF has_first_name > 0 AND has_last_name > 0 THEN
+        SET @copy_identity_sql = '
+            INSERT INTO employee_axis_identity (employee_id, first_name, last_name, birth_date, gender)
+            SELECT
+                e.id,
+                COALESCE(NULLIF(TRIM(e.first_name), ''''), ''Sin nombre''),
+                COALESCE(NULLIF(TRIM(e.last_name), ''''), ''Sin apellido''),
+                e.birth_date,
+                NULLIF(TRIM(e.gender), '''')
+            FROM employees e
+            LEFT JOIN employee_microsip_links eml ON eml.employee_id = e.id
+            WHERE eml.employee_id IS NULL
+            ON DUPLICATE KEY UPDATE
+                first_name = VALUES(first_name),
+                last_name = VALUES(last_name),
+                birth_date = VALUES(birth_date),
+                gender = VALUES(gender)
+        ';
+        PREPARE stmt FROM @copy_identity_sql;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;
+    END IF;
+
+    DELETE ai
+    FROM employee_axis_identity ai
+    JOIN employee_microsip_links eml ON eml.employee_id = ai.employee_id;
+
+    CALL ensure_drop_column('employees', 'birth_date');
+    CALL ensure_drop_column('employees', 'gender');
+    CALL ensure_drop_column('employees', 'first_name');
+    CALL ensure_drop_column('employees', 'last_name');
+END $$
+
+DELIMITER ;
+
+CALL normalize_employee_canonical();
+DROP PROCEDURE IF EXISTS normalize_employee_canonical;
 
 CALL ensure_index(
   'ext_microsip_state',
@@ -501,6 +592,7 @@ WHERE status_code IS NULL OR TRIM(status_code) = '';
 DROP PROCEDURE IF EXISTS ensure_column;
 DROP PROCEDURE IF EXISTS ensure_index;
 DROP PROCEDURE IF EXISTS ensure_foreign_key;
+DROP PROCEDURE IF EXISTS ensure_drop_column;
 
 INSERT IGNORE INTO ref_sync_status (code, label) VALUES
 ('pending', 'Pendiente'),
@@ -543,3 +635,51 @@ SELECT r.id, p.id
 FROM roles r
 JOIN permissions p ON p.code IN ('view_profile_self', 'view_profile_employee', 'view_payroll_self', 'view_payroll_employee')
 WHERE r.name = 'RRHH';
+
+-- Phase 0: Identity and access normalization
+INSERT IGNORE INTO roles (name, description) VALUES
+('RRHH', 'Gestion integral de empleados y expediente digital');
+
+INSERT IGNORE INTO permissions (code, description) VALUES
+('manage_axis_accounts', 'Puede crear y administrar cuentas AXIS de colaboradores'),
+('assign_system_roles', 'Puede asignar roles de sistema a cuentas AXIS'),
+('reset_user_passwords', 'Puede restablecer contrasenas de cuentas AXIS'),
+('toggle_user_accounts', 'Puede bloquear o desbloquear cuentas AXIS');
+
+INSERT IGNORE INTO role_permissions (role_id, permission_id)
+SELECT r.id, p.id
+FROM roles r
+JOIN permissions p ON p.code IN (
+    'manage_axis_accounts',
+    'assign_system_roles',
+    'reset_user_passwords',
+    'toggle_user_accounts'
+)
+WHERE r.name IN ('ADMIN', 'RRHH');
+
+INSERT IGNORE INTO role_permissions (role_id, permission_id)
+SELECT rrhh.id, rp.permission_id
+FROM roles legacy
+JOIN roles rrhh ON rrhh.name = 'RRHH'
+JOIN role_permissions rp ON rp.role_id = legacy.id
+WHERE UPPER(TRIM(legacy.name)) = 'HR_ADMIN';
+
+INSERT IGNORE INTO user_roles (user_id, role_id)
+SELECT ur.user_id, rrhh.id
+FROM user_roles ur
+JOIN roles legacy ON legacy.id = ur.role_id
+JOIN roles rrhh ON rrhh.name = 'RRHH'
+WHERE UPPER(TRIM(legacy.name)) = 'HR_ADMIN';
+
+DELETE ur
+FROM user_roles ur
+JOIN roles legacy ON legacy.id = ur.role_id
+WHERE UPPER(TRIM(legacy.name)) = 'HR_ADMIN';
+
+DELETE rp
+FROM role_permissions rp
+JOIN roles legacy ON legacy.id = rp.role_id
+WHERE UPPER(TRIM(legacy.name)) = 'HR_ADMIN';
+
+DELETE FROM roles
+WHERE UPPER(TRIM(name)) = 'HR_ADMIN';

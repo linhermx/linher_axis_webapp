@@ -48,6 +48,10 @@ INSERT IGNORE INTO permissions (code, description) VALUES
 ('view_audit_logs', 'Puede consultar bitacora de auditoria'),
 ('sync_microsip', 'Puede ejecutar sincronizacion con Microsip'),
 ('manage_roles', 'Puede gestionar roles y permisos'),
+('manage_axis_accounts', 'Puede crear y administrar cuentas AXIS de colaboradores'),
+('assign_system_roles', 'Puede asignar roles de sistema a cuentas AXIS'),
+('reset_user_passwords', 'Puede restablecer contrasenas de cuentas AXIS'),
+('toggle_user_accounts', 'Puede bloquear o desbloquear cuentas AXIS'),
 ('manage_recruitment', 'Puede gestionar vacantes y candidatos');
 
 INSERT IGNORE INTO role_permissions (role_id, permission_id)
@@ -82,7 +86,11 @@ JOIN permissions p ON (
         'view_payroll_employee',
         'view_calendar',
         'view_audit_logs',
-        'sync_microsip'
+        'sync_microsip',
+        'manage_axis_accounts',
+        'assign_system_roles',
+        'reset_user_passwords',
+        'toggle_user_accounts'
     ))
     OR (r.name = 'EMPLEADO' AND p.code IN (
         'view_dashboard',

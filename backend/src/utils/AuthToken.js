@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { randomUUID } from 'crypto';
+import { normalizeRoleName } from './RolePolicy.js';
 
 const ACCESS_TOKEN_EXPIRES_IN = '15m';
 const SHORT_REFRESH_TOKEN_EXPIRES_IN = '8h';
@@ -65,7 +66,7 @@ export const resolveRefreshTokenExpiry = (rememberMe = false) => (
 export const signAuthTokens = ({ userId, roleName }, rememberMe = false) => {
     const { accessSecret, refreshSecret } = getAuthSecrets();
     const tokenId = randomUUID();
-    const normalizedRole = String(roleName || '').toUpperCase();
+    const normalizedRole = normalizeRoleName(roleName);
     const remember = toBoolean(rememberMe);
 
     const accessToken = jwt.sign(

@@ -200,13 +200,10 @@ export class MicrosipLinkReconciliationService {
 
     async createInternalEmployee(connection, extEmployee) {
         const internalId = normalizeText(extEmployee.employee_number);
-        const firstName = normalizeText(extEmployee.first_name, 'Sin nombre');
-        const lastName = normalizeText(extEmployee.last_name, 'Sin apellido');
-
         const [result] = await connection.query(
-            `INSERT INTO employees (internal_id, first_name, last_name)
-             VALUES (?, ?, ?)`,
-            [internalId, firstName, lastName]
+            `INSERT INTO employees (internal_id)
+             VALUES (?)`,
+            [internalId]
         );
 
         return Number(result.insertId);
@@ -268,6 +265,13 @@ export class MicrosipLinkReconciliationService {
                 link_source = VALUES(link_source),
                 updated_at = CURRENT_TIMESTAMP`,
             [employeeId, employeeExtId]
+        );
+
+        // Keep canonical source in Microsip for linked employees.
+        await connection.query(
+            `DELETE FROM employee_axis_identity
+             WHERE employee_id = ?`,
+            [employeeId]
         );
     }
 

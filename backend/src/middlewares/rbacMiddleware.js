@@ -1,20 +1,16 @@
+import { isAdminUser, normalizeRoleName, toCanonicalRoleList } from '../utils/RolePolicy.js';
+
 const normalizeToArray = (value) => {
     if (!value) return [];
     return Array.isArray(value) ? value : [value];
 };
 
-const normalizeRoleName = (value) => String(value || '').trim().toUpperCase();
 const normalizePermissionCode = (value) => String(value || '').trim().toLowerCase();
 
 const toSet = (values, normalizer) => new Set(
     normalizeToArray(values)
         .map(normalizer)
         .filter(Boolean)
-);
-
-const isAdminUser = (user) => (
-    normalizeRoleName(user?.role_name) === 'ADMIN'
-    || Number(user?.role_id) === 1
 );
 
 export const checkPermission = (permissionCodes, options = {}) => {
@@ -29,7 +25,7 @@ export const checkPermission = (permissionCodes, options = {}) => {
                 return res.status(401).json({ message: 'Autenticacion requerida' });
             }
 
-            const userRoles = toSet([user.role_name, ...(user.roles || [])], normalizeRoleName);
+            const userRoles = new Set(toCanonicalRoleList([user?.role_name, ...(user?.roles || [])]));
             const userPermissions = toSet(user.permissions || [], normalizePermissionCode);
             const hasAllowedRole = Array.from(userRoles).some((role) => allowedRoles.has(role));
 
