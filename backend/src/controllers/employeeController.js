@@ -47,8 +47,8 @@ export const getAllEmployees = async (req, res) => {
                     WHEN ai.employee_id IS NOT NULL THEN 'axis_fallback'
                     ELSE 'axis_unresolved'
                 END AS canonical_source,
-                d.name AS department_name,
-                p.name AS position_name,
+                COALESCE(NULLIF(TRIM(ext_dep.name), ''), d.name) AS department_name,
+                COALESCE(NULLIF(TRIM(ext_job.name), ''), p.name) AS position_name,
                 personal.sex_code AS sex_code,
                 CASE
                     WHEN UPPER(TRIM(COALESCE(personal.sex_code, ai.gender, ''))) IN ('F', 'FEMENINO', 'FEMALE') THEN 'Femenino'
@@ -61,6 +61,8 @@ export const getAllEmployees = async (req, res) => {
             LEFT JOIN positions p ON ej.position_id = p.id
             LEFT JOIN employee_microsip_links eml ON eml.employee_id = e.id
             LEFT JOIN ext_microsip_employee ext ON ext.id = eml.microsip_employee_ext_id
+            LEFT JOIN ext_microsip_department ext_dep ON ext_dep.id = ext.department_ext_id
+            LEFT JOIN ext_microsip_job_title ext_job ON ext_job.id = ext.job_title_ext_id
             LEFT JOIN ext_microsip_employee_personal personal ON personal.employee_ext_id = eml.microsip_employee_ext_id
             LEFT JOIN employee_axis_identity ai ON ai.employee_id = e.id
         `);

@@ -57,7 +57,6 @@ const getEmployeeInitials = (employee) => {
   return `${parts[0][0] || ''}${parts[1][0] || ''}`.toUpperCase();
 };
 
-const toDisplayValue = (value, fallback = 'Sin información') => normalizeText(value) || fallback;
 const toHumanValue = (value, fallback = 'Sin información') => {
   const normalized = normalizeText(value);
   return normalized ? toTitleCase(normalized) : fallback;
@@ -93,6 +92,20 @@ const getStatusMeta = (employee) => {
   }
 
   return { status: 'approved', label: 'Activo' };
+};
+
+const getEmploymentStatusLabel = (employee) => {
+  const statusFlag = normalizeKey(employee?.employment_status || employee?.status || '');
+
+  if (!statusFlag) return 'Activo';
+  if (statusFlag.includes('active') || statusFlag.includes('activo') || statusFlag.includes('vigente')) {
+    return 'Activo';
+  }
+  if (statusFlag.includes('inactive') || statusFlag.includes('inactivo') || statusFlag.includes('terminated') || statusFlag.includes('baja')) {
+    return 'Inactivo';
+  }
+
+  return toHumanValue(employee?.employment_status || employee?.status, 'Activo');
 };
 
 const isEmployeeActive = (employee) => getStatusMeta(employee).status === 'approved';
@@ -560,7 +573,7 @@ const EmployeeDirectory = () => {
 
                   <div className="employee-directory__detail-item">
                     <dt>Estatus laboral</dt>
-                    <dd>{toDisplayValue(selectedEmployee.employment_status, 'Activo')}</dd>
+                    <dd>{getEmploymentStatusLabel(selectedEmployee)}</dd>
                   </div>
                 </dl>
 
