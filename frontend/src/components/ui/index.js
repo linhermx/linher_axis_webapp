@@ -5,6 +5,7 @@ export { default as Card } from './Card';
 export { default as ConfirmModal } from './ConfirmModal';
 export { default as CustomMenu } from './CustomMenu';
 export { default as CustomSelect } from './CustomSelect';
+export { default as DrawerShell } from './DrawerShell';
 export { default as InputField } from './InputField';
 export { default as ModalShell } from './ModalShell';
 export { default as NotificationToast } from './NotificationToast';
