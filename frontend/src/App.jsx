@@ -135,7 +135,7 @@ function App() {
           <Route
             path="/admin"
             element={
-              <ProtectedRoute requiredPermissions={['view_audit_logs']}>
+              <ProtectedRoute requiredPermissions={['manage_axis_accounts', 'view_audit_logs']}>
                 <MicrosipAdmin />
               </ProtectedRoute>
             }
@@ -153,7 +153,7 @@ function App() {
           <Route
             path="/settings"
             element={
-              <ProtectedRoute requiredPermissions={['view_audit_logs']}>
+              <ProtectedRoute requiredPermissions={['manage_axis_accounts', 'view_audit_logs']}>
                 <Navigate to="/admin" replace />
               </ProtectedRoute>
             }

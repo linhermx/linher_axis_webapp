@@ -1002,6 +1002,7 @@
 }
 
 .employee-directory__panel--people {
+  align-self: start;
   grid-area: people;
 }
 
@@ -2456,12 +2457,410 @@
 }
 
 /* Source: microsip-admin.css */
-.microsip-admin {
+.admin-module {
   display: flex;
   flex-direction: column;
   gap: 12px;
   height: calc(100vh - var(--header-height-current, var(--header-height)) - 42px);
   height: calc(100dvh - var(--header-height-current, var(--header-height)) - 42px);
+  min-height: 0;
+}
+
+.admin-module__tabs-wrap {
+  margin-bottom: 2px;
+}
+
+.admin-module__tabs {
+  margin: 0;
+}
+
+.admin-module__tab {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.axis-accounts {
+  display: block;
+}
+
+.axis-accounts .ui-card {
+  min-height: auto;
+}
+
+.axis-accounts__header {
+  align-items: center;
+}
+
+.axis-accounts__body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.axis-accounts__summary {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.axis-accounts__summary-item {
+  align-items: center;
+  background: color-mix(in srgb, var(--surface-muted) 70%, var(--surface));
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  gap: 10px;
+  min-height: 58px;
+  padding: 10px 12px;
+}
+
+.axis-accounts__summary-icon {
+  align-items: center;
+  background: color-mix(in srgb, var(--primary) 11%, transparent);
+  border-radius: 999px;
+  color: var(--primary);
+  display: inline-flex;
+  flex-shrink: 0;
+  height: 30px;
+  justify-content: center;
+  width: 30px;
+}
+
+.axis-accounts__summary-label {
+  color: var(--text-secondary);
+  font-size: var(--fs-label);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.axis-accounts__summary-value {
+  color: var(--text-main);
+  font-size: var(--fs-title-md);
+  font-weight: 800;
+  margin-top: 2px;
+}
+
+.axis-accounts__toolbar {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 260px) minmax(220px, 260px);
+}
+
+.axis-accounts__loading {
+  color: var(--text-secondary);
+  font-size: var(--fs-body-sm);
+}
+
+.axis-accounts__table {
+  overflow: hidden;
+}
+
+.axis-accounts__table .ui-table-scroll {
+  height: auto;
+  max-height: 50vh;
+  overflow: auto;
+}
+
+.axis-accounts__table-grid {
+  min-width: 0;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.axis-accounts__table-grid th,
+.axis-accounts__table-grid td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.axis-accounts__pagination {
+  background: color-mix(in srgb, var(--surface-muted) 54%, var(--surface));
+  border-top: 1px solid color-mix(in srgb, var(--border) 84%, transparent);
+  margin: 0;
+  padding: 10px 12px;
+}
+
+.axis-accounts__user {
+  align-items: flex-start;
+}
+
+.axis-accounts__avatar {
+  flex-shrink: 0;
+}
+
+.axis-accounts__employee {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.axis-accounts__account-email {
+  color: var(--text-main);
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.axis-accounts__employee-name {
+  color: var(--text-main);
+  font-size: var(--fs-body-md);
+  font-weight: 700;
+}
+
+.axis-accounts__employee-meta {
+  color: var(--text-secondary);
+  font-size: var(--fs-body-sm);
+  margin-top: 1px;
+}
+
+.axis-accounts__roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.axis-accounts__role-badge {
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+
+.axis-accounts__empty {
+  color: var(--text-secondary);
+  font-size: var(--fs-body-sm);
+}
+
+.axis-accounts__spin {
+  animation: axis-accounts-spin 0.9s linear infinite;
+}
+
+.axis-accounts__col--employee {
+  width: 30%;
+  white-space: normal !important;
+}
+
+.axis-accounts__col--account {
+  width: 19%;
+}
+
+.axis-accounts__col--roles {
+  width: 16%;
+}
+
+.axis-accounts__col--status {
+  width: 11%;
+}
+
+.axis-accounts__col--session {
+  width: 14%;
+}
+
+.axis-accounts__col--action {
+  width: 10%;
+}
+
+.axis-account-drawer {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.axis-account-drawer__loading {
+  color: var(--text-secondary);
+  font-size: var(--fs-body-sm);
+}
+
+.axis-account-drawer__employee {
+  align-items: start;
+  background: color-mix(in srgb, var(--surface-muted) 68%, var(--surface));
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xs);
+  display: grid;
+  gap: 10px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  min-height: 82px;
+  padding: 10px 11px;
+}
+
+.axis-account-drawer__avatar {
+  align-items: center;
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
+  border: 2px solid var(--surface);
+  border-radius: 999px;
+  color: var(--primary);
+  display: inline-flex;
+  font-size: var(--fs-body-sm);
+  font-weight: 800;
+  height: 46px;
+  justify-content: center;
+  letter-spacing: 0.02em;
+  width: 46px;
+}
+
+.axis-account-drawer__employee-meta {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.axis-account-drawer__employee-meta h3 {
+  color: var(--text-main);
+  font-size: var(--fs-title-md);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.axis-account-drawer__employee-meta p {
+  color: var(--text-secondary);
+  font-size: var(--fs-body-sm);
+}
+
+.axis-account-drawer__department-chip {
+  background: var(--department-chip-bg, color-mix(in srgb, var(--surface-muted) 80%, var(--surface)));
+  border: 1px solid color-mix(in srgb, var(--department-chip-fg, var(--text-secondary)) 20%, transparent);
+  border-radius: 999px;
+  color: var(--department-chip-fg, var(--text-secondary));
+  display: inline-flex;
+  font-size: var(--fs-label);
+  font-weight: 700;
+  justify-self: start;
+  letter-spacing: 0.01em;
+  max-width: 100%;
+  overflow: hidden;
+  padding: 3px 9px;
+  text-overflow: ellipsis;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.axis-account-drawer__employee-state {
+  align-self: start;
+}
+
+.axis-account-drawer__section {
+  border-top: 1px solid color-mix(in srgb, var(--border) 84%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 12px;
+}
+
+.axis-account-drawer__section-header {
+  padding-bottom: 2px;
+}
+
+.axis-account-drawer__section-header h4 {
+  color: var(--text-main);
+  font-size: var(--fs-title-md);
+  font-weight: 800;
+}
+
+.axis-account-drawer__section-header p {
+  color: var(--text-secondary);
+  font-size: var(--fs-body-sm);
+  margin-top: 3px;
+}
+
+.axis-account-drawer__form-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.axis-account-drawer__roles {
+  border: 0;
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+}
+
+.axis-account-drawer__roles legend {
+  color: var(--text-secondary);
+  font-size: var(--fs-label);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.axis-account-drawer__roles-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.axis-account-drawer__role-option {
+  align-items: center;
+  background: color-mix(in srgb, var(--surface-muted) 70%, var(--surface));
+  border-radius: var(--ui-list-hover-radius);
+  cursor: pointer;
+  display: flex;
+  gap: 7px;
+  min-height: 36px;
+  padding: 7px 8px;
+}
+
+.axis-account-drawer__role-option input {
+  accent-color: var(--primary);
+}
+
+.axis-account-drawer__role-option span {
+  color: var(--text-main);
+  font-size: var(--fs-body-sm);
+  font-weight: 700;
+}
+
+.axis-account-drawer__metric-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.axis-account-drawer__metric {
+  background: color-mix(in srgb, var(--surface-muted) 70%, var(--surface));
+  border-radius: var(--radius-md);
+  min-height: 58px;
+  padding: 9px 10px;
+}
+
+.axis-account-drawer__metric dt {
+  color: var(--text-secondary);
+  font-size: var(--fs-label);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.axis-account-drawer__metric dd {
+  color: var(--text-main);
+  font-size: var(--fs-body-md);
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.axis-account-drawer__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.axis-account-drawer__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.microsip-admin {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 12px;
   min-height: 0;
 }
 
@@ -2562,6 +2961,22 @@
 }
 
 @media (max-width: 1180px) {
+  .admin-module {
+    height: auto;
+  }
+
+  .axis-accounts__summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .axis-accounts__toolbar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .axis-accounts__table .ui-table-scroll {
+    max-height: 54vh;
+  }
+
   .microsip-admin {
     height: auto;
   }
@@ -2572,8 +2987,44 @@
 }
 
 @media (max-width: 860px) {
+  .axis-accounts__summary {
+    grid-template-columns: 1fr;
+  }
+
+  .axis-accounts__toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .axis-accounts__table .ui-table-scroll {
+    max-height: 58vh;
+  }
+
+  .axis-account-drawer__roles-grid,
+  .axis-account-drawer__metric-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .axis-account-drawer__employee {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .axis-account-drawer__employee-state {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
   .microsip-admin__metrics,
   .microsip-admin__form-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@keyframes axis-accounts-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
   }
 }
