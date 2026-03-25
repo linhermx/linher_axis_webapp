@@ -1,6 +1,15 @@
 import express from 'express';
 import { getAuditLogs, getRoles, getPermissions } from '../controllers/adminController.js';
 import {
+    createAxisAccount,
+    getAxisAccountByEmployeeId,
+    getAxisAccountRoles,
+    getAxisAccounts,
+    resetAxisAccountPassword,
+    updateAxisAccountRoles,
+    updateAxisAccountStatus,
+} from '../controllers/axisAccountController.js';
+import {
     getMicrosipHealth,
     getMicrosipEmployeesSnapshot,
     reconcileMicrosipLinks,
@@ -20,6 +29,15 @@ router.get('/audit-logs', checkPermission('view_audit_logs'), getAuditLogs);
 // Roles & Permissions management
 router.get('/roles', checkPermission('view_audit_logs'), getRoles);
 router.get('/permissions', checkPermission('view_audit_logs'), getPermissions);
+
+// Axis accounts governance
+router.get('/axis-accounts', checkPermission('manage_axis_accounts'), getAxisAccounts);
+router.get('/axis-accounts/roles', checkPermission('manage_axis_accounts'), getAxisAccountRoles);
+router.get('/axis-accounts/:employeeId', checkPermission('manage_axis_accounts'), getAxisAccountByEmployeeId);
+router.post('/axis-accounts', checkPermission('manage_axis_accounts'), createAxisAccount);
+router.patch('/axis-accounts/:employeeId/status', checkPermission('toggle_user_accounts'), updateAxisAccountStatus);
+router.post('/axis-accounts/:employeeId/reset-password', checkPermission('reset_user_passwords'), resetAxisAccountPassword);
+router.patch('/axis-accounts/:employeeId/roles', checkPermission('assign_system_roles'), updateAxisAccountRoles);
 
 // Microsip integration (MVP skeleton)
 router.get('/microsip/health', checkPermission('view_audit_logs'), getMicrosipHealth);

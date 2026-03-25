@@ -4,6 +4,7 @@ import {
   ArrowUpRight,
   Briefcase,
   Building2,
+  Shield,
   Search,
   Users,
 } from 'lucide-react';
@@ -23,6 +24,7 @@ import { cn } from '../lib/cn';
 import { getDepartmentTone } from '../lib/departmentTone';
 import { hasAnyPermission } from '../lib/permissions';
 import api from '../services/api';
+import AxisAccountDrawer from '../components/admin/AxisAccountDrawer';
 
 const normalizeText = (value) => String(value || '').trim();
 const normalizeKey = (value) => normalizeText(value).toLowerCase();
@@ -133,10 +135,12 @@ const EmployeeDirectory = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(DEFAULT_CARD_PAGE_SIZE);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
+  const [accountDrawerOpen, setAccountDrawerOpen] = useState(false);
 
   const navigate = useNavigate();
   const { user } = useAuth();
   const canViewEmployeeProfile = hasAnyPermission(user, ['view_profile_employee']);
+  const canManageAxisAccounts = hasAnyPermission(user, ['manage_axis_accounts']);
 
   useEffect(() => {
     let active = true;
@@ -588,6 +592,17 @@ const EmployeeDirectory = () => {
                     </Button>
                   ) : null}
 
+                  {canManageAxisAccounts ? (
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => setAccountDrawerOpen(true)}
+                    >
+                      <Shield size={16} />
+                      <span>Gestionar cuenta</span>
+                    </Button>
+                  ) : null}
+
                   <Button
                     type="button"
                     variant="secondary"
@@ -649,6 +664,12 @@ const EmployeeDirectory = () => {
           </Card>
         </div>
       ) : null}
+
+      <AxisAccountDrawer
+        isOpen={accountDrawerOpen}
+        employeeId={selectedEmployee?.id || null}
+        onClose={() => setAccountDrawerOpen(false)}
+      />
     </section>
   );
 };
