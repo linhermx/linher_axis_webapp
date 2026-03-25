@@ -33,13 +33,26 @@ export const getAllEmployees = async (req, res) => {
     try {
         const [employees] = await pool.query(`
             SELECT
-                e.*,
+                e.id,
+                e.user_id,
+                e.internal_id,
+                COALESCE(NULLIF(TRIM(ext.first_name), ''), NULLIF(TRIM(ai.first_name), '')) AS first_name,
+                COALESCE(NULLIF(TRIM(ext.last_name), ''), NULLIF(TRIM(ai.last_name), '')) AS last_name,
+                COALESCE(personal.birth_date, ai.birth_date) AS birth_date,
+                COALESCE(NULLIF(TRIM(personal.sex_code), ''), NULLIF(TRIM(ai.gender), '')) AS gender,
+                ext.employment_status,
+                ext.employee_number AS microsip_employee_number,
+                CASE
+                    WHEN ext.id IS NOT NULL THEN 'microsip'
+                    WHEN ai.employee_id IS NOT NULL THEN 'axis_fallback'
+                    ELSE 'axis_unresolved'
+                END AS canonical_source,
                 d.name AS department_name,
                 p.name AS position_name,
                 personal.sex_code AS sex_code,
                 CASE
-                    WHEN UPPER(TRIM(COALESCE(e.gender, personal.sex_code, ''))) IN ('F', 'FEMENINO', 'FEMALE') THEN 'Femenino'
-                    WHEN UPPER(TRIM(COALESCE(e.gender, personal.sex_code, ''))) IN ('M', 'MASCULINO', 'MALE') THEN 'Masculino'
+                    WHEN UPPER(TRIM(COALESCE(personal.sex_code, ai.gender, ''))) IN ('F', 'FEMENINO', 'FEMALE') THEN 'Femenino'
+                    WHEN UPPER(TRIM(COALESCE(personal.sex_code, ai.gender, ''))) IN ('M', 'MASCULINO', 'MALE') THEN 'Masculino'
                     ELSE NULL
                 END AS gender_label
             FROM employees e
@@ -47,7 +60,9 @@ export const getAllEmployees = async (req, res) => {
             LEFT JOIN departments d ON ej.department_id = d.id
             LEFT JOIN positions p ON ej.position_id = p.id
             LEFT JOIN employee_microsip_links eml ON eml.employee_id = e.id
+            LEFT JOIN ext_microsip_employee ext ON ext.id = eml.microsip_employee_ext_id
             LEFT JOIN ext_microsip_employee_personal personal ON personal.employee_ext_id = eml.microsip_employee_ext_id
+            LEFT JOIN employee_axis_identity ai ON ai.employee_id = e.id
         `);
         return res.json(employees);
     } catch (error) {
@@ -84,10 +99,16 @@ export const createEmployee = async (req, res) => {
         } = req.body;
 
         const [empResult] = await connection.query(
-            'INSERT INTO employees (internal_id, first_name, last_name, birth_date, gender) VALUES (?, ?, ?, ?, ?)',
-            [internalId, firstName, lastName, birth_date || null, gender || null]
+            'INSERT INTO employees (internal_id) VALUES (?)',
+            [internalId]
         );
         const employeeId = empResult.insertId;
+
+        await connection.query(
+            `INSERT INTO employee_axis_identity (employee_id, first_name, last_name, birth_date, gender)
+             VALUES (?, ?, ?, ?, ?)`,
+            [employeeId, firstName, lastName, birth_date || null, gender || null]
+        );
 
         await connection.query(
             `INSERT INTO employee_jobs (
@@ -157,9 +178,30 @@ export const getEmployeeById = async (req, res) => {
 
     try {
         const [rows] = await pool.query(`
-            SELECT e.*, ej.department_id, ej.position_id, ej.manager_id, ej.start_date, ej.end_date, ej.schedule, ej.salary, ej.currency
+            SELECT
+                e.id,
+                e.user_id,
+                e.internal_id,
+                COALESCE(NULLIF(TRIM(ext.first_name), ''), NULLIF(TRIM(ai.first_name), '')) AS first_name,
+                COALESCE(NULLIF(TRIM(ext.last_name), ''), NULLIF(TRIM(ai.last_name), '')) AS last_name,
+                COALESCE(personal.birth_date, ai.birth_date) AS birth_date,
+                COALESCE(NULLIF(TRIM(personal.sex_code), ''), NULLIF(TRIM(ai.gender), '')) AS gender,
+                ext.employment_status,
+                ext.employee_number AS microsip_employee_number,
+                ej.department_id,
+                ej.position_id,
+                ej.manager_id,
+                ej.start_date,
+                ej.end_date,
+                ej.schedule,
+                ej.salary,
+                ej.currency
             FROM employees e
             LEFT JOIN employee_jobs ej ON e.id = ej.employee_id AND ej.current_job_flag = 1
+            LEFT JOIN employee_microsip_links eml ON eml.employee_id = e.id
+            LEFT JOIN ext_microsip_employee ext ON ext.id = eml.microsip_employee_ext_id
+            LEFT JOIN ext_microsip_employee_personal personal ON personal.employee_ext_id = eml.microsip_employee_ext_id
+            LEFT JOIN employee_axis_identity ai ON ai.employee_id = e.id
             WHERE e.id = ?
         `, [employeeId]);
 

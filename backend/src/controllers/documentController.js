@@ -66,6 +66,22 @@ const resolveComputedStatusSql = () => `
     END
 `;
 
+const resolveEmployeeNameSql = () => `
+    COALESCE(
+        NULLIF(
+            TRIM(
+                CONCAT_WS(
+                    ' ',
+                    COALESCE(NULLIF(TRIM(ext.first_name), ''), NULLIF(TRIM(ai.first_name), '')),
+                    COALESCE(NULLIF(TRIM(ext.last_name), ''), NULLIF(TRIM(ai.last_name), ''))
+                )
+            ),
+            ''
+        ),
+        CONCAT('Empleado ', e.internal_id)
+    )
+`;
+
 const listCategories = async () => {
     const [rows] = await pool.query(
         `SELECT id, name
@@ -94,12 +110,15 @@ const getDocumentById = async (documentId) => {
             ed.updated_at,
             dc.name AS category_name,
             e.internal_id AS employee_internal_id,
-            CONCAT_WS(' ', e.first_name, e.last_name) AS employee_name,
+            ${resolveEmployeeNameSql()} AS employee_name,
             reviewer.email AS reviewed_by_email,
             uploader.email AS uploaded_by_email
          FROM employee_documents ed
          JOIN document_categories dc ON dc.id = ed.category_id
          JOIN employees e ON e.id = ed.employee_id
+         LEFT JOIN employee_microsip_links eml ON eml.employee_id = e.id
+         LEFT JOIN ext_microsip_employee ext ON ext.id = eml.microsip_employee_ext_id
+         LEFT JOIN employee_axis_identity ai ON ai.employee_id = e.id
          LEFT JOIN users reviewer ON reviewer.id = ed.reviewed_by_user_id
          LEFT JOIN users uploader ON uploader.id = ed.uploaded_by_user_id
          WHERE ed.id = ?
@@ -394,13 +413,16 @@ export const getValidationQueue = async (req, res) => {
                 ed.*,
                 dc.name AS category_name,
                 e.internal_id AS employee_internal_id,
-                CONCAT_WS(' ', e.first_name, e.last_name) AS employee_name,
+                ${resolveEmployeeNameSql()} AS employee_name,
                 reviewer.email AS reviewed_by_email,
                 uploader.email AS uploaded_by_email,
                 ${computedStatusSql} AS effective_status_code
              FROM employee_documents ed
              JOIN document_categories dc ON ed.category_id = dc.id
              JOIN employees e ON e.id = ed.employee_id
+             LEFT JOIN employee_microsip_links eml ON eml.employee_id = e.id
+             LEFT JOIN ext_microsip_employee ext ON ext.id = eml.microsip_employee_ext_id
+             LEFT JOIN employee_axis_identity ai ON ai.employee_id = e.id
              LEFT JOIN users reviewer ON reviewer.id = ed.reviewed_by_user_id
              LEFT JOIN users uploader ON uploader.id = ed.uploaded_by_user_id
              ${whereSql}
@@ -571,11 +593,14 @@ export const getExpiryAlerts = async (req, res) => {
                 ed.*,
                 dc.name AS category_name,
                 e.internal_id AS employee_internal_id,
-                CONCAT_WS(' ', e.first_name, e.last_name) AS employee_name,
+                ${resolveEmployeeNameSql()} AS employee_name,
                 ${resolveComputedStatusSql()} AS effective_status_code
              FROM employee_documents ed
              JOIN employees e ON e.id = ed.employee_id
              JOIN document_categories dc ON dc.id = ed.category_id
+             LEFT JOIN employee_microsip_links eml ON eml.employee_id = e.id
+             LEFT JOIN ext_microsip_employee ext ON ext.id = eml.microsip_employee_ext_id
+             LEFT JOIN employee_axis_identity ai ON ai.employee_id = e.id
              WHERE ed.expiry_date IS NOT NULL
                AND ed.expiry_date <= DATE_ADD(CURDATE(), INTERVAL ? DAY)
                AND ed.status_code <> 'rejected'

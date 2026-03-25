@@ -128,8 +128,10 @@ export class EmployeeProfileService {
                 e.id AS internal_employee_id,
                 e.user_id,
                 e.internal_id,
-                e.first_name AS internal_first_name,
-                e.last_name AS internal_last_name,
+                ai.first_name AS axis_first_name,
+                ai.last_name AS axis_last_name,
+                ai.birth_date AS axis_birth_date,
+                ai.gender AS axis_gender,
                 ${userPhotoSelect}
                 eml.id AS link_id,
                 eml.link_source,
@@ -219,6 +221,7 @@ export class EmployeeProfileService {
                 birth_country.name AS birth_country_name
              FROM employees e
              LEFT JOIN users u ON u.id = e.user_id
+             LEFT JOIN employee_axis_identity ai ON ai.employee_id = e.id
              LEFT JOIN employee_microsip_links eml ON eml.employee_id = e.id
              LEFT JOIN ext_microsip_employee ext ON ext.id = eml.microsip_employee_ext_id
              LEFT JOIN ext_microsip_department dep ON dep.id = ext.department_ext_id
@@ -248,11 +251,22 @@ export class EmployeeProfileService {
 
         const row = rows[0];
         if (!row.employee_ext_id) {
+            const fullName = [row.axis_first_name, row.axis_last_name].filter(Boolean).join(' ').trim();
             return {
                 internal_employee_id: Number(row.internal_employee_id),
                 internal_id: row.internal_id,
                 employee_ext_id: null,
                 linked: false,
+                identity: {
+                    full_name: fullName || null,
+                    first_name: row.axis_first_name || null,
+                    last_name: row.axis_last_name || null,
+                    photo_path: row.user_photo_path || null,
+                },
+                personal: {
+                    birth_date: row.axis_birth_date || null,
+                    sex_code: row.axis_gender || null,
+                },
             };
         }
 
@@ -378,7 +392,9 @@ export class EmployeeProfileService {
     }
 
     buildProfilePayload(row, payrollSummary) {
-        const fullName = [row.first_name, row.last_name].filter(Boolean).join(' ').trim();
+        const normalizedFirstName = row.first_name || row.axis_first_name || null;
+        const normalizedLastName = row.last_name || row.axis_last_name || null;
+        const fullName = [normalizedFirstName, normalizedLastName].filter(Boolean).join(' ').trim();
 
         return {
             internal_employee_id: Number(row.internal_employee_id),
@@ -389,8 +405,8 @@ export class EmployeeProfileService {
                 microsip_employee_id: row.microsip_employee_id,
                 employee_number: row.employee_number,
                 full_name: fullName,
-                first_name: row.first_name,
-                last_name: row.last_name,
+                first_name: normalizedFirstName,
+                last_name: normalizedLastName,
                 photo_path: row.user_photo_path,
                 employment_status: row.employment_status,
                 hired_at: row.hired_at,

@@ -85,13 +85,22 @@ CREATE TABLE employees (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT UNSIGNED NULL UNIQUE,
     internal_id VARCHAR(20) NOT NULL UNIQUE,
+    CONSTRAINT fk_employees_user
+        FOREIGN KEY (user_id) REFERENCES users(id)
+        ON DELETE SET NULL
+);
+
+CREATE TABLE employee_axis_identity (
+    employee_id BIGINT UNSIGNED PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     birth_date DATE NULL,
     gender VARCHAR(20) NULL,
-    CONSTRAINT fk_employees_user
-        FOREIGN KEY (user_id) REFERENCES users(id)
-        ON DELETE SET NULL
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_employee_axis_identity_employee
+        FOREIGN KEY (employee_id) REFERENCES employees(id)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE employee_jobs (

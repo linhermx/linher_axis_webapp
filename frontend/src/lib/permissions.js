@@ -1,5 +1,12 @@
 const normalizePermission = (value) => String(value || '').trim().toLowerCase();
-const normalizeRoleName = (value) => String(value || '').trim().toUpperCase();
+const ROLE_ALIASES = {
+  HR_ADMIN: 'RRHH',
+};
+
+const normalizeRoleName = (value) => {
+  const normalized = String(value || '').trim().toUpperCase();
+  return ROLE_ALIASES[normalized] || normalized;
+};
 
 const getNormalizedUserPermissions = (user) => (
   Array.isArray(user?.permissions)

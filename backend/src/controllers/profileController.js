@@ -2,11 +2,11 @@
 import { SystemLogger } from '../utils/SystemLogger.js';
 import { handleControllerError, sendError } from '../utils/ApiError.js';
 import { createEmployeeProfileService } from '../services/EmployeeProfileService.js';
+import { hasRole, isAdminUser, normalizeRoleName } from '../utils/RolePolicy.js';
 
 const logger = new SystemLogger(pool);
 const profileService = createEmployeeProfileService(pool);
 
-const normalizeRoleName = (value) => String(value || '').trim().toUpperCase();
 const normalizePermissionCode = (value) => String(value || '').trim().toLowerCase();
 
 const toInteger = (value) => {
@@ -36,13 +36,6 @@ const hasPermission = (user, permissionCode) => {
     return Array.isArray(user?.permissions)
         && user.permissions.some((code) => normalizePermissionCode(code) === requiredCode);
 };
-
-const isAdminUser = (user) => (
-    normalizeRoleName(user?.role_name) === 'ADMIN'
-    || Number(user?.role_id) === 1
-);
-
-const isRole = (user, roleName) => normalizeRoleName(user?.role_name) === normalizeRoleName(roleName);
 
 const getAuthEmployeeId = async (authUser) => {
     const sessionEmployeeId = toInteger(authUser?.employee_id);
@@ -183,7 +176,7 @@ export const getEmployeeProfile360 = async (req, res) => {
             if (supervisorEmployeeId !== targetEmployeeId) {
                 visibilityScope = 'summary';
             }
-        } else if (!['ADMIN', 'RRHH'].includes(roleName) && !isAdminUser(authUser)) {
+        } else if (!(hasRole(authUser, 'ADMIN') || hasRole(authUser, 'RRHH')) && !isAdminUser(authUser)) {
             return sendError(res, 403, 'No autorizado para consultar este perfil', req);
         }
 
@@ -224,9 +217,9 @@ export const getEmployeePayrollPayments = async (req, res) => {
             return sendError(res, 400, 'ID de empleado invalido', req);
         }
 
-        const roleName = normalizeRoleName(authUser?.role_name);
         const canViewPayroll = isAdminUser(authUser)
-            || (['ADMIN', 'RRHH'].includes(roleName) && hasPermission(authUser, 'view_payroll_employee'));
+            || ((hasRole(authUser, 'ADMIN') || hasRole(authUser, 'RRHH'))
+                && hasPermission(authUser, 'view_payroll_employee'));
 
         if (!canViewPayroll) {
             return sendError(res, 403, 'No autorizado para consultar pagos de colaboradores', req);
