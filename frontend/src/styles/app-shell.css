@@ -186,15 +186,15 @@
 
 .user-avatar-small {
   align-items: center;
-  background: var(--avatar-bg);
-  border-radius: 9px;
-  color: var(--avatar-text);
   display: flex;
-  font-weight: 800;
-  height: 2.35rem;
+  height: 40px;
   justify-content: center;
   position: relative;
-  width: 2.35rem;
+  width: 40px;
+}
+
+.sidebar-user-avatar {
+  box-shadow: var(--shadow-xs);
 }
 
 .status-indicator {

@@ -1,6 +1,17 @@
 import { useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import {
+  Avatar,
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+  TableShell,
+} from '../components/ui';
+import {
   Cell,
   Pie,
   PieChart,
@@ -365,7 +376,12 @@ const Dashboard = () => {
             <ul className="axis-candidate-list axis-candidate-list--scroll">
               {highlightedCandidates.map((candidate) => (
                 <li key={candidate.id} className="axis-candidate-item">
-                  <span className="axis-avatar axis-avatar--candidate">{candidate.initials}</span>
+                  <Avatar
+                    initials={candidate.initials}
+                    size="md"
+                    className="axis-avatar--candidate"
+                    aria-hidden="true"
+                  />
                   <div className="axis-candidate-item__content">
                     <p className="axis-candidate-item__name">{candidate.name}</p>
                     <p className="axis-candidate-item__role">Postulado para {candidate.role}</p>
@@ -381,11 +397,16 @@ const Dashboard = () => {
                 <article key={item.label} className="axis-absence-item">
                   <p className="axis-absence-item__label">{item.label}</p>
                   <div className="axis-absence-item__row">
-                    <div className="axis-avatar-stack">
+                    <div className="ui-avatar-stack">
                       {item.avatars.map((avatarCode) => (
-                        <span key={`${item.label}-${avatarCode}`} className="axis-avatar axis-avatar--stacked">
-                          {avatarCode}
-                        </span>
+                        <Avatar
+                          key={`${item.label}-${avatarCode}`}
+                          initials={avatarCode}
+                          size="xs"
+                          stacked
+                          className="axis-avatar--stacked"
+                          aria-hidden="true"
+                        />
                       ))}
                     </div>
                     <p className="axis-absence-item__value">{item.total}</p>
@@ -400,52 +421,55 @@ const Dashboard = () => {
                 <button type="button" className="axis-panel__link">Ver todo</button>
               </header>
 
-              <div className="axis-table-shell">
-                <div className="axis-table-scroll" role="region" aria-label="Solicitudes recientes">
-                  <table className="axis-table">
-                    <caption className="axis-sr-only">Solicitudes recientes de empleados</caption>
-                    <thead>
-                      <tr>
-                        <th scope="col">Nombre</th>
-                        <th scope="col">Periodo</th>
-                        <th scope="col">Tipo</th>
-                        <th scope="col">Estado</th>
-                        <th scope="col">Fecha</th>
-                        <th scope="col">Notas</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {requests.map((requestItem) => {
-                        const statusMeta = STATUS_META[requestItem.statusKey] || STATUS_META.pending;
+              <TableShell className="axis-table-shell">
+                <Table className="axis-table" aria-label="Solicitudes recientes">
+                  <TableCaption>Solicitudes recientes de empleados</TableCaption>
+                  <TableHead>
+                    <TableRow>
+                      <TableHeaderCell scope="col">Nombre</TableHeaderCell>
+                      <TableHeaderCell scope="col">Periodo</TableHeaderCell>
+                      <TableHeaderCell scope="col">Tipo</TableHeaderCell>
+                      <TableHeaderCell scope="col">Estado</TableHeaderCell>
+                      <TableHeaderCell scope="col">Fecha</TableHeaderCell>
+                      <TableHeaderCell scope="col">Notas</TableHeaderCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {requests.map((requestItem) => {
+                      const statusMeta = STATUS_META[requestItem.statusKey] || STATUS_META.pending;
 
-                        return (
-                          <tr key={requestItem.id}>
-                            <td>
-                              <div className="axis-table-user">
-                                <span className="axis-avatar axis-avatar--table">{requestItem.avatar}</span>
-                                <div>
-                                  <p className="axis-table-user__name">{requestItem.name}</p>
-                                  <p className="axis-table-user__role">{requestItem.role}</p>
-                                </div>
+                      return (
+                        <TableRow key={requestItem.id}>
+                          <TableCell>
+                            <div className="axis-table-user">
+                              <Avatar
+                                initials={requestItem.avatar}
+                                size="md"
+                                className="axis-avatar--table"
+                                aria-hidden="true"
+                              />
+                              <div>
+                                <p className="axis-table-user__name">{requestItem.name}</p>
+                                <p className="axis-table-user__role">{requestItem.role}</p>
                               </div>
-                            </td>
-                            <td>{requestItem.period}</td>
-                            <td>{requestItem.type}</td>
-                            <td>
-                              <span className={`axis-status axis-status--${statusMeta.variant}`}>
-                                <span className="axis-status__dot" aria-hidden="true" />
-                                {statusMeta.label}
-                              </span>
-                            </td>
-                            <td>{requestItem.dateLabel}</td>
-                            <td>{requestItem.notes}</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>{requestItem.period}</TableCell>
+                          <TableCell>{requestItem.type}</TableCell>
+                          <TableCell>
+                            <span className={`axis-status axis-status--${statusMeta.variant}`}>
+                              <span className="axis-status__dot" aria-hidden="true" />
+                              {statusMeta.label}
+                            </span>
+                          </TableCell>
+                          <TableCell>{requestItem.dateLabel}</TableCell>
+                          <TableCell>{requestItem.notes}</TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </TableShell>
             </section>
           </div>
         </div>

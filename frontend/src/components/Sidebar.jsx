@@ -13,16 +13,18 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
 } from 'lucide-react';
+import { Avatar } from './ui';
 import { useAuth } from '../hooks/useAuth';
+import { getInitials, toHumanName } from '../lib/identity';
 import { hasAnyPermission } from '../lib/permissions';
 
 const Sidebar = ({ collapsed = false, onToggleCollapse }) => {
   const { user } = useAuth();
 
   const profile = {
-    name: user?.name || 'Usuario AXIS',
+    name: toHumanName(user?.name || 'Usuario AXIS', 'Usuario AXIS'),
     role: user?.role_name || 'Admin de RRHH',
-    avatar: (user?.name?.charAt(0) || 'A').toUpperCase(),
+    avatar: getInitials(user?.name, { fallback: 'AX' }),
   };
 
   const canViewEmployees = hasAnyPermission(user, ['view_employees']);
@@ -108,7 +110,12 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }) => {
       <div className="sidebar-footer">
         <div className="user-profile-widget">
           <div className="user-avatar-small">
-            {profile.avatar}
+            <Avatar
+              initials={profile.avatar}
+              size="md"
+              className="sidebar-user-avatar"
+              aria-hidden="true"
+            />
             <div className="status-indicator online" />
           </div>
 

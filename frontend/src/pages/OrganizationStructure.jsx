@@ -1,6 +1,7 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
-import { Building2, ChevronRight, UserCircle2, Users } from 'lucide-react';
-import { Card, StatusBadge, StatusView } from '../components/ui';
+import { Building2, ChevronRight, Users } from 'lucide-react';
+import { Avatar, Card, StatusBadge, StatusView } from '../components/ui';
+import { buildFullName, getInitials, toHumanName } from '../lib/identity';
 import api from '../services/api';
 
 const DEPTH_CLASS_MAP = [
@@ -215,14 +216,24 @@ const OrganizationStructure = () => {
                       {selectedUnitDetails.members.map((member) => (
                         <article key={member.id} className="organization-member-card">
                           <div className="organization-member-header">
-                            <span className="organization-member-avatar">
-                              <UserCircle2 size={17} />
-                            </span>
+                            <Avatar
+                              initials={getInitials(
+                                buildFullName(member.first_name, member.last_name, 'Sin nombre'),
+                                { fallback: 'NA' }
+                              )}
+                              name={buildFullName(member.first_name, member.last_name, 'Sin nombre')}
+                              src={member.photo_url || member.photo_path || member.avatar_url || ''}
+                              size="sm"
+                              className="organization-member-avatar"
+                              aria-hidden="true"
+                            />
                             <div>
                               <p className="organization-member-name">
-                                {member.first_name} {member.last_name}
+                                {buildFullName(member.first_name, member.last_name, 'Sin nombre')}
                               </p>
-                              <p className="organization-member-role">{member.position_name || 'Sin puesto asignado'}</p>
+                              <p className="organization-member-role">
+                                {toHumanName(member.position_name || 'Sin puesto asignado', 'Sin puesto asignado')}
+                              </p>
                               <p className="organization-member-meta">
                                 Rol en unidad: <b>{member.role_in_unit || 'Colaborador'}</b>
                               </p>
