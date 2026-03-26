@@ -448,6 +448,8 @@ DELIMITER ;
 CALL ensure_column('ext_microsip_employee', 'employee_number', 'VARCHAR(50) NULL');
 CALL ensure_column('ext_microsip_employee', 'source_payload', 'JSON NULL');
 CALL ensure_column('ext_microsip_employee', 'synced_at', 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP');
+CALL ensure_column('users', 'must_change_password', 'TINYINT(1) NOT NULL DEFAULT 0');
+CALL ensure_column('users', 'password_changed_at', 'TIMESTAMP NULL');
 
 CALL ensure_column('ext_microsip_employee_compensation', 'payroll_regime', 'VARCHAR(80) NULL');
 CALL ensure_column('ext_microsip_employee_compensation', 'contribution_base_amount', 'DECIMAL(15,2) NULL');

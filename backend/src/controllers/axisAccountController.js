@@ -131,7 +131,8 @@ const buildEmployeeAccountBaseQuery = ({ employeeId = null } = {}) => `
         COALESCE(NULLIF(TRIM(ext_dep.name), ''), d.name) AS department_name,
         COALESCE(NULLIF(TRIM(ext_job.name), ''), p.name) AS position_name,
         u.email AS account_email,
-        u.status AS account_status
+        u.status AS account_status,
+        u.must_change_password AS account_must_change_password
     FROM employees e
     LEFT JOIN employee_microsip_links eml ON eml.employee_id = e.id
     LEFT JOIN ext_microsip_employee ext ON ext.id = eml.microsip_employee_ext_id
@@ -211,6 +212,7 @@ const toAxisAccountRecord = (row, roleMap, lastSessionMap) => {
             email: normalizeText(row.account_email) || null,
             status: normalizeText(row.account_status).toLowerCase() || 'active',
             status_label: buildAccountStatusLabel(row.account_status),
+            must_change_password: Boolean(Number(row.account_must_change_password || 0)),
             last_session_at: lastSessionMap.get(userId) || null,
             roles: roleList,
             has_employee_role: roleList.includes('EMPLEADO'),
@@ -501,8 +503,8 @@ export const createAxisAccount = async (req, res) => {
 
         const passwordHash = await argon2.hash(password);
         const [createUserResult] = await connection.query(
-            'INSERT INTO users (email, password_hash, status) VALUES (?, ?, ?)',
-            [email, passwordHash, 'active']
+            'INSERT INTO users (email, password_hash, status, must_change_password, password_changed_at) VALUES (?, ?, ?, ?, ?)',
+            [email, passwordHash, 'active', 1, null]
         );
 
         const userId = toNumericId(createUserResult.insertId);
@@ -656,7 +658,7 @@ export const resetAxisAccountPassword = async (req, res) => {
 
         const newPasswordHash = await argon2.hash(newPassword);
         await connection.query(
-            'UPDATE users SET password_hash = ? WHERE id = ?',
+            'UPDATE users SET password_hash = ?, must_change_password = 1, password_changed_at = NULL WHERE id = ?',
             [newPasswordHash, employeeRecord.user_id]
         );
         await revokeRefreshTokens(connection, employeeRecord.user_id, 'password_reset');

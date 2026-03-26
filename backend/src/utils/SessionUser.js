@@ -10,6 +10,7 @@ export const getUserSessionById = async (db, userId) => {
             u.id,
             u.email,
             u.status,
+            u.must_change_password,
             e.id AS employee_id,
             COALESCE(NULLIF(TRIM(ext.first_name), ''), NULLIF(TRIM(ai.first_name), '')) AS first_name,
             COALESCE(NULLIF(TRIM(ext.last_name), ''), NULLIF(TRIM(ai.last_name), '')) AS last_name
@@ -64,6 +65,7 @@ export const getUserSessionById = async (db, userId) => {
         roles,
         permissions,
         status: user.status,
+        must_change_password: Boolean(Number(user.must_change_password || 0)),
     };
 };
 
