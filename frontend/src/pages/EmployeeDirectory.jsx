@@ -33,7 +33,7 @@ import { cn } from '../lib/cn';
 import { getDepartmentTone } from '../lib/departmentTone';
 import { hasAnyPermission } from '../lib/permissions';
 import api from '../services/api';
-import AxisAccountDrawer from '../components/admin/AxisAccountDrawer';
+import AccountDrawer from '../components/admin/AccountDrawer';
 
 const getEmployeeName = (employee) => buildFullName(employee?.first_name, employee?.last_name, 'Sin nombre');
 const getEmployeeInitials = (employee) => getInitials(getEmployeeName(employee), { fallback: 'NA' });
@@ -123,7 +123,7 @@ const EmployeeDirectory = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const canViewEmployeeProfile = hasAnyPermission(user, ['view_profile_employee']);
-  const canManageAxisAccounts = hasAnyPermission(user, ['manage_axis_accounts']);
+  const canManageAccounts = hasAnyPermission(user, ['manage_axis_accounts']);
 
   useEffect(() => {
     let active = true;
@@ -595,7 +595,7 @@ const EmployeeDirectory = () => {
                     </Button>
                   ) : null}
 
-                  {canManageAxisAccounts ? (
+                  {canManageAccounts ? (
                     <Button
                       type="button"
                       variant="secondary"
@@ -675,7 +675,7 @@ const EmployeeDirectory = () => {
         </div>
       ) : null}
 
-      <AxisAccountDrawer
+      <AccountDrawer
         isOpen={accountDrawerOpen}
         employeeId={selectedEmployee?.id || null}
         onClose={() => setAccountDrawerOpen(false)}
@@ -685,4 +685,3 @@ const EmployeeDirectory = () => {
 };
 
 export default EmployeeDirectory;
-

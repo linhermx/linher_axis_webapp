@@ -29,11 +29,11 @@ import {
 } from '../../lib/axisAccounts';
 import { getInitials, normalizeText, toHumanName } from '../../lib/identity';
 import api from '../../services/api';
-import AxisAccountDrawer from './AxisAccountDrawer';
+import AccountDrawer from './AccountDrawer';
 
 const DEFAULT_PAGE_SIZE = 8;
 
-const AxisAccountsManager = () => {
+const AccountsManager = () => {
   const [records, setRecords] = useState([]);
   const [summary, setSummary] = useState(null);
   const [roleCatalog, setRoleCatalog] = useState([]);
@@ -54,7 +54,7 @@ const AxisAccountsManager = () => {
     [roleCatalog]
   );
 
-  const loadAxisAccounts = useCallback(async ({ silent = false } = {}) => {
+  const loadAccounts = useCallback(async ({ silent = false } = {}) => {
     if (silent) {
       setRefreshing(true);
     } else {
@@ -77,8 +77,8 @@ const AxisAccountsManager = () => {
   }, []);
 
   useEffect(() => {
-    loadAxisAccounts();
-  }, [loadAxisAccounts]);
+    loadAccounts();
+  }, [loadAccounts]);
 
   const filteredRecords = useMemo(() => {
     const normalizedSearch = normalizeText(searchTerm).toLocaleLowerCase('es-MX');
@@ -157,7 +157,7 @@ const AxisAccountsManager = () => {
           <Button
             type="button"
             variant="secondary"
-            onClick={() => loadAxisAccounts({ silent: true })}
+            onClick={() => loadAccounts({ silent: true })}
             disabled={loading || refreshing}
           >
             <RefreshCw size={16} className={refreshing ? 'axis-accounts__spin' : ''} />
@@ -348,14 +348,14 @@ const AxisAccountsManager = () => {
         ) : null}
       </Card>
 
-      <AxisAccountDrawer
+      <AccountDrawer
         isOpen={drawerOpen}
         employeeId={selectedEmployeeId}
         onClose={() => setDrawerOpen(false)}
-        onAccountUpdated={() => loadAxisAccounts({ silent: true })}
+        onAccountUpdated={() => loadAccounts({ silent: true })}
       />
     </section>
   );
 };
 
-export default AxisAccountsManager;
+export default AccountsManager;

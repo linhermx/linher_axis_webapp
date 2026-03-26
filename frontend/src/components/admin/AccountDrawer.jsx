@@ -27,7 +27,7 @@ const DEFAULT_FORM = {
   selectedSystemRoles: [],
 };
 
-const AxisAccountDrawer = ({
+const AccountDrawer = ({
   isOpen,
   onClose,
   employeeId,
@@ -479,4 +479,4 @@ const AxisAccountDrawer = ({
   );
 };
 
-export default AxisAccountDrawer;
+export default AccountDrawer;
