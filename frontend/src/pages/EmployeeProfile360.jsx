@@ -126,7 +126,13 @@ const EmployeeProfile360 = () => {
           loadingPayments={loadingPayments}
           paymentsError={paymentsError}
           headerAction={(
-            <Button type="button" variant="secondary" onClick={() => navigate('/employees')}>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              className="axis-utility-button"
+              onClick={() => navigate('/employees')}
+            >
               <ArrowLeft size={16} />
               <span>Volver al directorio</span>
             </Button>

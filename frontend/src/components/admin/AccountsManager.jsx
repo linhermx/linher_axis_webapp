@@ -157,6 +157,8 @@ const AccountsManager = () => {
           <Button
             type="button"
             variant="secondary"
+            size="sm"
+            className="axis-utility-button"
             onClick={() => loadAccounts({ silent: true })}
             disabled={loading || refreshing}
           >
@@ -239,117 +241,119 @@ const AccountsManager = () => {
         ) : null}
 
         {!loading && !error ? (
-          <TableShell className="axis-accounts__table" ref={tableHostRef}>
-            <Table className="axis-table axis-accounts__table-grid">
-              <TableHead>
-                <TableRow>
-                  <TableHeaderCell scope="col" className="axis-accounts__col--employee">Colaborador</TableHeaderCell>
-                  <TableHeaderCell scope="col" className="axis-accounts__col--account">Cuenta</TableHeaderCell>
-                  <TableHeaderCell scope="col" className="axis-accounts__col--roles">Roles</TableHeaderCell>
-                  <TableHeaderCell scope="col" className="axis-accounts__col--status">Estatus</TableHeaderCell>
-                  <TableHeaderCell scope="col" className="axis-accounts__col--session">Última sesión</TableHeaderCell>
-                  <TableHeaderCell scope="col" className="axis-accounts__col--action">Acción</TableHeaderCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredRecords.length === 0 ? (
-                  <TableEmptyState colSpan={6}>
-                    No hay colaboradores que coincidan con los filtros actuales.
-                  </TableEmptyState>
-                ) : (
-                  paginatedRecords.map((record) => {
-                    const statusMeta = getAccountStatusMeta(
-                      record?.account?.status,
-                      Boolean(record?.account?.must_change_password)
-                    );
+          <div className="axis-accounts__table-wrap">
+            <TableShell className="axis-accounts__table axis-table-shell" ref={tableHostRef}>
+              <Table className="axis-table axis-accounts__table-grid">
+                <TableHead>
+                  <TableRow>
+                    <TableHeaderCell scope="col" className="axis-accounts__col--employee">Colaborador</TableHeaderCell>
+                    <TableHeaderCell scope="col" className="axis-accounts__col--account">Cuenta</TableHeaderCell>
+                    <TableHeaderCell scope="col" className="axis-accounts__col--roles">Roles</TableHeaderCell>
+                    <TableHeaderCell scope="col" className="axis-accounts__col--status">Estatus</TableHeaderCell>
+                    <TableHeaderCell scope="col" className="axis-accounts__col--session">Última sesión</TableHeaderCell>
+                    <TableHeaderCell scope="col" className="axis-accounts__col--action">Acción</TableHeaderCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {filteredRecords.length === 0 ? (
+                    <TableEmptyState colSpan={6}>
+                      No hay colaboradores que coincidan con los filtros actuales.
+                    </TableEmptyState>
+                  ) : (
+                    paginatedRecords.map((record) => {
+                      const statusMeta = getAccountStatusMeta(
+                        record?.account?.status,
+                        Boolean(record?.account?.must_change_password)
+                      );
 
-                    return (
-                      <TableRow key={record.employee_id}>
-                        <TableCell className="axis-accounts__col--employee">
-                          <div className="axis-table-user axis-accounts__user">
-                            <Avatar
-                              initials={getInitials(record.full_name, { fallback: 'AX' })}
-                              name={toHumanName(record.full_name)}
-                              src={record.photo_url || record.photo_path || record.avatar_url || ''}
-                              size="md"
-                              className="axis-avatar--table axis-accounts__avatar"
-                              aria-hidden="true"
-                            />
-                            <div className="axis-accounts__employee">
-                              <p className="axis-table-user__name">{toHumanName(record.full_name)}</p>
-                              <p className="axis-table-user__role">{toHumanName(record.position_name)}</p>
+                      return (
+                        <TableRow key={record.employee_id}>
+                          <TableCell className="axis-accounts__col--employee">
+                            <div className="axis-table-user axis-accounts__user">
+                              <Avatar
+                                initials={getInitials(record.full_name, { fallback: 'AX' })}
+                                name={toHumanName(record.full_name)}
+                                src={record.photo_url || record.photo_path || record.avatar_url || ''}
+                                size="md"
+                                className="axis-avatar--table axis-accounts__avatar"
+                                aria-hidden="true"
+                              />
+                              <div className="axis-accounts__employee">
+                                <p className="axis-table-user__name">{toHumanName(record.full_name)}</p>
+                                <p className="axis-table-user__role">{toHumanName(record.position_name)}</p>
+                              </div>
                             </div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="axis-accounts__col--account">
-                          {record.account ? (
-                            <span className="axis-accounts__account-email" title={record.account.email}>{record.account.email}</span>
-                          ) : (
-                            <Badge variant="neutral">Sin cuenta</Badge>
-                          )}
-                        </TableCell>
-                        <TableCell className="axis-accounts__col--roles">
-                          {record.account ? (
-                            <div className="axis-accounts__roles">
-                              {record.account.roles.map((roleName) => (
-                                <Badge
-                                  key={`${record.employee_id}-${roleName}`}
-                                  variant={getRoleBadgeVariant(roleName)}
-                                  className="axis-accounts__role-badge"
-                                >
-                                  {toRoleLabel(roleName)}
-                                </Badge>
-                              ))}
-                            </div>
-                          ) : (
-                            <span className="axis-accounts__empty">Pendiente</span>
-                          )}
-                        </TableCell>
-                        <TableCell className="axis-accounts__col--status">
-                          {record.account ? (
-                            <StatusBadge
-                              status={statusMeta.status}
-                              label={statusMeta.label}
-                            />
-                          ) : (
-                            <StatusBadge status="pending" label="Sin cuenta" />
-                          )}
-                        </TableCell>
-                        <TableCell className="axis-accounts__col--session">
-                          {record.account ? formatLastSession(record.account.last_session_at) : 'Sin sesión'}
-                        </TableCell>
-                        <TableCell className="axis-accounts__col--action">
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant={record.account ? 'secondary' : 'primary'}
-                            onClick={() => handleOpenDrawer(record.employee_id)}
-                          >
-                            {record.account ? 'Gestionar' : 'Crear cuenta'}
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                )}
-              </TableBody>
-            </Table>
+                          </TableCell>
+                          <TableCell className="axis-accounts__col--account">
+                            {record.account ? (
+                              <span className="axis-accounts__account-email" title={record.account.email}>{record.account.email}</span>
+                            ) : (
+                              <Badge variant="neutral">Sin cuenta</Badge>
+                            )}
+                          </TableCell>
+                          <TableCell className="axis-accounts__col--roles">
+                            {record.account ? (
+                              <div className="axis-accounts__roles">
+                                {record.account.roles.map((roleName) => (
+                                  <Badge
+                                    key={`${record.employee_id}-${roleName}`}
+                                    variant={getRoleBadgeVariant(roleName)}
+                                    className="axis-accounts__role-badge"
+                                  >
+                                    {toRoleLabel(roleName)}
+                                  </Badge>
+                                ))}
+                              </div>
+                            ) : (
+                              <span className="axis-accounts__empty">Pendiente</span>
+                            )}
+                          </TableCell>
+                          <TableCell className="axis-accounts__col--status">
+                            {record.account ? (
+                              <StatusBadge
+                                status={statusMeta.status}
+                                label={statusMeta.label}
+                              />
+                            ) : (
+                              <StatusBadge status="pending" label="Sin cuenta" />
+                            )}
+                          </TableCell>
+                          <TableCell className="axis-accounts__col--session">
+                            {record.account ? formatLastSession(record.account.last_session_at) : 'Sin sesión'}
+                          </TableCell>
+                          <TableCell className="axis-accounts__col--action">
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant={record.account ? 'secondary' : 'primary'}
+                              onClick={() => handleOpenDrawer(record.employee_id)}
+                            >
+                              {record.account ? 'Gestionar' : 'Crear cuenta'}
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
+                  )}
+                </TableBody>
+              </Table>
 
-            {shouldShowPagination ? (
-              <Pagination
-                className="ui-pagination--table-footer axis-accounts__pagination"
-                page={page}
-                pageSize={pageSize}
-                totalItems={filteredRecords.length}
-                pageSizeOptions={[8, 10, 12, 20]}
-                onPageChange={setPage}
-                onPageSizeChange={(nextSize) => {
-                  setPageSize(nextSize);
-                  setPage(1);
-                }}
-              />
-            ) : null}
-          </TableShell>
+              {shouldShowPagination ? (
+                <Pagination
+                  className="ui-pagination--table-footer axis-accounts__pagination"
+                  page={page}
+                  pageSize={pageSize}
+                  totalItems={filteredRecords.length}
+                  pageSizeOptions={[8, 10, 12, 20]}
+                  onPageChange={setPage}
+                  onPageSizeChange={(nextSize) => {
+                    setPageSize(nextSize);
+                    setPage(1);
+                  }}
+                />
+              ) : null}
+            </TableShell>
+          </div>
         ) : null}
       </Card>
 

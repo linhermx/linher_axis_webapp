@@ -2474,6 +2474,18 @@
   gap: 12px;
 }
 
+.axis-utility-button.ui-button {
+  border-radius: 10px;
+  gap: 6px;
+  height: 34px;
+  padding: 0 12px;
+}
+
+.axis-utility-button.ui-button svg {
+  height: 15px;
+  width: 15px;
+}
+
 .axis-accounts__summary {
   display: grid;
   gap: 10px;
@@ -2529,7 +2541,17 @@
   font-size: var(--fs-body-sm);
 }
 
+.axis-accounts__table-wrap {
+  border-top: 1px solid color-mix(in srgb, var(--border) 84%, transparent);
+  margin-top: 2px;
+  min-height: 0;
+  padding-top: 10px;
+}
+
 .axis-accounts__table {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   overflow: hidden;
 }
 
