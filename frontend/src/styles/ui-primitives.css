@@ -334,6 +334,98 @@
   color: color-mix(in srgb, var(--primary) 84%, black);
 }
 
+.ui-avatar {
+  --ui-avatar-bg: color-mix(in srgb, var(--primary) 14%, transparent);
+  --ui-avatar-fg: var(--primary);
+  --ui-avatar-border: var(--surface);
+  align-items: center;
+  background: var(--ui-avatar-bg);
+  border: 2px solid var(--ui-avatar-border);
+  border-radius: 999px;
+  color: var(--ui-avatar-fg);
+  display: inline-flex;
+  flex-shrink: 0;
+  font-weight: 800;
+  justify-content: center;
+  letter-spacing: 0.02em;
+  overflow: hidden;
+  user-select: none;
+}
+
+.ui-avatar__image {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.ui-avatar__initials {
+  line-height: 1;
+}
+
+.ui-avatar--xs {
+  font-size: var(--fs-label);
+  height: 32px;
+  width: 32px;
+}
+
+.ui-avatar--sm {
+  font-size: var(--fs-caption);
+  height: 36px;
+  width: 36px;
+}
+
+.ui-avatar--md {
+  font-size: var(--fs-body-sm);
+  height: 40px;
+  width: 40px;
+}
+
+.ui-avatar--lg {
+  font-size: var(--fs-body-sm);
+  height: 46px;
+  width: 46px;
+}
+
+.ui-avatar--xl {
+  font-size: var(--fs-title-md);
+  height: 50px;
+  width: 50px;
+}
+
+.ui-avatar--2xl {
+  font-size: calc(var(--fs-title-md) * 1.08);
+  height: 72px;
+  width: 72px;
+}
+
+.ui-avatar--primary {
+  --ui-avatar-bg: color-mix(in srgb, var(--primary) 14%, transparent);
+  --ui-avatar-fg: var(--primary);
+}
+
+.ui-avatar--neutral {
+  --ui-avatar-bg: color-mix(in srgb, var(--surface-muted) 76%, var(--surface));
+  --ui-avatar-fg: var(--text-secondary);
+}
+
+.ui-avatar--success {
+  --ui-avatar-bg: color-mix(in srgb, var(--success) 14%, transparent);
+  --ui-avatar-fg: color-mix(in srgb, var(--success) 84%, black);
+}
+
+.ui-avatar-stack {
+  display: flex;
+}
+
+.ui-avatar--stacked {
+  margin-left: -14px;
+}
+
+.ui-avatar-stack > .ui-avatar--stacked:first-child {
+  margin-left: 0;
+}
+
 .ui-status-badge {
   align-items: center;
   border: 1px solid transparent;
@@ -612,6 +704,14 @@
   color: var(--text-secondary);
   font-size: var(--fs-body-sm);
   margin-right: 2px;
+}
+
+.ui-pagination--table-footer {
+  background: color-mix(in srgb, var(--surface-muted) 54%, var(--surface));
+  border-top: 1px solid color-mix(in srgb, var(--border) 84%, transparent);
+  flex-shrink: 0;
+  margin: 0;
+  padding: 10px 12px;
 }
 
 .ui-menu {

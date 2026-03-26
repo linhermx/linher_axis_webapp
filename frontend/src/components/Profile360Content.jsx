@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { CalendarDays, Clock3, FileText, Hash, User } from 'lucide-react';
 import {
+  Avatar,
   Badge,
   StatusBadge,
   StatusView,
@@ -15,6 +16,7 @@ import {
   TableShell,
 } from './ui';
 import { getDepartmentTone } from '../lib/departmentTone';
+import { getInitials, normalizeText } from '../lib/identity';
 
 const TAB_OPTIONS = [
   { key: 'personal', label: 'Información personal' },
@@ -134,17 +136,6 @@ const resolvePhotoSource = (value) => {
 
   const cleanPath = normalized.replace(/^\/+/, '');
   return `${API_ROOT_URL}/${cleanPath}`;
-};
-
-const buildInitials = (fullName) => {
-  const tokens = String(fullName || '')
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2);
-
-  if (tokens.length === 0) return 'NA';
-  return tokens.map((token) => token[0]?.toUpperCase() || '').join('');
 };
 
 const ProfileSheet = ({ title, fields = [], columns = 2, className = '' }) => {
@@ -306,18 +297,16 @@ const Profile360Content = ({
       <div className="profile360__workspace">
         <section className="profile360__hero">
           <div className="profile360__hero-main">
-            <div className="profile360__avatar-wrap" aria-hidden="true">
-              {photoSource && !photoLoadError ? (
-                <img
-                  src={photoSource}
-                  alt=""
-                  className="profile360__avatar-image"
-                  onError={() => setPhotoLoadError(true)}
-                />
-              ) : (
-                <span className="profile360__avatar-fallback">{buildInitials(fullName)}</span>
-              )}
-            </div>
+            <Avatar
+              initials={getInitials(fullName, { fallback: 'NA' })}
+              name={fullName}
+              src={photoSource && !photoLoadError ? photoSource : ''}
+              alt={`Foto de ${normalizeText(fullName) || 'colaborador'}`}
+              size="2xl"
+              className="profile360__avatar-wrap"
+              onImageError={() => setPhotoLoadError(true)}
+              aria-hidden="true"
+            />
 
             <div className="profile360__identity-content">
               <h2 className="profile360__name">{fullName}</h2>

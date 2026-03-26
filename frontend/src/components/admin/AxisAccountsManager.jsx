@@ -1,7 +1,8 @@
-﻿import { useCallback, useEffect, useMemo, useState } from 'react';
+﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { RefreshCw, Search, Shield, UserPlus2, Users } from 'lucide-react';
 import {
   Alert,
+  Avatar,
   Badge,
   Button,
   Card,
@@ -26,28 +27,9 @@ import {
   getRoleFilterOptions,
   toRoleLabel,
 } from '../../lib/axisAccounts';
+import { getInitials, normalizeText, toHumanName } from '../../lib/identity';
 import api from '../../services/api';
 import AxisAccountDrawer from './AxisAccountDrawer';
-
-const normalizeText = (value) => String(value || '').trim();
-
-const toHumanName = (value) => {
-  const normalized = normalizeText(value);
-  if (!normalized) return 'Sin nombre';
-
-  return normalized
-    .toLocaleLowerCase('es-MX')
-    .split(/\s+/)
-    .map((word) => `${word.charAt(0).toLocaleUpperCase('es-MX')}${word.slice(1)}`)
-    .join(' ');
-};
-
-const getInitials = (value) => {
-  const parts = toHumanName(value).split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return 'AX';
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return `${parts[0][0] || ''}${parts[1][0] || ''}`.toUpperCase();
-};
 
 const DEFAULT_PAGE_SIZE = 8;
 
@@ -65,6 +47,7 @@ const AxisAccountsManager = () => {
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const tableHostRef = useRef(null);
 
   const roleOptions = useMemo(
     () => getRoleFilterOptions(roleCatalog),
@@ -149,6 +132,13 @@ const AxisAccountsManager = () => {
       setPage(totalPages);
     }
   }, [filteredRecords.length, page, pageSize]);
+
+  useEffect(() => {
+    const scrollContainer = tableHostRef.current?.querySelector('.ui-table-scroll');
+    if (scrollContainer) {
+      scrollContainer.scrollTop = 0;
+    }
+  }, [page, pageSize, searchTerm, statusFilter, roleFilter]);
 
   const shouldShowPagination = filteredRecords.length > pageSize;
 
@@ -249,7 +239,7 @@ const AxisAccountsManager = () => {
         ) : null}
 
         {!loading && !error ? (
-          <TableShell className="axis-accounts__table">
+          <TableShell className="axis-accounts__table" ref={tableHostRef}>
             <Table className="axis-table axis-accounts__table-grid">
               <TableHead>
                 <TableRow>
@@ -272,9 +262,14 @@ const AxisAccountsManager = () => {
                       <TableRow key={record.employee_id}>
                         <TableCell className="axis-accounts__col--employee">
                           <div className="axis-table-user axis-accounts__user">
-                            <span className="axis-avatar axis-avatar--table axis-accounts__avatar" aria-hidden="true">
-                              {getInitials(record.full_name)}
-                            </span>
+                            <Avatar
+                              initials={getInitials(record.full_name, { fallback: 'AX' })}
+                              name={toHumanName(record.full_name)}
+                              src={record.photo_url || record.photo_path || record.avatar_url || ''}
+                              size="md"
+                              className="axis-avatar--table axis-accounts__avatar"
+                              aria-hidden="true"
+                            />
                             <div className="axis-accounts__employee">
                               <p className="axis-table-user__name">{toHumanName(record.full_name)}</p>
                               <p className="axis-table-user__role">{toHumanName(record.position_name)}</p>
@@ -337,7 +332,7 @@ const AxisAccountsManager = () => {
 
             {shouldShowPagination ? (
               <Pagination
-                className="axis-accounts__pagination"
+                className="ui-pagination--table-footer axis-accounts__pagination"
                 page={page}
                 pageSize={pageSize}
                 totalItems={filteredRecords.length}

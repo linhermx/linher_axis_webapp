@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowUpRight,
@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import {
   Alert,
+  Avatar,
   Badge,
   Button,
   Card,
@@ -20,44 +21,25 @@ import {
   StatusView,
 } from '../components/ui';
 import { useAuth } from '../hooks/useAuth';
+import {
+  buildFullName,
+  getInitials,
+  normalizeKey,
+  normalizeText,
+  normalizeToken,
+  toTitleCase,
+} from '../lib/identity';
 import { cn } from '../lib/cn';
 import { getDepartmentTone } from '../lib/departmentTone';
 import { hasAnyPermission } from '../lib/permissions';
 import api from '../services/api';
 import AxisAccountDrawer from '../components/admin/AxisAccountDrawer';
 
-const normalizeText = (value) => String(value || '').trim();
-const normalizeKey = (value) => normalizeText(value).toLowerCase();
-const normalizeToken = (value) => (
-  normalizeText(value)
-    .toLocaleLowerCase('es-MX')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/\s+/g, ' ')
+const getEmployeeName = (employee) => buildFullName(employee?.first_name, employee?.last_name, 'Sin nombre');
+const getEmployeeInitials = (employee) => getInitials(getEmployeeName(employee), { fallback: 'NA' });
+const getEmployeePhoto = (employee) => (
+  normalizeText(employee?.photo_url || employee?.photo_path || employee?.avatar_url || '')
 );
-
-const toTitleCase = (value) => {
-  const normalized = normalizeText(value);
-  if (!normalized) return '';
-
-  return normalized
-    .toLocaleLowerCase('es-MX')
-    .split(/\s+/)
-    .filter(Boolean)
-    .map((word) => `${word.charAt(0).toLocaleUpperCase('es-MX')}${word.slice(1)}`)
-    .join(' ');
-};
-
-const getEmployeeName = (employee) => (
-  `${toTitleCase(employee?.first_name)} ${toTitleCase(employee?.last_name)}`.trim() || 'Sin nombre'
-);
-
-const getEmployeeInitials = (employee) => {
-  const parts = getEmployeeName(employee).split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return 'NA';
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return `${parts[0][0] || ''}${parts[1][0] || ''}`.toUpperCase();
-};
 
 const toHumanValue = (value, fallback = 'Sin información') => {
   const normalized = normalizeText(value);
@@ -136,6 +118,7 @@ const EmployeeDirectory = () => {
   const [pageSize, setPageSize] = useState(DEFAULT_CARD_PAGE_SIZE);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
   const [accountDrawerOpen, setAccountDrawerOpen] = useState(false);
+  const cardsScrollRef = useRef(null);
 
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -276,6 +259,12 @@ const EmployeeDirectory = () => {
       setPage(totalPages);
     }
   }, [filteredEmployees.length, page, pageSize]);
+
+  useEffect(() => {
+    if (cardsScrollRef.current) {
+      cardsScrollRef.current.scrollTop = 0;
+    }
+  }, [page, pageSize, searchTerm, departmentFilter, positionFilter]);
 
   useEffect(() => {
     if (!filteredEmployees.length) {
@@ -460,7 +449,7 @@ const EmployeeDirectory = () => {
                 />
               ) : (
                 <>
-                  <div className="employee-directory__cards-scroll">
+                  <div ref={cardsScrollRef} className="employee-directory__cards-scroll">
                     <ul className="employee-directory__cards-grid">
                       {paginatedEmployees.map((employee) => {
                         const statusMeta = getStatusMeta(employee);
@@ -481,7 +470,14 @@ const EmployeeDirectory = () => {
                               )}
                             >
                               <div className="employee-directory__person-card-head">
-                                <span className="employee-directory__person-avatar">{getEmployeeInitials(employee)}</span>
+                                <Avatar
+                                  initials={getEmployeeInitials(employee)}
+                                  name={getEmployeeName(employee)}
+                                  src={getEmployeePhoto(employee)}
+                                  size="md"
+                                  className="employee-directory__person-avatar"
+                                  aria-hidden="true"
+                                />
                                 <StatusBadge
                                   className="employee-directory__person-status"
                                   status={statusMeta.status}
@@ -511,7 +507,7 @@ const EmployeeDirectory = () => {
 
                   {shouldShowCardPagination ? (
                     <Pagination
-                      className="employee-directory__cards-pagination"
+                      className="ui-pagination--table-footer employee-directory__cards-pagination"
                       page={page}
                       pageSize={pageSize}
                       totalItems={filteredEmployees.length}
@@ -536,7 +532,14 @@ const EmployeeDirectory = () => {
             {selectedEmployee ? (
               <div className="employee-directory__detail-content">
                 <article className="employee-directory__detail-hero">
-                  <span className="employee-directory__detail-avatar">{getEmployeeInitials(selectedEmployee)}</span>
+                  <Avatar
+                    initials={getEmployeeInitials(selectedEmployee)}
+                    name={getEmployeeName(selectedEmployee)}
+                    src={getEmployeePhoto(selectedEmployee)}
+                    size="xl"
+                    className="employee-directory__detail-avatar"
+                    aria-hidden="true"
+                  />
 
                   <div className="employee-directory__detail-headline">
                     <h3 className="employee-directory__detail-name">{getEmployeeName(selectedEmployee)}</h3>
@@ -625,7 +628,14 @@ const EmployeeDirectory = () => {
                             onClick={() => setSelectedEmployeeId(employee.id)}
                             className="employee-directory__related-item ui-list-hoverable"
                           >
-                            <span className="employee-directory__related-avatar">{getEmployeeInitials(employee)}</span>
+                            <Avatar
+                              initials={getEmployeeInitials(employee)}
+                              name={getEmployeeName(employee)}
+                              src={getEmployeePhoto(employee)}
+                              size="md"
+                              className="employee-directory__related-avatar"
+                              aria-hidden="true"
+                            />
                             <span className="employee-directory__related-meta">
                               <span className="employee-directory__related-name">{getEmployeeName(employee)}</span>
                               <span className="employee-directory__related-role">
@@ -675,3 +685,4 @@ const EmployeeDirectory = () => {
 };
 
 export default EmployeeDirectory;
+
