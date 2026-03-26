@@ -205,6 +205,8 @@ const MicrosipIntegrationPanel = () => {
           <Button
             type="button"
             variant="secondary"
+            size="sm"
+            className="axis-utility-button"
             onClick={() => loadMicrosipAdminData({ silent: true })}
             disabled={refreshing || loading || runningSync || reconcilingLinks}
           >
