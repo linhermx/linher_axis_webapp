@@ -1,6 +1,6 @@
 ﻿import { useMemo, useState } from 'react';
 import { StatusView } from '../components/ui';
-import AxisAccountsManager from '../components/admin/AxisAccountsManager';
+import AccountsManager from '../components/admin/AccountsManager';
 import MicrosipIntegrationPanel from '../components/admin/MicrosipIntegrationPanel';
 import { useAuth } from '../hooks/useAuth';
 import { hasAnyPermission } from '../lib/permissions';
@@ -62,10 +62,11 @@ const MicrosipAdmin = () => {
         </nav>
       </header>
 
-      {selectedTab?.key === 'axis_accounts' ? <AxisAccountsManager /> : null}
+      {selectedTab?.key === 'axis_accounts' ? <AccountsManager /> : null}
       {selectedTab?.key === 'microsip' ? <MicrosipIntegrationPanel /> : null}
     </section>
   );
 };
 
 export default MicrosipAdmin;
+
