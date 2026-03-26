@@ -23,6 +23,21 @@ const toNumericUserId = (value) => {
     return parsedValue;
 };
 
+const validatePasswordStrength = (password) => {
+    const normalizedPassword = String(password || '');
+    if (normalizedPassword.length < 10) {
+        return 'La contrasena debe tener al menos 10 caracteres.';
+    }
+
+    const hasLetter = /[A-Za-z]/.test(normalizedPassword);
+    const hasNumber = /\d/.test(normalizedPassword);
+    if (!hasLetter || !hasNumber) {
+        return 'La contrasena debe incluir al menos una letra y un numero.';
+    }
+
+    return null;
+};
+
 const isTokenExpired = (expiresAt) => {
     if (!expiresAt) {
         return true;
@@ -33,12 +48,25 @@ const isTokenExpired = (expiresAt) => {
 
 const findActiveUserByEmail = async (email) => {
     const [users] = await pool.query(
-        `SELECT id, email, password_hash, status
+        `SELECT id, email, password_hash, status, must_change_password
          FROM users
          WHERE email = ?
            AND status = 'active'
          LIMIT 1`,
         [email]
+    );
+
+    return users[0] || null;
+};
+
+const findActiveUserById = async (userId) => {
+    const [users] = await pool.query(
+        `SELECT id, email, password_hash, status, must_change_password
+         FROM users
+         WHERE id = ?
+           AND status = 'active'
+         LIMIT 1`,
+        [userId]
     );
 
     return users[0] || null;
@@ -264,6 +292,76 @@ export const logout = async (req, res) => {
         return res.json({ message: 'Sesion cerrada correctamente' });
     } catch (error) {
         return handleApiError(req, res, error, 'AUTH_LOGOUT_ERROR', 'Error al cerrar sesion');
+    }
+};
+
+export const changeRequiredPassword = async (req, res) => {
+    const userId = toNumericUserId(req.authUser?.id || req.user?.id);
+    const currentPassword = String(req.body?.current_password || '');
+    const newPassword = String(req.body?.new_password || '');
+
+    if (!userId) {
+        return res.status(401).json({ message: 'Autenticacion requerida' });
+    }
+
+    if (!currentPassword || !newPassword) {
+        return res.status(400).json({ message: 'Debes capturar la contrasena actual y la nueva contrasena' });
+    }
+
+    const passwordValidationMessage = validatePasswordStrength(newPassword);
+    if (passwordValidationMessage) {
+        return res.status(400).json({ message: passwordValidationMessage });
+    }
+
+    try {
+        const user = await findActiveUserById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado o inactivo' });
+        }
+
+        if (!Boolean(Number(user.must_change_password || 0))) {
+            return res.status(409).json({ message: 'La cuenta no requiere cambio obligatorio de contrasena' });
+        }
+
+        const currentPasswordMatches = await argon2.verify(user.password_hash, currentPassword).catch(() => false);
+        if (!currentPasswordMatches) {
+            return res.status(401).json({ message: 'La contrasena actual es incorrecta' });
+        }
+
+        const reusedPassword = await argon2.verify(user.password_hash, newPassword).catch(() => false);
+        if (reusedPassword) {
+            return res.status(400).json({ message: 'La nueva contrasena debe ser distinta a la actual' });
+        }
+
+        const newPasswordHash = await argon2.hash(newPassword);
+        await pool.query(
+            `UPDATE users
+             SET password_hash = ?,
+                 must_change_password = 0,
+                 password_changed_at = NOW()
+             WHERE id = ?`,
+            [newPasswordHash, userId]
+        );
+
+        const sessionUser = await loadActiveUserSession(userId);
+
+        await logger.auth(userId, 'PASSWORD_CHANGE_REQUIRED_COMPLETED', {
+            email: user.email,
+            ...buildRequestContext(req),
+        }, req.ip);
+
+        return res.json({
+            message: 'Contrasena actualizada correctamente.',
+            user: sessionUser,
+        });
+    } catch (error) {
+        return handleApiError(
+            req,
+            res,
+            error,
+            'AUTH_CHANGE_REQUIRED_PASSWORD_ERROR',
+            'Error al actualizar contrasena'
+        );
     }
 };
 

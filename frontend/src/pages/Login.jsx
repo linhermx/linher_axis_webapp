@@ -14,7 +14,7 @@ const Login = () => {
 
   useEffect(() => {
     if (user) {
-      navigate('/', { replace: true });
+      navigate(user.must_change_password ? '/change-password' : '/', { replace: true });
     }
   }, [user, navigate]);
 
@@ -26,8 +26,8 @@ const Login = () => {
     setError('');
 
     try {
-      await login(email, password);
-      navigate('/', { replace: true });
+      const sessionUser = await login(email, password);
+      navigate(sessionUser?.must_change_password ? '/change-password' : '/', { replace: true });
     } catch (requestError) {
       setError(requestError.response?.data?.message || 'Ocurrió un error al iniciar sesión.');
     } finally {

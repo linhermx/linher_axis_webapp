@@ -258,6 +258,11 @@ const AccountsManager = () => {
                   </TableEmptyState>
                 ) : (
                   paginatedRecords.map((record) => {
+                    const statusMeta = getAccountStatusMeta(
+                      record?.account?.status,
+                      Boolean(record?.account?.must_change_password)
+                    );
+
                     return (
                       <TableRow key={record.employee_id}>
                         <TableCell className="axis-accounts__col--employee">
@@ -303,8 +308,8 @@ const AccountsManager = () => {
                         <TableCell className="axis-accounts__col--status">
                           {record.account ? (
                             <StatusBadge
-                              status={getAccountStatusMeta(record.account.status).status}
-                              label={getAccountStatusMeta(record.account.status).label}
+                              status={statusMeta.status}
+                              label={statusMeta.label}
                             />
                           ) : (
                             <StatusBadge status="pending" label="Sin cuenta" />

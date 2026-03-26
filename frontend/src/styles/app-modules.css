@@ -58,6 +58,64 @@
   text-align: center;
 }
 
+/* Source: force-password-change.css */
+.password-required-page {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.password-required-page__card {
+  background: var(--surface);
+  max-width: 480px;
+  width: 100%;
+}
+
+.password-required-page__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.password-required-page__hero {
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.password-required-page__icon {
+  align-items: center;
+  background: var(--gradient-primary);
+  border-radius: 12px;
+  box-shadow: 0 14px 24px color-mix(in srgb, var(--primary) 24%, transparent);
+  color: #fff;
+  display: inline-flex;
+  height: 56px;
+  justify-content: center;
+  width: 56px;
+}
+
+.password-required-page__title {
+  color: var(--text-main);
+  font-size: var(--fs-title-lg);
+  font-weight: 800;
+  margin-top: 14px;
+}
+
+.password-required-page__subtitle {
+  color: var(--text-secondary);
+  font-size: var(--fs-body-sm);
+  line-height: 1.5;
+  margin-top: 6px;
+}
+
+.password-required-page__form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
 /* Source: dashboard.css */
 .axis-dashboard {
   --axis-fs-title: var(--fs-title-md);

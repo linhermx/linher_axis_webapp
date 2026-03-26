@@ -12,12 +12,14 @@ import OrganizationStructure from './pages/OrganizationStructure';
 import MicrosipAdmin from './pages/MicrosipAdmin';
 import MyProfile360 from './pages/MyProfile360';
 import EmployeeProfile360 from './pages/EmployeeProfile360';
+import ForcePasswordChange from './pages/ForcePasswordChange';
 
 const ProtectedRoute = ({ children, requiredPermissions = [] }) => {
   const { user, loading } = useAuth();
 
   if (loading) return <div>Cargando...</div>;
   if (!user) return <Navigate to="/login" />;
+  if (user.must_change_password) return <Navigate to="/change-password" replace />;
   if (!hasAnyPermission(user, requiredPermissions)) {
     return (
       <Layout>
@@ -32,12 +34,31 @@ const ProtectedRoute = ({ children, requiredPermissions = [] }) => {
   return <Layout>{children}</Layout>;
 };
 
+const PasswordChangeRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) return <div>Cargando...</div>;
+  if (!user) return <Navigate to="/login" replace />;
+  if (!user.must_change_password) return <Navigate to="/" replace />;
+
+  return children;
+};
+
 function App() {
   return (
     <AuthProvider>
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
+
+          <Route
+            path="/change-password"
+            element={(
+              <PasswordChangeRoute>
+                <ForcePasswordChange />
+              </PasswordChangeRoute>
+            )}
+          />
 
           <Route
             path="/"
