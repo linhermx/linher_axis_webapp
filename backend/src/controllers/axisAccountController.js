@@ -583,6 +583,7 @@ export const updateAxisAccountStatus = async (req, res) => {
         if (!employeeRecord.account || !employeeRecord.user_id) {
             throw buildApiValidationError(409, 'El colaborador aún no tiene cuenta AXIS vinculada.');
         }
+        const previousStatus = normalizeText(employeeRecord.account?.status).toLowerCase() || 'active';
 
         await connection.query(
             'UPDATE users SET status = ? WHERE id = ?',
@@ -597,6 +598,14 @@ export const updateAxisAccountStatus = async (req, res) => {
         transactionStarted = false;
 
         const refreshedRecord = (await fetchAxisAccountRecords(pool, { employeeId }))[0];
+        await logger.business(req.authUser?.id, 'AXIS_ACCOUNT_STATUS_UPDATE', {
+            employee_id: employeeId,
+            user_id: employeeRecord.user_id,
+            previous_status: previousStatus,
+            new_status: requestedStatus,
+            ...buildRequestContext(req),
+        }, req.ip);
+
         return res.json({
             message: 'Estatus de cuenta actualizado.',
             data: refreshedRecord,
