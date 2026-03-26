@@ -462,40 +462,16 @@
   line-height: 1;
 }
 
-.axis-avatar {
-  align-items: center;
-  display: inline-flex;
-  font-weight: 700;
-  justify-content: center;
-}
-
 .axis-avatar--candidate {
-  background: color-mix(in srgb, var(--primary) 14%, transparent);
-  border: 2px solid var(--surface);
-  border-radius: 999px;
-  color: var(--primary);
+  font-weight: 700;
   font-size: var(--axis-fs-caption);
   height: 42px;
   width: 42px;
 }
 
-.axis-avatar-stack {
-  display: flex;
-}
-
 .axis-avatar--stacked {
-  background: color-mix(in srgb, var(--primary) 16%, var(--surface));
-  border: 2px solid var(--surface);
-  border-radius: 999px;
-  color: var(--primary);
   font-size: var(--axis-fs-label);
-  height: 32px;
   margin-left: -15px;
-  width: 32px;
-}
-
-.axis-avatar--stacked:first-child {
-  margin-left: 0;
 }
 
 .axis-panel--requests {
@@ -576,13 +552,8 @@
 }
 
 .axis-avatar--table {
-  background: color-mix(in srgb, var(--primary) 14%, transparent);
-  border: 2px solid var(--surface);
-  border-radius: 999px;
-  color: var(--primary);
   font-size: var(--axis-fs-caption);
-  height: 40px;
-  width: 40px;
+  font-weight: 700;
 }
 
 .axis-table-user__name {
@@ -1260,29 +1231,8 @@
 .employee-directory__person-avatar,
 .employee-directory__detail-avatar,
 .employee-directory__related-avatar {
-  align-items: center;
-  background: color-mix(in srgb, var(--primary) 14%, transparent);
-  border: 2px solid var(--surface);
-  border-radius: 999px;
-  color: var(--primary);
-  display: inline-flex;
   flex-shrink: 0;
-  font-weight: 800;
-  justify-content: center;
-  letter-spacing: 0.02em;
-}
-
-.employee-directory__person-avatar,
-.employee-directory__related-avatar {
-  font-size: var(--employee-fs-caption);
-  height: 40px;
-  width: 40px;
-}
-
-.employee-directory__detail-avatar {
-  font-size: var(--employee-fs-value);
-  height: 50px;
-  width: 50px;
+  box-shadow: var(--shadow-xs);
 }
 
 .employee-directory__person-status {
@@ -1563,10 +1513,8 @@
 }
 
 .employee-directory__cards-pagination {
-  border-top: 1px solid color-mix(in srgb, var(--border) 82%, transparent);
   flex-shrink: 0;
-  margin-top: 10px;
-  padding-top: 10px;
+  margin-top: 0;
 }
 
 .employee-directory__related-empty {
@@ -1706,32 +1654,8 @@
 }
 
 .profile360__avatar-wrap {
-  align-items: center;
-  background: color-mix(in srgb, var(--primary) 14%, transparent);
-  border: 2px solid var(--surface);
-  border-radius: 999px;
   box-shadow: var(--shadow-xs);
-  color: var(--primary);
-  display: inline-flex;
   flex-shrink: 0;
-  font-size: 1rem;
-  font-weight: 800;
-  height: 72px;
-  justify-content: center;
-  overflow: hidden;
-  width: 72px;
-}
-
-.profile360__avatar-image {
-  display: block;
-  height: 100%;
-  object-fit: cover;
-  width: 100%;
-}
-
-.profile360__avatar-fallback {
-  font-size: 1.06rem;
-  letter-spacing: 0.02em;
 }
 
 .profile360__identity-content {
@@ -2387,15 +2311,8 @@
 }
 
 .organization-member-avatar {
-  align-items: center;
-  background: color-mix(in srgb, var(--primary) 14%, transparent);
-  border-radius: 999px;
-  color: var(--primary);
-  display: inline-flex;
   flex-shrink: 0;
-  height: 36px;
-  justify-content: center;
-  width: 36px;
+  box-shadow: var(--shadow-xs);
 }
 
 .organization-member-name {
@@ -2560,7 +2477,7 @@
 
 .axis-accounts__table .ui-table-scroll {
   height: auto;
-  max-height: 50vh;
+  max-height: clamp(320px, 42vh, 460px);
   overflow: auto;
 }
 
@@ -2577,19 +2494,13 @@
   white-space: nowrap;
 }
 
-.axis-accounts__pagination {
-  background: color-mix(in srgb, var(--surface-muted) 54%, var(--surface));
-  border-top: 1px solid color-mix(in srgb, var(--border) 84%, transparent);
-  margin: 0;
-  padding: 10px 12px;
-}
-
 .axis-accounts__user {
   align-items: flex-start;
 }
 
 .axis-accounts__avatar {
   flex-shrink: 0;
+  box-shadow: var(--shadow-xs);
 }
 
 .axis-accounts__employee {
@@ -2689,18 +2600,7 @@
 }
 
 .axis-account-drawer__avatar {
-  align-items: center;
-  background: color-mix(in srgb, var(--primary) 14%, transparent);
-  border: 2px solid var(--surface);
-  border-radius: 999px;
-  color: var(--primary);
-  display: inline-flex;
-  font-size: var(--fs-body-sm);
-  font-weight: 800;
-  height: 46px;
-  justify-content: center;
-  letter-spacing: 0.02em;
-  width: 46px;
+  box-shadow: var(--shadow-xs);
 }
 
 .axis-account-drawer__employee-meta {
@@ -2974,7 +2874,7 @@
   }
 
   .axis-accounts__table .ui-table-scroll {
-    max-height: 54vh;
+    max-height: clamp(280px, 48vh, 420px);
   }
 
   .microsip-admin {
@@ -2996,7 +2896,7 @@
   }
 
   .axis-accounts__table .ui-table-scroll {
-    max-height: 58vh;
+    max-height: clamp(260px, 52vh, 400px);
   }
 
   .axis-account-drawer__roles-grid,

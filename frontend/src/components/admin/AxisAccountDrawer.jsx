@@ -2,6 +2,7 @@
 import { AlertCircle, CheckCircle2, KeyRound, Mail, ShieldCheck, UserRound, UserX } from 'lucide-react';
 import {
   Alert,
+  Avatar,
   Badge,
   Button,
   DrawerShell,
@@ -16,28 +17,9 @@ import {
   toRoleLabel,
 } from '../../lib/axisAccounts';
 import { getDepartmentTone } from '../../lib/departmentTone';
+import { getInitials, normalizeText, toHumanName } from '../../lib/identity';
 import { cn } from '../../lib/cn';
 import api from '../../services/api';
-
-const normalizeText = (value) => String(value || '').trim();
-
-const toHumanName = (value) => {
-  const normalized = normalizeText(value);
-  if (!normalized) return 'Sin nombre';
-
-  return normalized
-    .toLocaleLowerCase('es-MX')
-    .split(/\s+/)
-    .map((word) => `${word.charAt(0).toLocaleUpperCase('es-MX')}${word.slice(1)}`)
-    .join(' ');
-};
-
-const getInitials = (name) => {
-  const parts = normalizeText(name).split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return 'AX';
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-};
 
 const DEFAULT_FORM = {
   email: '',
@@ -268,18 +250,31 @@ const AxisAccountDrawer = ({
         {!loading && !error && employeeData ? (
           <div className="axis-account-drawer">
             <article className="axis-account-drawer__employee">
-              <span className="axis-account-drawer__avatar" aria-hidden="true">{getInitials(employeeName)}</span>
+              <Avatar
+                initials={getInitials(employeeName, { fallback: 'AX' })}
+                name={employeeName}
+                src={
+                  employeeData.photo_url
+                  || employeeData.photo_path
+                  || employeeData.avatar_url
+                  || ''
+                }
+                size="lg"
+                className="axis-account-drawer__avatar"
+                aria-hidden="true"
+              />
               <div className="axis-account-drawer__employee-meta">
                 <h3>{employeeName}</h3>
                 <p>{toHumanName(employeeData.position_name)}</p>
-                <span
+                <Badge
+                  variant="neutral"
                   className={cn(
                     'axis-account-drawer__department-chip',
                     `employee-directory__department-tone--${departmentTone}`
                   )}
                 >
                   {toHumanName(employeeData.department_name)}
-                </span>
+                </Badge>
               </div>
               <div className="axis-account-drawer__employee-state">
                 {accountData ? (
