@@ -91,6 +91,23 @@ export const AuthProvider = ({ children }) => {
     return meResponse.data.user;
   };
 
+  const changeRequiredPassword = async (currentPassword, newPassword) => {
+    const { data } = await api.post('/auth/change-password', {
+      current_password: currentPassword,
+      new_password: newPassword,
+    });
+
+    const nextUser = data?.user
+      ? data.user
+      : (await api.get('/auth/me')).data.user;
+
+    const storage = getStorageForKey('accessToken') || localStorage;
+    storage.setItem('user', JSON.stringify(nextUser));
+    setUser(nextUser);
+
+    return nextUser;
+  };
+
   const logout = async () => {
     const refreshToken = getStoredValue('refreshToken');
     try {
@@ -104,7 +121,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, changeRequiredPassword, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );

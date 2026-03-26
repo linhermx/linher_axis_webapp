@@ -49,10 +49,13 @@ export const normalizeRoleList = (roles = []) => (
     .sort((left, right) => getRoleSortWeight(left) - getRoleSortWeight(right))
 );
 
-export const getAccountStatusMeta = (statusValue) => {
+export const getAccountStatusMeta = (statusValue, mustChangePassword = false) => {
   const normalizedStatus = normalizeText(statusValue).toLowerCase();
   if (normalizedStatus === 'inactive') {
     return { status: 'inactive', label: 'Inactiva' };
+  }
+  if (mustChangePassword) {
+    return { status: 'pending', label: 'Cambio pendiente' };
   }
   return { status: 'approved', label: 'Activa' };
 };
