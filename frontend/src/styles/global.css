@@ -76,7 +76,7 @@
   --error: var(--danger);
   --action: var(--accent-cyan);
   --action-hover: color-mix(in srgb, var(--accent-cyan) 78%, black);
-  --avatar-bg: color-mix(in srgb, var(--primary) 13%, transparent);
+  --avatar-bg: color-mix(in srgb, var(--primary) 13%, var(--surface));
   --avatar-text: var(--primary);
   --nav-active-bg: color-mix(in srgb, var(--primary) 12%, var(--surface));
   --nav-active-text: var(--primary);

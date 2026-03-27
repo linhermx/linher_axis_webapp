@@ -22,11 +22,11 @@ const buildPages = (current, total) => {
 
 const Pagination = ({
   page = 1,
-  pageSize = 10,
+  pageSize = 8,
   totalItems = 0,
   onPageChange,
   onPageSizeChange,
-  pageSizeOptions = [10, 20, 50, 100],
+  pageSizeOptions = [8, 12, 16, 24],
   className,
 }) => {
   const pageSizeControlId = useId();

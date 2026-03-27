@@ -335,7 +335,7 @@
 }
 
 .ui-avatar {
-  --ui-avatar-bg: color-mix(in srgb, var(--primary) 14%, transparent);
+  --ui-avatar-bg: color-mix(in srgb, var(--primary) 14%, var(--surface));
   --ui-avatar-fg: var(--primary);
   --ui-avatar-border: var(--surface);
   align-items: center;
@@ -400,7 +400,7 @@
 }
 
 .ui-avatar--primary {
-  --ui-avatar-bg: color-mix(in srgb, var(--primary) 14%, transparent);
+  --ui-avatar-bg: color-mix(in srgb, var(--primary) 14%, var(--surface));
   --ui-avatar-fg: var(--primary);
 }
 
@@ -410,7 +410,7 @@
 }
 
 .ui-avatar--success {
-  --ui-avatar-bg: color-mix(in srgb, var(--success) 14%, transparent);
+  --ui-avatar-bg: color-mix(in srgb, var(--success) 14%, var(--surface));
   --ui-avatar-fg: color-mix(in srgb, var(--success) 84%, black);
 }
 
@@ -711,7 +711,7 @@
   border-top: 1px solid color-mix(in srgb, var(--border) 84%, transparent);
   flex-shrink: 0;
   margin: 0;
-  padding: 10px 12px;
+  padding: 12px 10px 0 10px;
 }
 
 .ui-menu {

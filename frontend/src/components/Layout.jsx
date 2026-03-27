@@ -6,8 +6,20 @@ import Topbar from './Topbar';
 const Layout = ({ children }) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const location = useLocation();
-  const hasTopbarTabs = location.pathname === '/employees'
-    || location.pathname === '/employees/organization';
+
+  const topbarTabsVariant = (() => {
+    if (location.pathname === '/employees' || location.pathname === '/employees/organization') {
+      return 'employees';
+    }
+
+    if (location.pathname.startsWith('/admin')) {
+      return 'admin';
+    }
+
+    return null;
+  })();
+
+  const hasTopbarTabs = Boolean(topbarTabsVariant);
 
   return (
     <div className={`app-layout ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
@@ -16,7 +28,7 @@ const Layout = ({ children }) => {
         onToggleCollapse={() => setIsSidebarCollapsed((value) => !value)}
       />
       <div className={`main-content ${hasTopbarTabs ? 'has-topbar-tabs' : ''}`}>
-        <Topbar hasTabs={hasTopbarTabs} />
+        <Topbar hasTabs={hasTopbarTabs} tabsVariant={topbarTabsVariant} />
         <main className="page-container page-shell">{children}</main>
       </div>
     </div>
