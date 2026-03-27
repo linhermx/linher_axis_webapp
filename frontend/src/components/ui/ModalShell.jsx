@@ -116,7 +116,9 @@ const ModalShell = ({
 
           <Button
             type="button"
-            variant="icon"
+            variant="ghost"
+            size="sm"
+            className="ui-overlay-close"
             onClick={() => onClose?.()}
             aria-label="Cerrar modal"
           >
