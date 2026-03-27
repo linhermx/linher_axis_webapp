@@ -16,6 +16,7 @@ import {
 import { Avatar } from './ui';
 import { useAuth } from '../hooks/useAuth';
 import { getInitials, toHumanName } from '../lib/identity';
+import { resolveAssetUrl } from '../lib/media';
 import { hasAnyPermission } from '../lib/permissions';
 
 const Sidebar = ({ collapsed = false, onToggleCollapse }) => {
@@ -25,6 +26,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }) => {
     name: toHumanName(user?.name || 'Usuario AXIS', 'Usuario AXIS'),
     role: user?.role_name || 'Admin de RRHH',
     avatar: getInitials(user?.name, { fallback: 'AX' }),
+    photo: resolveAssetUrl(user?.photo_path),
   };
 
   const canViewEmployees = hasAnyPermission(user, ['view_employees']);
@@ -112,6 +114,8 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }) => {
           <div className="user-avatar-small">
             <Avatar
               initials={profile.avatar}
+              src={profile.photo}
+              name={profile.name}
               size="md"
               className="sidebar-user-avatar"
               aria-hidden="true"

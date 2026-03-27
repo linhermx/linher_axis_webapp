@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { cloneElement, isValidElement, useState } from 'react';
 import { CalendarDays, Clock3, FileText, Hash, User } from 'lucide-react';
 import {
   Avatar,
@@ -17,6 +17,7 @@ import {
 } from './ui';
 import { getDepartmentTone } from '../lib/departmentTone';
 import { getInitials, normalizeText } from '../lib/identity';
+import { resolveAssetUrl } from '../lib/media';
 
 const TAB_OPTIONS = [
   { key: 'personal', label: 'Información personal' },
@@ -25,9 +26,6 @@ const TAB_OPTIONS = [
   { key: 'payments', label: 'Pagos' },
   { key: 'activity', label: 'Actividad / Auditoría' },
 ];
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-const API_ROOT_URL = API_BASE_URL.replace(/\/api\/?$/, '');
 
 const MARITAL_STATUS_LABEL_MAP = {
   C: 'Casado(a)',
@@ -122,20 +120,6 @@ const toEmploymentStatusView = (value) => {
   }
 
   return { status: 'info', label: formatPlain(value) };
-};
-
-const resolvePhotoSource = (value) => {
-  const normalized = String(value || '').trim();
-  if (!normalized) {
-    return null;
-  }
-
-  if (/^https?:\/\//i.test(normalized) || normalized.startsWith('data:')) {
-    return normalized;
-  }
-
-  const cleanPath = normalized.replace(/^\/+/, '');
-  return `${API_ROOT_URL}/${cleanPath}`;
 };
 
 const ProfileSheet = ({ title, fields = [], columns = 2, className = '' }) => {
@@ -235,6 +219,7 @@ const Profile360Content = ({
   loadingPayments = false,
   paymentsError = '',
   headerAction = null,
+  photoActions = null,
 }) => {
   const [activeTab, setActiveTab] = useState('personal');
   const [photoLoadError, setPhotoLoadError] = useState(false);
@@ -260,12 +245,15 @@ const Profile360Content = ({
   const departmentTone = getDepartmentTone(identity.department?.name || departmentName);
   const genderLabel = formatGender(personal.sex_code);
   const employmentStatus = toEmploymentStatusView(identity.employment_status);
-  const photoSource = resolvePhotoSource(
+  const photoSource = resolveAssetUrl(
     identity.photo_url
     || identity.photo_path
     || profile.photo_url
     || profile.photo_path
   );
+  const resolvedPhotoActions = isValidElement(photoActions)
+    ? cloneElement(photoActions, { currentImageUrl: photoSource })
+    : photoActions;
 
   const summaryFacts = [
     { key: 'employee_number', label: 'Número de empleado', value: formatPlain(identity.employee_number), icon: Hash },
@@ -297,16 +285,23 @@ const Profile360Content = ({
       <div className="profile360__workspace">
         <section className="profile360__hero">
           <div className="profile360__hero-main">
-            <Avatar
-              initials={getInitials(fullName, { fallback: 'NA' })}
-              name={fullName}
-              src={photoSource && !photoLoadError ? photoSource : ''}
-              alt={`Foto de ${normalizeText(fullName) || 'colaborador'}`}
-              size="2xl"
-              className="profile360__avatar-wrap"
-              onImageError={() => setPhotoLoadError(true)}
-              aria-hidden="true"
-            />
+            <div className={resolvedPhotoActions ? 'profile360__avatar-shell is-photo-editable' : 'profile360__avatar-shell'}>
+              <Avatar
+                initials={getInitials(fullName, { fallback: 'NA' })}
+                name={fullName}
+                src={photoSource && !photoLoadError ? photoSource : ''}
+                alt={`Foto de ${normalizeText(fullName) || 'colaborador'}`}
+                size="2xl"
+                className="profile360__avatar-wrap"
+                onImageError={() => setPhotoLoadError(true)}
+                aria-hidden="true"
+              />
+              {resolvedPhotoActions ? (
+                <div className="profile360__avatar-overlay">
+                  {resolvedPhotoActions}
+                </div>
+              ) : null}
+            </div>
 
             <div className="profile360__identity-content">
               <h2 className="profile360__name">{fullName}</h2>
