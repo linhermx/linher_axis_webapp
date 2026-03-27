@@ -75,30 +75,65 @@
 }
 
 .sidebar-header {
-  align-items: center;
   display: flex;
-  gap: 0.6rem;
-  justify-content: space-between;
-  padding: 1rem 1rem 0.9rem;
+  padding: 0.95rem 0.88rem 0.78rem;
+  position: relative;
+}
+
+.sidebar-brand-link {
+  align-items: center;
+  border-radius: 10px;
+  display: flex;
+  justify-content: flex-start;
+  min-height: 52px;
+  padding: 0 0.25rem;
+  width: 100%;
+}
+
+.sidebar-brand-link:hover {
+  background: color-mix(in srgb, var(--surface-muted) 74%, var(--surface));
 }
 
 .sidebar-logo {
-  max-height: 52px;
-  max-width: 176px;
   object-fit: contain;
+  overflow: visible;
   width: auto;
+}
+
+.sidebar-logo--full {
+  max-height: 56px;
+  max-width: 188px;
+}
+
+.sidebar-logo--mark {
+  display: none;
+  height: 46px;
+  width: 46px;
+}
+
+:root[data-theme='light'] .sidebar-logo--dark {
+  display: none;
+}
+
+:root[data-theme='dark'] .sidebar-logo--light {
+  display: none;
 }
 
 .sidebar-collapse {
   align-items: center;
-  background: color-mix(in srgb, var(--surface-muted) 84%, var(--surface));
+  background: var(--surface);
   border: 1px solid color-mix(in srgb, var(--border) 86%, transparent);
-  border-radius: 8px;
+  border-radius: 999px;
+  box-shadow: var(--shadow-xs);
   color: var(--text-secondary);
   display: inline-flex;
-  height: 32px;
+  height: 30px;
   justify-content: center;
-  width: 32px;
+  position: absolute;
+  right: -14px;
+  top: 22px;
+  width: 30px;
+  z-index: 110;
 }
 
 .sidebar-collapse:hover {
@@ -286,7 +321,6 @@
   color: var(--primary);
 }
 
-.sidebar.is-collapsed .sidebar-logo,
 .sidebar.is-collapsed .nav-item span,
 .sidebar.is-collapsed .user-meta,
 .sidebar.is-collapsed .user-options,
@@ -295,8 +329,31 @@
 }
 
 .sidebar.is-collapsed .sidebar-header {
+  padding-left: 0.4rem;
+  padding-right: 0.4rem;
+}
+
+.sidebar.is-collapsed .sidebar-brand-link {
   justify-content: center;
-  padding-top: 0.9rem;
+  min-height: 52px;
+  padding: 0;
+  width: 100%;
+}
+
+.sidebar.is-collapsed .sidebar-logo--full {
+  display: none;
+}
+
+.sidebar.is-collapsed .sidebar-logo--mark {
+  display: block;
+}
+
+:root[data-theme='light'] .sidebar.is-collapsed .sidebar-logo--mark.sidebar-logo--dark {
+  display: none;
+}
+
+:root[data-theme='dark'] .sidebar.is-collapsed .sidebar-logo--mark.sidebar-logo--light {
+  display: none;
 }
 
 .sidebar.is-collapsed .sidebar-nav {
