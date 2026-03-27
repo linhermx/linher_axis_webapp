@@ -29,6 +29,16 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(readStoredUser);
   const [loading, setLoading] = useState(true);
 
+  const refreshSessionUser = async ({ syncState = true } = {}) => {
+    const { data } = await api.get('/auth/me');
+    const storage = getStorageForKey('accessToken') || localStorage;
+    storage.setItem('user', JSON.stringify(data.user));
+    if (syncState) {
+      setUser(data.user);
+    }
+    return data.user;
+  };
+
   useEffect(() => {
     let isMounted = true;
 
@@ -46,12 +56,9 @@ export const AuthProvider = ({ children }) => {
       }
 
       try {
-        const { data } = await api.get('/auth/me');
-        const storage = getStorageForKey('accessToken');
-        storage.setItem('user', JSON.stringify(data.user));
-
+        const nextUser = await refreshSessionUser({ syncState: false });
         if (isMounted) {
-          setUser(data.user);
+          setUser(nextUser);
         }
       } catch {
         clearStoredAuth();
@@ -85,10 +92,7 @@ export const AuthProvider = ({ children }) => {
       return data.user;
     }
 
-    const meResponse = await api.get('/auth/me');
-    localStorage.setItem('user', JSON.stringify(meResponse.data.user));
-    setUser(meResponse.data.user);
-    return meResponse.data.user;
+    return refreshSessionUser();
   };
 
   const changeRequiredPassword = async (currentPassword, newPassword) => {
@@ -99,7 +103,7 @@ export const AuthProvider = ({ children }) => {
 
     const nextUser = data?.user
       ? data.user
-      : (await api.get('/auth/me')).data.user;
+      : await refreshSessionUser();
 
     const storage = getStorageForKey('accessToken') || localStorage;
     storage.setItem('user', JSON.stringify(nextUser));
@@ -121,7 +125,15 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, changeRequiredPassword, loading }}>
+    <AuthContext.Provider value={{
+      user,
+      login,
+      logout,
+      changeRequiredPassword,
+      refreshSessionUser,
+      loading,
+    }}
+    >
       {!loading && children}
     </AuthContext.Provider>
   );
