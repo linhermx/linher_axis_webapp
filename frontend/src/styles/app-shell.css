@@ -57,7 +57,7 @@
 
 /* Source: sidebar.css */
 .sidebar {
-  background: #ffffff;
+  background: var(--surface);
   border-right: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
   display: flex;
   flex-direction: column;
@@ -168,19 +168,17 @@
 }
 
 .sidebar-footer {
-  background: color-mix(in srgb, var(--surface-muted) 62%, transparent);
+  background: var(--surface);
   border-top: 1px solid color-mix(in srgb, var(--border) 86%, transparent);
-  padding: 1rem;
+  padding: 0.86rem 1rem 1rem;
 }
 
-.user-profile-widget {
+.sidebar-user-panel {
   align-items: center;
-  background: color-mix(in srgb, var(--surface) 92%, transparent);
-  border-radius: 11px;
-  box-shadow: var(--shadow-xs);
   display: flex;
   gap: 0.72rem;
-  padding: 0.72rem;
+  min-height: 42px;
+  padding: 0.12rem 0;
   position: relative;
 }
 
@@ -213,27 +211,74 @@
 
 .user-meta {
   display: flex;
+  flex: 1;
   flex-direction: column;
+  min-width: 0;
   overflow: hidden;
 }
 
 .user-fullname {
   color: var(--text-main);
+  display: block;
   font-size: var(--fs-body-sm);
   font-weight: 700;
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .user-jobrole {
   color: var(--text-secondary);
+  display: block;
   font-size: var(--fs-caption);
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-options-menu {
+  margin-left: auto;
+}
+
+.user-options-menu__trigger.ui-button {
+  border-radius: 8px;
+  color: var(--text-secondary);
+  height: 32px;
+  min-width: 32px;
+  padding: 0;
+  width: 32px;
+}
+
+.user-options-menu__trigger.ui-button:hover:not(:disabled) {
+  color: var(--text-main);
+  transform: none;
+}
+
+.user-options-menu .ui-menu__panel {
+  bottom: auto;
+  left: calc(100% + 10px);
+  right: auto;
+  top: 50%;
+  transform: translateY(-50%);
+  min-width: 168px;
+  padding: 4px;
+  width: max-content;
+}
+
+.user-options-menu .ui-menu__item {
+  border-radius: 8px;
+  gap: 8px;
+  padding: 8px 10px;
+  white-space: nowrap;
+}
+
+.user-options-menu .ui-menu__item {
   font-weight: 700;
 }
 
 .user-options {
   color: var(--text-secondary);
-  margin-left: auto;
   opacity: 0.8;
 }
 
@@ -244,7 +289,8 @@
 .sidebar.is-collapsed .sidebar-logo,
 .sidebar.is-collapsed .nav-item span,
 .sidebar.is-collapsed .user-meta,
-.sidebar.is-collapsed .user-options {
+.sidebar.is-collapsed .user-options,
+.sidebar.is-collapsed .user-options-menu {
   display: none;
 }
 
@@ -272,7 +318,7 @@
   padding: 0.6rem;
 }
 
-.sidebar.is-collapsed .user-profile-widget {
+.sidebar.is-collapsed .sidebar-user-panel {
   justify-content: center;
 }
 
@@ -285,7 +331,7 @@
 /* Source: topbar.css */
 .topbar {
   backdrop-filter: blur(14px);
-  background: #ffffff;
+  background: var(--surface);
   border-bottom: 1px solid color-mix(in srgb, var(--border) 88%, transparent);
   position: sticky;
   top: 0;
