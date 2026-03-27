@@ -1,0 +1,12 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="118 8 176 138" preserveAspectRatio="xMidYMid meet" role="img" aria-label="AXIS monograma">
+  <defs>
+    <linearGradient id="axisMarkGradient" x1="152.21" y1="144.9" x2="268.3" y2="28.8" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#3b82f6"/>
+      <stop offset="0.36" stop-color="#2e65d7"/>
+      <stop offset="0.76" stop-color="#224aba"/>
+      <stop offset="0.99" stop-color="#1e40af"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#axisMarkGradient)" d="M224.44,26.83c-.09,25.88-39.53,26-39.65,0C185.24.77,224,.8,224.44,26.83Zm52.8,97.76L234,81.37h0l43.44-43.43c-.93-.92-10.52-10.52-11.11-11.11H226.69L238,38.11h-.39L204.48,71.2c-6.3-6.3-26.47-26.48-33.09-33.09H131.73l43.32,43.32L131.9,124.59h39.55l23.38-23.38,1.77-1.77L178.54,81.37h15.77l.15-.15,54.64,54.64h39.41Z"/>
+</svg>
+

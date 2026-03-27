@@ -1,5 +1,8 @@
-import { NavLink } from 'react-router-dom';
-import logo from '../assets/linher-axis-horizontal-v1.svg';
+import { Link, NavLink } from 'react-router-dom';
+import logoFullLight from '../assets/branding/axis-logo-full-light.svg';
+import logoFullDark from '../assets/branding/axis-logo-full-dark.svg';
+import logoMarkLight from '../assets/branding/axis-logo-mark-light.svg';
+import logoMarkDark from '../assets/branding/axis-logo-mark-dark.svg';
 import {
   LayoutDashboard,
   Users,
@@ -38,21 +41,43 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }) => {
   const canManageRecruitment = hasAnyPermission(user, ['manage_recruitment']);
   const canViewReports = hasAnyPermission(user, ['view_dashboard']);
 
+  const preferredModuleRoute = canViewReports
+    ? '/'
+    : canViewEmployees
+      ? '/employees'
+      : canViewProfile
+        ? '/me/profile'
+        : canViewDocuments
+          ? '/documents'
+          : canViewCalendar
+            ? '/calendar'
+            : canManageRecruitment
+              ? '/recruitment'
+              : canViewAdmin
+                ? '/admin'
+                : '/';
+
   const navItemClass = ({ isActive }) => `nav-item ${isActive ? 'active' : ''}`;
 
   return (
     <aside className={`sidebar ${collapsed ? 'is-collapsed' : ''}`}>
       <div className="sidebar-header">
-        <img src={logo} alt="Linher Axis" className="sidebar-logo" />
-        <button
-          type="button"
-          className="sidebar-collapse"
-          onClick={onToggleCollapse}
-          aria-label={collapsed ? 'Expandir menú lateral' : 'Colapsar menú lateral'}
-        >
-          {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
-        </button>
+        <Link to={preferredModuleRoute} className="sidebar-brand-link" aria-label="Ir al módulo principal">
+          <img src={logoFullLight} alt="AXIS by LINHER" className="sidebar-logo sidebar-logo--full sidebar-logo--light" />
+          <img src={logoFullDark} alt="AXIS by LINHER" className="sidebar-logo sidebar-logo--full sidebar-logo--dark" />
+          <img src={logoMarkLight} alt="AXIS" className="sidebar-logo sidebar-logo--mark sidebar-logo--light" />
+          <img src={logoMarkDark} alt="AXIS" className="sidebar-logo sidebar-logo--mark sidebar-logo--dark" />
+        </Link>
       </div>
+
+      <button
+        type="button"
+        className="sidebar-collapse"
+        onClick={onToggleCollapse}
+        aria-label={collapsed ? 'Expandir menú lateral' : 'Colapsar menú lateral'}
+      >
+        {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+      </button>
 
       <nav className="sidebar-nav">
         <NavLink to="/" className={navItemClass}>
