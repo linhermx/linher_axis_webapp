@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { Bell, Search } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { Button, InputField, ThemeToggle } from './ui';
+import AdminModuleNav from './AdminModuleNav';
 import EmployeeModuleNav from './EmployeeModuleNav';
 
-const Topbar = ({ hasTabs = false }) => {
+const Topbar = ({ hasTabs = false, tabsVariant = null }) => {
   const location = useLocation();
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -58,7 +59,7 @@ const Topbar = ({ hasTabs = false }) => {
 
         {hasTabs ? (
           <div className="topbar__tabs-row">
-            <EmployeeModuleNav />
+            {tabsVariant === 'admin' ? <AdminModuleNav /> : <EmployeeModuleNav />}
           </div>
         ) : null}
       </div>
