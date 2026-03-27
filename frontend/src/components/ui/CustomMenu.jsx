@@ -10,8 +10,13 @@ const alignClasses = {
 
 const CustomMenu = ({
   label = 'Acciones',
+  ariaLabel = '',
   items = [],
   align = 'right',
+  iconOnly = false,
+  showChevron = true,
+  triggerVariant = 'secondary',
+  triggerIcon = null,
   triggerClassName,
   menuClassName,
   className,
@@ -56,15 +61,17 @@ const CustomMenu = ({
       <Button
         id={buttonId}
         type="button"
-        variant="secondary"
+        variant={triggerVariant}
         className={cn(triggerClassName)}
+        aria-label={ariaLabel || (iconOnly ? label : undefined)}
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={menuId}
         onClick={() => setMenuOpen(!open)}
       >
-        <span>{label}</span>
-        <ChevronDown size={16} aria-hidden="true" />
+        {triggerIcon ? <span aria-hidden="true">{triggerIcon}</span> : null}
+        {!iconOnly ? <span>{label}</span> : null}
+        {showChevron ? <ChevronDown size={16} aria-hidden="true" /> : null}
       </Button>
 
       {open ? (
