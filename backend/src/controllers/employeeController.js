@@ -36,6 +36,7 @@ export const getAllEmployees = async (req, res) => {
                 e.id,
                 e.user_id,
                 e.internal_id,
+                u.photo_path,
                 COALESCE(NULLIF(TRIM(ext.first_name), ''), NULLIF(TRIM(ai.first_name), '')) AS first_name,
                 COALESCE(NULLIF(TRIM(ext.last_name), ''), NULLIF(TRIM(ai.last_name), '')) AS last_name,
                 COALESCE(personal.birth_date, ai.birth_date) AS birth_date,
@@ -56,6 +57,7 @@ export const getAllEmployees = async (req, res) => {
                     ELSE NULL
                 END AS gender_label
             FROM employees e
+            LEFT JOIN users u ON u.id = e.user_id
             LEFT JOIN employee_jobs ej ON e.id = ej.employee_id AND ej.current_job_flag = 1
             LEFT JOIN departments d ON ej.department_id = d.id
             LEFT JOIN positions p ON ej.position_id = p.id
@@ -184,6 +186,7 @@ export const getEmployeeById = async (req, res) => {
                 e.id,
                 e.user_id,
                 e.internal_id,
+                u.photo_path,
                 COALESCE(NULLIF(TRIM(ext.first_name), ''), NULLIF(TRIM(ai.first_name), '')) AS first_name,
                 COALESCE(NULLIF(TRIM(ext.last_name), ''), NULLIF(TRIM(ai.last_name), '')) AS last_name,
                 COALESCE(personal.birth_date, ai.birth_date) AS birth_date,
@@ -199,6 +202,7 @@ export const getEmployeeById = async (req, res) => {
                 ej.salary,
                 ej.currency
             FROM employees e
+            LEFT JOIN users u ON u.id = e.user_id
             LEFT JOIN employee_jobs ej ON e.id = ej.employee_id AND ej.current_job_flag = 1
             LEFT JOIN employee_microsip_links eml ON eml.employee_id = e.id
             LEFT JOIN ext_microsip_employee ext ON ext.id = eml.microsip_employee_ext_id
