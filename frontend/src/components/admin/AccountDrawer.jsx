@@ -1,5 +1,5 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
-import { AlertCircle, CheckCircle2, KeyRound, Mail, ShieldCheck, UserRound, UserX } from 'lucide-react';
+import { CheckCircle2, Copy, KeyRound, Mail, ShieldCheck, UserRound, UserX } from 'lucide-react';
 import {
   Alert,
   Avatar,
@@ -10,6 +10,7 @@ import {
   NotificationToast,
   StatusBadge,
 } from '../ui';
+import ProfilePhotoActions from '../ProfilePhotoActions';
 import {
   getAccountStatusMeta,
   getRoleBadgeVariant,
@@ -18,12 +19,13 @@ import {
 } from '../../lib/axisAccounts';
 import { getDepartmentTone } from '../../lib/departmentTone';
 import { getInitials, normalizeText, toHumanName } from '../../lib/identity';
+import { resolveAssetUrl } from '../../lib/media';
 import { cn } from '../../lib/cn';
+import { useAuth } from '../../hooks/useAuth';
 import api from '../../services/api';
 
 const DEFAULT_FORM = {
   email: '',
-  password: '',
   selectedSystemRoles: [],
 };
 
@@ -33,12 +35,15 @@ const AccountDrawer = ({
   employeeId,
   onAccountUpdated,
 }) => {
+  const { user, refreshSessionUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [photoUploading, setPhotoUploading] = useState(false);
+  const [photoRemoving, setPhotoRemoving] = useState(false);
   const [payload, setPayload] = useState(null);
   const [error, setError] = useState('');
   const [form, setForm] = useState(DEFAULT_FORM);
-  const [newPassword, setNewPassword] = useState('');
+  const [temporaryPassword, setTemporaryPassword] = useState('');
   const [toast, setToast] = useState({
     open: false,
     variant: 'info',
@@ -66,7 +71,7 @@ const AccountDrawer = ({
       setPayload(null);
       setError('');
       setForm(DEFAULT_FORM);
-      setNewPassword('');
+      setTemporaryPassword('');
       return;
     }
 
@@ -83,7 +88,6 @@ const AccountDrawer = ({
         setPayload(data || null);
         setForm({
           email: account?.email || '',
-          password: '',
           selectedSystemRoles: normalizeRoleList(account?.system_roles || []),
         });
       } catch (requestError) {
@@ -139,10 +143,63 @@ const AccountDrawer = ({
     const account = data?.data?.account || null;
     setForm({
       email: account?.email || '',
-      password: '',
       selectedSystemRoles: normalizeRoleList(account?.system_roles || []),
     });
     return data;
+  };
+
+  const refreshSessionIfCurrentUser = async (nextPayload = null) => {
+    const payloadToValidate = nextPayload || payload;
+    const payloadUserId = Number(payloadToValidate?.data?.user_id || payloadToValidate?.data?.account?.user_id);
+    const sessionUserId = Number(user?.id);
+
+    if (!payloadUserId || !sessionUserId || payloadUserId !== sessionUserId) {
+      return;
+    }
+
+    if (typeof refreshSessionUser === 'function') {
+      await refreshSessionUser();
+    }
+  };
+
+  const handleUploadProfilePhoto = async (file) => {
+    setPhotoUploading(true);
+    setError('');
+
+    try {
+      const formData = new FormData();
+      formData.append('photo', file);
+      await api.post(`/admin/axis-accounts/${employeeId}/photo`, formData);
+      const refreshed = await refreshPayload();
+      await refreshSessionIfCurrentUser(refreshed);
+      onAccountUpdated?.();
+      showToast('success', 'Foto actualizada', 'La foto de perfil se actualizó correctamente.');
+      return true;
+    } catch (requestError) {
+      setError(requestError?.response?.data?.message || 'No fue posible actualizar la foto de perfil.');
+      return false;
+    } finally {
+      setPhotoUploading(false);
+    }
+  };
+
+  const handleRemoveProfilePhoto = async () => {
+    setPhotoRemoving(true);
+    setError('');
+
+    try {
+      await api.delete(`/admin/axis-accounts/${employeeId}/photo`);
+      const refreshed = await refreshPayload();
+      await refreshSessionIfCurrentUser(refreshed);
+      onAccountUpdated?.();
+      showToast('success', 'Foto eliminada', 'La foto de perfil se eliminó correctamente.');
+      return true;
+    } catch (requestError) {
+      setError(requestError?.response?.data?.message || 'No fue posible eliminar la foto de perfil.');
+      return false;
+    } finally {
+      setPhotoRemoving(false);
+    }
   };
 
   const handleCreateAccount = async () => {
@@ -150,15 +207,23 @@ const AccountDrawer = ({
     setError('');
 
     try {
-      await api.post('/admin/axis-accounts', {
+      const { data } = await api.post('/admin/axis-accounts', {
         employee_id: employeeId,
         email: form.email,
-        password: form.password,
         system_roles: form.selectedSystemRoles,
       });
 
       await refreshPayload();
-      showToast('success', 'Cuenta creada', 'La cuenta AXIS se creó y vinculó correctamente.');
+      const generatedPassword = String(
+        data?.credentials?.temporary_password
+        || ''
+      ).trim();
+      if (generatedPassword) {
+        setTemporaryPassword(generatedPassword);
+      }
+      showToast('success', 'Cuenta creada', generatedPassword
+        ? 'Cuenta creada con contraseña temporal.'
+        : 'La cuenta AXIS se creó y vinculó correctamente.');
       onAccountUpdated?.();
     } catch (requestError) {
       setError(requestError?.response?.data?.message || 'No fue posible crear la cuenta AXIS.');
@@ -213,11 +278,18 @@ const AccountDrawer = ({
     setError('');
 
     try {
-      await api.post(`/admin/axis-accounts/${employeeId}/reset-password`, {
-        new_password: newPassword,
-      });
-      setNewPassword('');
-      showToast('success', 'Contraseña restablecida', 'La nueva contraseña quedó aplicada.');
+      const { data } = await api.post(`/admin/axis-accounts/${employeeId}/reset-password`);
+      const generatedPassword = String(
+        data?.credentials?.temporary_password
+        || ''
+      ).trim();
+
+      if (generatedPassword) {
+        setTemporaryPassword(generatedPassword);
+        showToast('success', 'Contraseña temporal generada', 'Ya puedes copiarla y compartirla.');
+      } else {
+        showToast('warning', 'Sin contraseña visible', 'Se ejecutó la acción, pero no llegó contraseña temporal.');
+      }
     } catch (requestError) {
       setError(requestError?.response?.data?.message || 'No fue posible restablecer la contraseña.');
     } finally {
@@ -225,9 +297,40 @@ const AccountDrawer = ({
     }
   };
 
+  const handleCopyTemporaryPassword = async () => {
+    if (!temporaryPassword) return;
+
+    try {
+      await navigator.clipboard.writeText(temporaryPassword);
+      showToast('success', 'Contraseña copiada', 'La contraseña temporal se copió al portapapeles.');
+    } catch {
+      showToast('error', 'No se pudo copiar', 'Cópiala manualmente desde el panel.');
+    }
+  };
+
   const employeeName = toHumanName(employeeData?.full_name);
+  const positionName = toHumanName(employeeData?.position_name, 'Sin puesto');
   const currentSystemRoles = normalizeRoleList(form.selectedSystemRoles);
   const departmentTone = getDepartmentTone(employeeData?.department_name);
+  const photoSource = resolveAssetUrl(
+    employeeData?.photo_url
+    || employeeData?.photo_path
+    || employeeData?.avatar_url
+    || ''
+  );
+  const hasProfilePhoto = Boolean(normalizeText(employeeData?.photo_url || employeeData?.photo_path || employeeData?.avatar_url));
+  const canManageProfilePhoto = Boolean(employeeData?.user_id || accountData?.user_id);
+  const accountStatus = accountData
+    ? getAccountStatusMeta(accountData.status)
+    : { status: 'pending', label: 'Sin cuenta' };
+  const employeeNumber = normalizeText(employeeData?.microsip_employee_number || employeeData?.internal_id) || 'Sin dato';
+  const lastSessionLabel = accountData?.last_session_at
+    ? new Date(accountData.last_session_at).toLocaleString('es-MX', {
+      timeZone: 'America/Mexico_City',
+      dateStyle: 'short',
+      timeStyle: 'short',
+    })
+    : 'Sin sesión';
 
   return (
     <>
@@ -249,50 +352,76 @@ const AccountDrawer = ({
 
         {!loading && !error && employeeData ? (
           <div className="axis-account-drawer">
-            <article className="axis-account-drawer__employee">
-              <Avatar
-                initials={getInitials(employeeName, { fallback: 'AX' })}
-                name={employeeName}
-                src={
-                  employeeData.photo_url
-                  || employeeData.photo_path
-                  || employeeData.avatar_url
-                  || ''
-                }
-                size="lg"
-                className="axis-account-drawer__avatar"
-                aria-hidden="true"
+            <article className="axis-account-drawer__hero">
+              <p className="axis-account-drawer__hero-kicker">ID. EMPLEADO: {employeeNumber}</p>
+              <StatusBadge
+                status={accountStatus.status}
+                label={accountStatus.label}
+                className="axis-account-drawer__status axis-account-drawer__status--corner"
               />
-              <div className="axis-account-drawer__employee-meta">
-                <h3>{employeeName}</h3>
-                <p>{toHumanName(employeeData.position_name)}</p>
-                <Badge
-                  variant="neutral"
-                  className={cn(
-                    'axis-account-drawer__department-chip',
-                    `employee-directory__department-tone--${departmentTone}`
-                  )}
-                >
-                  {toHumanName(employeeData.department_name)}
-                </Badge>
-              </div>
-              <div className="axis-account-drawer__employee-state">
-                {accountData ? (
-                  <StatusBadge
-                    status={getAccountStatusMeta(accountData.status).status}
-                    label={getAccountStatusMeta(accountData.status).label}
+
+              <div className="axis-account-drawer__hero-main">
+                <div className={canManageProfilePhoto ? 'axis-account-drawer__avatar-shell is-photo-editable' : 'axis-account-drawer__avatar-shell'}>
+                  <Avatar
+                    initials={getInitials(employeeName, { fallback: 'AX' })}
+                    name={employeeName}
+                    src={photoSource}
+                    size="2xl"
+                    className="axis-account-drawer__avatar"
+                    aria-hidden="true"
                   />
-                ) : (
-                  <StatusBadge status="pending" label="Sin cuenta" />
-                )}
+
+                  {canManageProfilePhoto ? (
+                    <div className="axis-account-drawer__avatar-overlay">
+                      <ProfilePhotoActions
+                        className="axis-account-drawer__photo-actions"
+                        variant="overlay"
+                        currentImageUrl={photoSource}
+                        disabled={submitting}
+                        uploading={photoUploading}
+                        removing={photoRemoving}
+                        canRemove={hasProfilePhoto}
+                        uploadLabel="Actualizar foto"
+                        removeLabel="Quitar foto"
+                        onUpload={handleUploadProfilePhoto}
+                        onRemove={handleRemoveProfilePhoto}
+                      />
+                    </div>
+                  ) : null}
+                </div>
+
+                <div className="axis-account-drawer__employee-meta">
+                  <h3>{employeeName}</h3>
+                  <p>{positionName}</p>
+                  <Badge
+                    variant="neutral"
+                    className={cn(
+                      'axis-account-drawer__department-chip',
+                      `employee-directory__department-tone--${departmentTone}`
+                    )}
+                  >
+                    {toHumanName(employeeData.department_name)}
+                  </Badge>
+                </div>
               </div>
+
+              <dl className="axis-account-drawer__hero-facts">
+                <div className="axis-account-drawer__hero-fact axis-account-drawer__hero-fact--email">
+                  <dt>Correo</dt>
+                  <dd title={accountData?.email || 'Sin cuenta vinculada'}>{accountData?.email || 'Sin cuenta vinculada'}</dd>
+                </div>
+                <div className="axis-account-drawer__hero-fact">
+                  <dt>Última sesión</dt>
+                  <dd title={lastSessionLabel}>{lastSessionLabel}</dd>
+                </div>
+              </dl>
             </article>
 
             {!accountData ? (
               <section className="axis-account-drawer__section">
                 <header className="axis-account-drawer__section-header">
                   <h4>Crear cuenta de acceso</h4>
-                  <p>Vincula un correo corporativo y define contraseña inicial.</p>
+                  <p>Vincula un correo corporativo y define roles de sistema.</p>
                 </header>
 
                 <div className="axis-account-drawer__form-grid">
@@ -303,16 +432,6 @@ const AccountDrawer = ({
                     onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
                     leftIcon={<Mail size={16} />}
                     placeholder="nombre@linher.com.mx"
-                  />
-
-                  <InputField
-                    name="axis-account-password"
-                    label="Contraseña inicial"
-                    type="password"
-                    value={form.password}
-                    onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
-                    leftIcon={<KeyRound size={16} />}
-                    placeholder="Mínimo 10 caracteres"
                   />
                 </div>
 
@@ -346,23 +465,26 @@ const AccountDrawer = ({
                 <section className="axis-account-drawer__section">
                   <header className="axis-account-drawer__section-header">
                     <h4>Cuenta vinculada</h4>
-                    <p>Controla estatus y última sesión de acceso.</p>
+                    <p>Controla acceso y contraseña temporal.</p>
                   </header>
 
-                  <div className="axis-account-drawer__metric-grid">
-                    <article className="axis-account-drawer__metric">
-                      <dt>Correo</dt>
-                      <dd>{accountData.email || 'Sin dato'}</dd>
-                    </article>
-                    <article className="axis-account-drawer__metric">
-                      <dt>Última sesión</dt>
-                      <dd>
-                        {accountData.last_session_at
-                          ? new Date(accountData.last_session_at).toLocaleString('es-MX', { timeZone: 'America/Mexico_City' })
-                          : 'Sin sesión'}
-                      </dd>
-                    </article>
-                  </div>
+                  {temporaryPassword ? (
+                    <div className="axis-account-drawer__temp-password">
+                      <div className="axis-account-drawer__temp-password-head">
+                        <p className="axis-account-drawer__temp-password-label">Contraseña temporal</p>
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="sm"
+                          onClick={handleCopyTemporaryPassword}
+                        >
+                          <Copy size={14} />
+                          Copiar
+                        </Button>
+                      </div>
+                      <code className="axis-account-drawer__temp-password-value">{temporaryPassword}</code>
+                    </div>
+                  ) : null}
 
                   <div className="axis-account-drawer__actions">
                     {accountData.status === 'active' ? (
@@ -385,6 +507,16 @@ const AccountDrawer = ({
                         {submitting ? 'Actualizando...' : 'Activar cuenta'}
                       </Button>
                     )}
+
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={handleResetPassword}
+                      disabled={submitting}
+                    >
+                      <KeyRound size={16} />
+                      {submitting ? 'Generando...' : 'Contraseña temporal'}
+                    </Button>
                   </div>
                 </section>
 
@@ -434,34 +566,6 @@ const AccountDrawer = ({
                   </Button>
                 </section>
 
-                <section className="axis-account-drawer__section">
-                  <header className="axis-account-drawer__section-header">
-                    <h4>Restablecer contraseña</h4>
-                    <p>Se cerrarán sesiones activas y se aplicará la nueva contraseña.</p>
-                  </header>
-
-                  <div className="axis-account-drawer__form-grid">
-                    <InputField
-                      name="axis-account-reset-password"
-                      label="Nueva contraseña"
-                      type="password"
-                      value={newPassword}
-                      onChange={(event) => setNewPassword(event.target.value)}
-                      leftIcon={<KeyRound size={16} />}
-                      placeholder="Mínimo 10 caracteres"
-                    />
-                  </div>
-
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={handleResetPassword}
-                    disabled={submitting}
-                  >
-                    <AlertCircle size={16} />
-                    {submitting ? 'Aplicando...' : 'Restablecer contraseña'}
-                  </Button>
-                </section>
               </>
             )}
           </div>
