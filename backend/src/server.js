@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
 import pool from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import meRoutes from './routes/meRoutes.js';
@@ -17,6 +18,11 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 const logger = new SystemLogger(pool);
+const uploadsRootPath = path.resolve(
+    process.env.UPLOADS_STORAGE_PATH
+    || process.env.DOCS_STORAGE_PATH
+    || './src/uploads'
+);
 
 const toOrigin = (urlValue) => {
     if (!urlValue) {
@@ -60,6 +66,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(requestContextMiddleware);
+app.use('/uploads', express.static(uploadsRootPath));
 
 const v1 = express.Router();
 

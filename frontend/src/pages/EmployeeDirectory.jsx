@@ -31,6 +31,7 @@ import {
 } from '../lib/identity';
 import { cn } from '../lib/cn';
 import { getDepartmentTone } from '../lib/departmentTone';
+import { resolveAssetUrl } from '../lib/media';
 import { hasAnyPermission } from '../lib/permissions';
 import api from '../services/api';
 import AccountDrawer from '../components/admin/AccountDrawer';
@@ -38,7 +39,7 @@ import AccountDrawer from '../components/admin/AccountDrawer';
 const getEmployeeName = (employee) => buildFullName(employee?.first_name, employee?.last_name, 'Sin nombre');
 const getEmployeeInitials = (employee) => getInitials(getEmployeeName(employee), { fallback: 'NA' });
 const getEmployeePhoto = (employee) => (
-  normalizeText(employee?.photo_url || employee?.photo_path || employee?.avatar_url || '')
+  resolveAssetUrl(employee?.photo_url || employee?.photo_path || employee?.avatar_url || '')
 );
 
 const toHumanValue = (value, fallback = 'Sin información') => {

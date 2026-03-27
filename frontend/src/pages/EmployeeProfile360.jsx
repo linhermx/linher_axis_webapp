@@ -1,101 +1,150 @@
-﻿import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Alert, Button, Card, StatusView } from '../components/ui';
 import Profile360Content from '../components/Profile360Content';
+import ProfilePhotoActions from '../components/ProfilePhotoActions';
 import { useAuth } from '../hooks/useAuth';
+import { validateProfilePhotoFile } from '../lib/profilePhoto';
 import { hasAnyPermission } from '../lib/permissions';
 import api from '../services/api';
 
 const EmployeeProfile360 = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, refreshSessionUser } = useAuth();
 
   const [profile, setProfile] = useState(null);
   const [visibilityScope, setVisibilityScope] = useState('full');
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingPayments, setLoadingPayments] = useState(false);
+  const [photoUploading, setPhotoUploading] = useState(false);
+  const [photoRemoving, setPhotoRemoving] = useState(false);
   const [error, setError] = useState('');
   const [paymentsError, setPaymentsError] = useState('');
+  const [photoError, setPhotoError] = useState('');
   const [linkMissing, setLinkMissing] = useState(false);
 
   const canViewPayroll = hasAnyPermission(user, ['view_payroll_employee']);
+  const canManageProfilePhoto = hasAnyPermission(user, ['manage_axis_accounts']);
 
-  useEffect(() => {
-    let active = true;
-
-    const loadProfile = async () => {
+  const loadProfile = useCallback(async ({ silent = false } = {}) => {
+    if (!silent) {
       setLoading(true);
-      setError('');
-      setLinkMissing(false);
+    }
 
-      try {
-        const { data } = await api.get(`/employees/${id}/profile-360`);
-        if (!active) return;
+    setError('');
+    setLinkMissing(false);
 
-        setProfile(data?.data || null);
-        setVisibilityScope(data?.visibility_scope || 'full');
-      } catch (fetchError) {
-        if (!active) return;
-
-        const responseCode = fetchError?.response?.data?.code;
-        if (responseCode === 'MICROSIP_LINK_NOT_FOUND') {
-          setLinkMissing(true);
-          setProfile(null);
-          return;
-        }
-
-        setError(fetchError?.response?.data?.message || 'No fue posible cargar el perfil del colaborador.');
-      } finally {
-        if (active) {
-          setLoading(false);
-        }
-      }
-    };
-
-    loadProfile();
-
-    return () => {
-      active = false;
-    };
-  }, [id]);
-
-  useEffect(() => {
-    let active = true;
-
-    const loadPayments = async () => {
-      if (!profile?.linked || visibilityScope !== 'full' || !canViewPayroll) {
-        setPayments([]);
+    try {
+      const { data } = await api.get(`/employees/${id}/profile-360`);
+      setProfile(data?.data || null);
+      setVisibilityScope(data?.visibility_scope || 'full');
+    } catch (fetchError) {
+      const responseCode = fetchError?.response?.data?.code;
+      if (responseCode === 'MICROSIP_LINK_NOT_FOUND') {
+        setLinkMissing(true);
+        setProfile(null);
         return;
       }
 
-      setLoadingPayments(true);
-      setPaymentsError('');
-
-      try {
-        const { data } = await api.get(`/employees/${id}/payroll-payments?limit=10`);
-        if (!active) return;
-
-        setPayments(Array.isArray(data?.data) ? data.data : []);
-      } catch (fetchError) {
-        if (!active) return;
-
-        setPaymentsError(fetchError?.response?.data?.message || 'No fue posible cargar pagos recientes.');
-      } finally {
-        if (active) {
-          setLoadingPayments(false);
-        }
+      setError(fetchError?.response?.data?.message || 'No fue posible cargar el perfil del colaborador.');
+    } finally {
+      if (!silent) {
+        setLoading(false);
       }
-    };
+    }
+  }, [id]);
 
-    loadPayments();
+  const loadPayments = useCallback(async () => {
+    if (!profile?.linked || visibilityScope !== 'full' || !canViewPayroll) {
+      setPayments([]);
+      return;
+    }
 
-    return () => {
-      active = false;
-    };
-  }, [id, profile, visibilityScope, canViewPayroll]);
+    setLoadingPayments(true);
+    setPaymentsError('');
+
+    try {
+      const { data } = await api.get(`/employees/${id}/payroll-payments?limit=10`);
+      setPayments(Array.isArray(data?.data) ? data.data : []);
+    } catch (fetchError) {
+      setPaymentsError(fetchError?.response?.data?.message || 'No fue posible cargar pagos recientes.');
+    } finally {
+      setLoadingPayments(false);
+    }
+  }, [canViewPayroll, id, profile?.linked, visibilityScope]);
+
+  useEffect(() => {
+    void loadProfile();
+  }, [loadProfile]);
+
+  useEffect(() => {
+    void loadPayments();
+  }, [loadPayments]);
+
+  const refreshSessionIfCurrentProfile = async () => {
+    const currentUserEmployeeId = Number(user?.employee_id);
+    const targetEmployeeId = Number(id);
+
+    if (!currentUserEmployeeId || !targetEmployeeId || currentUserEmployeeId !== targetEmployeeId) {
+      return;
+    }
+
+    if (typeof refreshSessionUser === 'function') {
+      await refreshSessionUser();
+    }
+  };
+
+  const handleUploadPhoto = async (file) => {
+    const validationError = validateProfilePhotoFile(file);
+    if (validationError) {
+      setPhotoError(validationError);
+      return false;
+    }
+
+    setPhotoUploading(true);
+    setPhotoError('');
+
+    try {
+      const formData = new FormData();
+      formData.append('photo', file);
+      await api.post(`/admin/axis-accounts/${id}/photo`, formData);
+      await loadProfile({ silent: true });
+      await refreshSessionIfCurrentProfile();
+      return true;
+    } catch (requestError) {
+      setPhotoError(requestError?.response?.data?.message || 'No fue posible actualizar la foto de perfil.');
+      return false;
+    } finally {
+      setPhotoUploading(false);
+    }
+  };
+
+  const handleRemovePhoto = async () => {
+    setPhotoRemoving(true);
+    setPhotoError('');
+
+    try {
+      await api.delete(`/admin/axis-accounts/${id}/photo`);
+      await loadProfile({ silent: true });
+      await refreshSessionIfCurrentProfile();
+      return true;
+    } catch (requestError) {
+      setPhotoError(requestError?.response?.data?.message || 'No fue posible eliminar la foto de perfil.');
+      return false;
+    } finally {
+      setPhotoRemoving(false);
+    }
+  };
+
+  const hasProfilePhoto = Boolean(
+    profile?.identity?.photo_url
+    || profile?.identity?.photo_path
+    || profile?.photo_url
+    || profile?.photo_path
+  );
 
   return (
     <section className="profile360-page">
@@ -108,6 +157,12 @@ const EmployeeProfile360 = () => {
       {!loading && error ? (
         <Alert variant="error" title="No se pudo cargar el perfil">
           {error}
+        </Alert>
+      ) : null}
+
+      {!loading && !error && photoError ? (
+        <Alert variant="error" title="No se pudo actualizar la foto">
+          {photoError}
         </Alert>
       ) : null}
 
@@ -137,6 +192,17 @@ const EmployeeProfile360 = () => {
               <span>Volver al directorio</span>
             </Button>
           )}
+          photoActions={canManageProfilePhoto ? (
+            <ProfilePhotoActions
+              variant="overlay"
+              disabled={photoUploading || photoRemoving}
+              uploading={photoUploading}
+              removing={photoRemoving}
+              canRemove={hasProfilePhoto}
+              onUpload={handleUploadPhoto}
+              onRemove={handleRemovePhoto}
+            />
+          ) : null}
         />
       ) : null}
     </section>

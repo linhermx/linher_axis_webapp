@@ -129,6 +129,11 @@ api.interceptors.request.use(
             config.headers.Authorization = `Bearer ${token}`;
         }
 
+        if (config.data instanceof FormData && config.headers) {
+            delete config.headers['Content-Type'];
+            delete config.headers['content-type'];
+        }
+
         appendOperatorId(config, getSessionUser());
         return config;
     },

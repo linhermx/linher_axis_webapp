@@ -11,6 +11,7 @@ export const getUserSessionById = async (db, userId) => {
             u.email,
             u.status,
             u.must_change_password,
+            u.photo_path,
             e.id AS employee_id,
             COALESCE(NULLIF(TRIM(ext.first_name), ''), NULLIF(TRIM(ai.first_name), '')) AS first_name,
             COALESCE(NULLIF(TRIM(ext.last_name), ''), NULLIF(TRIM(ai.last_name), '')) AS last_name
@@ -59,7 +60,7 @@ export const getUserSessionById = async (db, userId) => {
         employee_id: user.employee_id ?? null,
         name: fullName || fallbackName || 'Usuario',
         email: user.email,
-        photo_path: null,
+        photo_path: user.photo_path || null,
         role_id: roleRows[0]?.id ?? null,
         role_name: primaryRole || null,
         roles,

@@ -10,6 +10,10 @@ import {
     updateAxisAccountStatus,
 } from '../controllers/axisAccountController.js';
 import {
+    removeEmployeeProfilePhoto,
+    uploadEmployeeProfilePhoto,
+} from '../controllers/profilePhotoController.js';
+import {
     getMicrosipHealth,
     getMicrosipEmployeesSnapshot,
     reconcileMicrosipLinks,
@@ -18,6 +22,7 @@ import {
 } from '../controllers/microsipController.js';
 import { authenticateToken } from '../middlewares/authMiddleware.js';
 import { checkPermission } from '../middlewares/rbacMiddleware.js';
+import { uploadProfilePhoto } from '../middlewares/profilePhotoUpload.js';
 
 const router = express.Router();
 
@@ -38,6 +43,8 @@ router.post('/axis-accounts', checkPermission('manage_axis_accounts'), createAxi
 router.patch('/axis-accounts/:employeeId/status', checkPermission('toggle_user_accounts'), updateAxisAccountStatus);
 router.post('/axis-accounts/:employeeId/reset-password', checkPermission('reset_user_passwords'), resetAxisAccountPassword);
 router.patch('/axis-accounts/:employeeId/roles', checkPermission('assign_system_roles'), updateAxisAccountRoles);
+router.post('/axis-accounts/:employeeId/photo', checkPermission('manage_axis_accounts'), uploadProfilePhoto('photo'), uploadEmployeeProfilePhoto);
+router.delete('/axis-accounts/:employeeId/photo', checkPermission('manage_axis_accounts'), removeEmployeeProfilePhoto);
 
 // Microsip integration (MVP skeleton)
 router.get('/microsip/health', checkPermission('view_audit_logs'), getMicrosipHealth);

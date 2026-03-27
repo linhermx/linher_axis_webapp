@@ -37,6 +37,7 @@ CREATE TABLE users (
     email VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     status ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
+    photo_path VARCHAR(500) NULL,
     must_change_password TINYINT(1) NOT NULL DEFAULT 0,
     password_changed_at TIMESTAMP NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP

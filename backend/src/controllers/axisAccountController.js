@@ -82,6 +82,22 @@ const validatePasswordStrength = (password) => {
     return null;
 };
 
+const TEMP_PASSWORD_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%';
+
+const generateTemporaryPassword = (length = 14) => {
+    let generatedPassword = '';
+    for (let index = 0; index < length; index += 1) {
+        const randomIndex = Math.floor(Math.random() * TEMP_PASSWORD_ALPHABET.length);
+        generatedPassword += TEMP_PASSWORD_ALPHABET[randomIndex];
+    }
+
+    if (!validatePasswordStrength(generatedPassword)) {
+        return generatedPassword;
+    }
+
+    return generateTemporaryPassword(length + 1);
+};
+
 const buildAccountStatusLabel = (status) => {
     const normalizedStatus = normalizeText(status).toLowerCase();
     if (normalizedStatus === 'inactive') return 'Inactivo';
@@ -130,6 +146,7 @@ const buildEmployeeAccountBaseQuery = ({ employeeId = null } = {}) => `
         COALESCE(NULLIF(TRIM(ext.last_name), ''), NULLIF(TRIM(ai.last_name), '')) AS last_name,
         COALESCE(NULLIF(TRIM(ext_dep.name), ''), d.name) AS department_name,
         COALESCE(NULLIF(TRIM(ext_job.name), ''), p.name) AS position_name,
+        u.photo_path,
         u.email AS account_email,
         u.status AS account_status,
         u.must_change_password AS account_must_change_password
@@ -208,6 +225,7 @@ const toAxisAccountRecord = (row, roleMap, lastSessionMap) => {
         last_name: normalizeText(row.last_name) || null,
         department_name: normalizeText(row.department_name) || 'Sin departamento',
         position_name: normalizeText(row.position_name) || 'Sin puesto',
+        photo_path: normalizeText(row.photo_path),
         account: userId ? {
             email: normalizeText(row.account_email) || null,
             status: normalizeText(row.account_status).toLowerCase() || 'active',
@@ -442,7 +460,8 @@ export const getAxisAccountByEmployeeId = async (req, res) => {
 export const createAxisAccount = async (req, res) => {
     const employeeId = parseEmployeeId(req.body?.employee_id);
     const email = normalizeEmail(req.body?.email);
-    const password = String(req.body?.password || '');
+    const requestedPassword = String(req.body?.password || '').trim();
+    const password = requestedPassword || generateTemporaryPassword();
     const requestedRoles = req.body?.roles ?? req.body?.system_roles ?? [];
 
     if (!employeeId) {
@@ -519,6 +538,11 @@ export const createAxisAccount = async (req, res) => {
         res.status(201).json({
             message: 'Cuenta AXIS creada y vinculada correctamente.',
             data: refreshedRecord,
+            credentials: {
+                temporary_password: password,
+                must_change_password: true,
+                generated_automatically: !requestedPassword,
+            },
         });
 
         await logger.business(req.authUser?.id, 'AXIS_ACCOUNT_CREATE', {
@@ -637,7 +661,8 @@ export const updateAxisAccountStatus = async (req, res) => {
 
 export const resetAxisAccountPassword = async (req, res) => {
     const employeeId = parseEmployeeId(req.params.employeeId);
-    const newPassword = String(req.body?.new_password || '');
+    const requestedPassword = String(req.body?.new_password || '').trim();
+    const newPassword = requestedPassword || generateTemporaryPassword();
 
     if (!employeeId) {
         return sendError(res, 400, 'ID de colaborador inválido', req);
@@ -683,6 +708,11 @@ export const resetAxisAccountPassword = async (req, res) => {
 
         return res.json({
             message: 'Contraseña restablecida correctamente.',
+            credentials: {
+                temporary_password: newPassword,
+                must_change_password: true,
+                generated_automatically: !requestedPassword,
+            },
         });
     } catch (error) {
         if (transactionStarted) {
@@ -786,3 +816,4 @@ export const updateAxisAccountRoles = async (req, res) => {
         connection.release();
     }
 };
+

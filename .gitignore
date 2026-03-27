@@ -36,5 +36,7 @@ yarn-error.log*
 frontend/node_modules/
 backend/node_modules/
 frontend/dist/
+uploads/
+backend/src/uploads/
 AGENTS.md
 TODO.md

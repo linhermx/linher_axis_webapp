@@ -2,6 +2,7 @@
 import { Building2, ChevronRight, Users } from 'lucide-react';
 import { Avatar, Card, StatusBadge, StatusView } from '../components/ui';
 import { buildFullName, getInitials, toHumanName } from '../lib/identity';
+import { resolveAssetUrl } from '../lib/media';
 import api from '../services/api';
 
 const DEPTH_CLASS_MAP = [
@@ -222,7 +223,7 @@ const OrganizationStructure = () => {
                                 { fallback: 'NA' }
                               )}
                               name={buildFullName(member.first_name, member.last_name, 'Sin nombre')}
-                              src={member.photo_url || member.photo_path || member.avatar_url || ''}
+                              src={resolveAssetUrl(member.photo_url || member.photo_path || member.avatar_url || '')}
                               size="sm"
                               className="organization-member-avatar"
                               aria-hidden="true"

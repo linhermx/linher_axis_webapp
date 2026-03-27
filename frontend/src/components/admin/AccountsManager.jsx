@@ -28,6 +28,7 @@ import {
   toRoleLabel,
 } from '../../lib/axisAccounts';
 import { getInitials, normalizeText, toHumanName } from '../../lib/identity';
+import { resolveAssetUrl } from '../../lib/media';
 import api from '../../services/api';
 import AccountDrawer from './AccountDrawer';
 
@@ -270,13 +271,13 @@ const AccountsManager = () => {
                         <TableRow key={record.employee_id}>
                           <TableCell className="axis-accounts__col--employee">
                             <div className="axis-table-user axis-accounts__user">
-                              <Avatar
-                                initials={getInitials(record.full_name, { fallback: 'AX' })}
-                                name={toHumanName(record.full_name)}
-                                src={record.photo_url || record.photo_path || record.avatar_url || ''}
-                                size="md"
-                                className="axis-avatar--table axis-accounts__avatar"
-                                aria-hidden="true"
+                                <Avatar
+                                  initials={getInitials(record.full_name, { fallback: 'AX' })}
+                                  name={toHumanName(record.full_name)}
+                                  src={resolveAssetUrl(record.photo_url || record.photo_path || record.avatar_url || '')}
+                                  size="md"
+                                  className="axis-avatar--table axis-accounts__avatar"
+                                  aria-hidden="true"
                               />
                               <div className="axis-accounts__employee">
                                 <p className="axis-table-user__name">{toHumanName(record.full_name)}</p>
