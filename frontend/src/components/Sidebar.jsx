@@ -1,4 +1,4 @@
-﻿import { NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import logo from '../assets/linher-axis-horizontal-v1.svg';
 import {
   LayoutDashboard,
@@ -8,19 +8,20 @@ import {
   BarChart3,
   Settings,
   MoreVertical,
+  LogOut,
   IdCard,
   FolderOpen,
   PanelLeftClose,
   PanelLeftOpen,
 } from 'lucide-react';
-import { Avatar } from './ui';
+import { Avatar, CustomMenu } from './ui';
 import { useAuth } from '../hooks/useAuth';
 import { getInitials, toHumanName } from '../lib/identity';
 import { resolveAssetUrl } from '../lib/media';
 import { hasAnyPermission } from '../lib/permissions';
 
 const Sidebar = ({ collapsed = false, onToggleCollapse }) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const profile = {
     name: toHumanName(user?.name || 'Usuario AXIS', 'Usuario AXIS'),
@@ -110,7 +111,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }) => {
       </nav>
 
       <div className="sidebar-footer">
-        <div className="user-profile-widget">
+        <div className="sidebar-user-panel">
           <div className="user-avatar-small">
             <Avatar
               initials={profile.avatar}
@@ -128,9 +129,25 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }) => {
             <span className="user-jobrole">{profile.role}</span>
           </div>
 
-          <button type="button" className="user-options" aria-label="Opciones de perfil">
-            <MoreVertical size={16} />
-          </button>
+          <CustomMenu
+            className="user-options-menu"
+            align="right"
+            label="Opciones de cuenta"
+            ariaLabel="Opciones de cuenta"
+            iconOnly
+            showChevron={false}
+            triggerVariant="ghost"
+            triggerClassName="user-options-menu__trigger"
+            triggerIcon={<MoreVertical size={16} />}
+            items={[
+              {
+                id: 'logout',
+                label: 'Cerrar sesión',
+                icon: <LogOut size={14} />,
+                onClick: logout,
+              },
+            ]}
+          />
         </div>
       </div>
     </aside>
