@@ -271,13 +271,13 @@ const AccountsManager = () => {
                         <TableRow key={record.employee_id}>
                           <TableCell className="axis-accounts__col--employee">
                             <div className="axis-table-user axis-accounts__user">
-                                <Avatar
-                                  initials={getInitials(record.full_name, { fallback: 'AX' })}
-                                  name={toHumanName(record.full_name)}
-                                  src={resolveAssetUrl(record.photo_url || record.photo_path || record.avatar_url || '')}
-                                  size="md"
-                                  className="axis-avatar--table axis-accounts__avatar"
-                                  aria-hidden="true"
+                              <Avatar
+                                initials={getInitials(record.full_name, { fallback: 'AX' })}
+                                name={toHumanName(record.full_name)}
+                                src={resolveAssetUrl(record.photo_url || record.photo_path || record.avatar_url || '')}
+                                size="md"
+                                className="axis-avatar--table axis-accounts__avatar"
+                                aria-hidden="true"
                               />
                               <div className="axis-accounts__employee">
                                 <p className="axis-table-user__name">{toHumanName(record.full_name)}</p>
@@ -289,7 +289,7 @@ const AccountsManager = () => {
                             {record.account ? (
                               <span className="axis-accounts__account-email" title={record.account.email}>{record.account.email}</span>
                             ) : (
-                              <Badge variant="neutral">Sin cuenta</Badge>
+                              <Badge variant="neutral" className="axis-accounts__account-badge">Sin cuenta</Badge>
                             )}
                           </TableCell>
                           <TableCell className="axis-accounts__col--roles">
@@ -312,11 +312,12 @@ const AccountsManager = () => {
                           <TableCell className="axis-accounts__col--status">
                             {record.account ? (
                               <StatusBadge
+                                className="axis-accounts__status-badge"
                                 status={statusMeta.status}
                                 label={statusMeta.label}
                               />
                             ) : (
-                              <StatusBadge status="pending" label="Sin cuenta" />
+                              <StatusBadge className="axis-accounts__status-badge" status="pending" label="Sin cuenta" />
                             )}
                           </TableCell>
                           <TableCell className="axis-accounts__col--session">
@@ -327,6 +328,7 @@ const AccountsManager = () => {
                               type="button"
                               size="sm"
                               variant={record.account ? 'secondary' : 'primary'}
+                              className="axis-accounts__action-button"
                               onClick={() => handleOpenDrawer(record.employee_id)}
                             >
                               {record.account ? 'Gestionar' : 'Crear cuenta'}
@@ -345,7 +347,7 @@ const AccountsManager = () => {
                   page={page}
                   pageSize={pageSize}
                   totalItems={filteredRecords.length}
-                  pageSizeOptions={[8, 10, 12, 20]}
+                  pageSizeOptions={[8, 12, 16, 24]}
                   onPageChange={setPage}
                   onPageSizeChange={(nextSize) => {
                     setPageSize(nextSize);

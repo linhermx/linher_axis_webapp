@@ -2657,27 +2657,17 @@
   min-height: 0;
 }
 
-.admin-module__tabs-wrap {
-  margin-bottom: 2px;
-}
-
-.admin-module__tabs {
-  margin: 0;
-}
-
-.admin-module__tab {
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-  font-family: inherit;
-}
-
 .axis-accounts {
-  display: block;
+  display: flex;
+  flex: 1;
+  min-height: 0;
 }
 
 .axis-accounts .ui-card {
-  min-height: auto;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .axis-accounts__header {
@@ -2686,8 +2676,10 @@
 
 .axis-accounts__body {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 12px;
+  min-height: 0;
 }
 
 .axis-utility-button.ui-button {
@@ -2759,6 +2751,9 @@
 
 .axis-accounts__table-wrap {
   border-top: 1px solid color-mix(in srgb, var(--border) 84%, transparent);
+  display: flex;
+  flex: 1;
+  flex-direction: column;
   margin-top: 2px;
   min-height: 0;
   padding-top: 10px;
@@ -2766,14 +2761,16 @@
 
 .axis-accounts__table {
   display: flex;
+  flex: 1;
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
 }
 
 .axis-accounts__table .ui-table-scroll {
-  height: auto;
-  max-height: clamp(320px, 42vh, 460px);
+  flex: 1;
+  max-height: none;
+  min-height: 0;
   overflow: auto;
 }
 
@@ -2834,13 +2831,24 @@
 }
 
 .axis-accounts__role-badge {
+  justify-content: center;
   letter-spacing: 0.01em;
+  min-width: 108px;
   text-transform: none;
+}
+
+.axis-accounts__account-badge,
+.axis-accounts__status-badge {
+  justify-content: center;
+  min-width: 108px;
 }
 
 .axis-accounts__empty {
   color: var(--text-secondary);
+  display: inline-flex;
   font-size: var(--fs-body-sm);
+  justify-content: center;
+  min-width: 108px;
 }
 
 .axis-accounts__spin {
@@ -2853,11 +2861,11 @@
 }
 
 .axis-accounts__col--account {
-  width: 19%;
+  width: 18%;
 }
 
 .axis-accounts__col--roles {
-  width: 16%;
+  width: 15%;
 }
 
 .axis-accounts__col--status {
@@ -2869,7 +2877,11 @@
 }
 
 .axis-accounts__col--action {
-  width: 10%;
+  width: 12%;
+}
+
+.axis-accounts__action-button.ui-button {
+  min-width: 118px;
 }
 
 .axis-account-drawer {

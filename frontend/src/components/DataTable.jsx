@@ -15,7 +15,7 @@ import {
   TableShell,
 } from './ui';
 
-const DEFAULT_PAGE_SIZE = 10;
+const DEFAULT_PAGE_SIZE = 8;
 
 const DataTable = ({ columns, data, onRowClick }) => {
   const [searchTerm, setSearchTerm] = useState('');
