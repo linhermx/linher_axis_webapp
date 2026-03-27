@@ -161,6 +161,30 @@
   width: 36px;
 }
 
+.ui-overlay-close.ui-button {
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--border) 78%, transparent);
+  border-radius: 10px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  height: 36px;
+  min-width: 36px;
+  padding: 0;
+  transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+  width: 36px;
+}
+
+.ui-overlay-close.ui-button:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--surface-muted) 74%, var(--surface));
+  border-color: color-mix(in srgb, var(--primary) 24%, transparent);
+  color: var(--text-main);
+  transform: none;
+}
+
+.ui-overlay-close.ui-button:focus-visible {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 24%, transparent);
+}
+
 .ui-field {
   display: flex;
   flex-direction: column;

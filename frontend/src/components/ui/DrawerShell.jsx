@@ -110,7 +110,9 @@ const DrawerShell = ({
 
           <Button
             type="button"
-            variant="icon"
+            variant="ghost"
+            size="sm"
+            className="ui-overlay-close"
             aria-label="Cerrar panel"
             onClick={() => onClose?.()}
           >
