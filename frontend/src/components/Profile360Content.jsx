@@ -285,37 +285,6 @@ const Profile360Content = ({
       <div className="profile360__workspace">
         <section className="profile360__hero">
           <div className="profile360__hero-main">
-            <div className={resolvedPhotoActions ? 'profile360__avatar-shell is-photo-editable' : 'profile360__avatar-shell'}>
-              <Avatar
-                initials={getInitials(fullName, { fallback: 'NA' })}
-                name={fullName}
-                src={photoSource && !photoLoadError ? photoSource : ''}
-                alt={`Foto de ${normalizeText(fullName) || 'colaborador'}`}
-                size="2xl"
-                className="profile360__avatar-wrap"
-                onImageError={() => setPhotoLoadError(true)}
-                aria-hidden="true"
-              />
-              {resolvedPhotoActions ? (
-                <div className="profile360__avatar-overlay">
-                  {resolvedPhotoActions}
-                </div>
-              ) : null}
-            </div>
-
-            <div className="profile360__identity-content">
-              <h2 className="profile360__name">{fullName}</h2>
-              <p className="profile360__role">{roleName}</p>
-              <div className="profile360__chips">
-                <Badge
-                  variant="neutral"
-                  className={`profile360__department-chip employee-directory__department-tone--${departmentTone}`}
-                >
-                  {departmentName}
-                </Badge>
-              </div>
-            </div>
-
             <div className="profile360__hero-side">
               {headerAction ? (
                 <div className="profile360__hero-action">
@@ -327,6 +296,39 @@ const Profile360Content = ({
                 label={employmentStatus.label}
                 className="profile360__identity-status"
               />
+            </div>
+
+            <div className="profile360__hero-identity">
+              <div className={resolvedPhotoActions ? 'profile360__avatar-shell is-photo-editable' : 'profile360__avatar-shell'}>
+                <Avatar
+                  initials={getInitials(fullName, { fallback: 'NA' })}
+                  name={fullName}
+                  src={photoSource && !photoLoadError ? photoSource : ''}
+                  alt={`Foto de ${normalizeText(fullName) || 'colaborador'}`}
+                  size="2xl"
+                  className="profile360__avatar-wrap"
+                  onImageError={() => setPhotoLoadError(true)}
+                  aria-hidden="true"
+                />
+                {resolvedPhotoActions ? (
+                  <div className="profile360__avatar-overlay">
+                    {resolvedPhotoActions}
+                  </div>
+                ) : null}
+              </div>
+
+              <div className="profile360__identity-content">
+                <h2 className="profile360__name">{fullName}</h2>
+                <p className="profile360__role">{roleName}</p>
+                <div className="profile360__chips">
+                  <Badge
+                    variant="neutral"
+                    className={`profile360__department-chip employee-directory__department-tone--${departmentTone}`}
+                  >
+                    {departmentName}
+                  </Badge>
+                </div>
+              </div>
             </div>
           </div>
 
